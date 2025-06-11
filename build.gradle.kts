@@ -15,7 +15,6 @@ buildscript {
         classpath(libs.kotlin.gradle.plugin)
         classpath(libs.hilt.android.gradle.plugin)
         classpath(libs.google.services)
-        classpath(libs.firebase.crashlytics.gradle)
     }
 }
 
