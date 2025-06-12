@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import com.example.spotistats.presentation.screen.authorization.AuthScreen
 import com.example.spotistats.presentation.screen.authorization.AuthViewModel
 import com.example.spotistats.ui.theme.SpotiStatsTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,7 +22,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
+                    AuthScreen()
                 }
             }
         }
