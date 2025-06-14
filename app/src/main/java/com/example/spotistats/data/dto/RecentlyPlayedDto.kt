@@ -24,7 +24,7 @@ data class CursorsDto(
 
 @Serializable
 data class ItemDto(
-    val context: Context,
+    val context: ContextDto,
     val played_at: String,
     val track: TrackDto
 )
