@@ -1,6 +1,9 @@
-package com.example.spotistats.data.api.models
+package com.example.spotistats.data.dto
 
-data class SpotifyAuthResponse (
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class AuthorizationDto (
     val access_token: String,
     val token_type: String,
     val expires_in: Int,

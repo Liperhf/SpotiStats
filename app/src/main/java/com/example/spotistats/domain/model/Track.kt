@@ -1,18 +1,13 @@
 package com.example.spotistats.domain.model
 
-import com.example.spotistats.data.dto.Album
-import com.example.spotistats.data.dto.ArtistX
-import com.example.spotistats.data.dto.ExternalIds
-import com.example.spotistats.data.dto.ExternalUrlsXXX
-import com.example.spotistats.data.dto.LinkedFrom
-import com.example.spotistats.data.dto.RestrictionsX
 
-data class Track (
-    val artists: List<ArtistX>,
+data class Track(
+    val album: String,
+    val artists: String,
     val duration_ms: Int,
     val id: String,
     val name: String,
-    val popularity: Int,
     val type: String,
-    val uri: String
+    val uri: String,
+    val imageUrl:String
 )

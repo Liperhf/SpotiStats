@@ -6,10 +6,13 @@ import android.net.Uri
 import com.example.spotistats.data.api.SpotifyAuthApi
 import com.example.spotistats.data.api.SpotifyConfig
 import com.example.spotistats.data.api.SpotifyUserApi
-import com.example.spotistats.data.api.models.SpotifyAuthResponse
-import com.example.spotistats.data.api.models.SpotifyUserProfile
-import com.example.spotistats.data.dto.TrackDto
+import com.example.spotistats.data.dto.AuthorizationDto
+import com.example.spotistats.data.dto.RecentlyPlayedDto
+import com.example.spotistats.data.dto.UserProfileDto
+import com.example.spotistats.data.mapper.toDomain
 import com.example.spotistats.domain.Repository
+import com.example.spotistats.domain.model.RecentlyPlayed
+import com.example.spotistats.domain.model.Track
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -44,7 +47,7 @@ class RepositoryImpl @Inject constructor(
         return (1..length).map{chars.random()}.joinToString("")
     }
 
-    override suspend fun exchangeCodeForToken(code: String): SpotifyAuthResponse {
+    override suspend fun exchangeCodeForToken(code: String): AuthorizationDto {
         return spotifyAuthApi.exchangeCodeForToken(code = code,
             clientId = config.CLIENT_ID,
             clientSecret = config.CLIENT_SECRET,
@@ -61,9 +64,14 @@ class RepositoryImpl @Inject constructor(
         return prefs.getString("access_token",null)
     }
 
-    override suspend fun getUserProfile(): SpotifyUserProfile {
+    override suspend fun getUserProfile(): UserProfileDto {
         val token = getAccessToken() ?: throw IllegalStateException("No access token")
         return spotifyUserApi.getUserProfile("Bearer $token")
     }
 
+    override suspend fun getRecentlyPlayed(): RecentlyPlayed {
+        val token = getAccessToken() ?: throw IllegalArgumentException("No access token")
+        val dto = spotifyUserApi.getRecentlyPlayed("Bearer $token")
+        return dto.toDomain()
+    }
 }

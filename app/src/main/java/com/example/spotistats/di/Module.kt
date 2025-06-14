@@ -3,7 +3,6 @@ package com.example.spotistats.di
 import com.example.spotistats.data.api.SpotifyAuthApi
 import com.example.spotistats.data.api.SpotifyConfig
 import com.example.spotistats.data.api.SpotifyUserApi
-import com.example.spotistats.data.api.models.SpotifyAuthResponse
 import com.example.spotistats.data.repository.RepositoryImpl
 import com.example.spotistats.domain.Repository
 import dagger.Module

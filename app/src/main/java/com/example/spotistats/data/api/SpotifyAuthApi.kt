@@ -1,6 +1,6 @@
 package com.example.spotistats.data.api
 
-import com.example.spotistats.data.api.models.SpotifyAuthResponse
+import com.example.spotistats.data.dto.AuthorizationDto
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
@@ -14,5 +14,5 @@ interface SpotifyAuthApi {
         @Field("redirect_uri") redirectUri:String,
         @Field("client_id") clientId:String,
         @Field("client_secret") clientSecret:String
-    ):SpotifyAuthResponse
+    ): AuthorizationDto
 }

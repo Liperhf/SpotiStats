@@ -1,9 +1,11 @@
 package com.example.spotistats.domain.useCases
 
 import android.content.Intent
-import com.example.spotistats.data.api.models.SpotifyAuthResponse
-import com.example.spotistats.data.repository.RepositoryImpl
+import com.example.spotistats.data.dto.AuthorizationDto
+import com.example.spotistats.data.dto.RecentlyPlayedDto
 import com.example.spotistats.domain.Repository
+import com.example.spotistats.domain.model.RecentlyPlayed
+import com.example.spotistats.domain.model.Track
 import javax.inject.Inject
 
 class SpotifyAuthUseCase @Inject constructor(
@@ -13,7 +15,7 @@ class SpotifyAuthUseCase @Inject constructor(
         return repository.buildAuthIntent()
     }
 
-    suspend fun exchangeCodeForToken(code:String):SpotifyAuthResponse{
+    suspend fun exchangeCodeForToken(code:String): AuthorizationDto {
         return repository.exchangeCodeForToken(code)
     }
 
@@ -28,4 +30,10 @@ class SpotifyAuthUseCase @Inject constructor(
     suspend fun isUserAuthorized():Boolean{
     return getAccessToken() != null
     }
+
+    suspend fun getRecentlyPlayed():RecentlyPlayed{
+        return repository.getRecentlyPlayed()
+    }
+
+
 }
