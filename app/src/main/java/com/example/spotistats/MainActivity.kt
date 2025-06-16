@@ -58,7 +58,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        authViewModel.refreshToken()
         authViewModel.checkAuthStatus()
     }
-}//добавить кнопку логаута для тестировки,спросить про hiltviewmodel в mainavtivity,ну и продумать идею и ui
+}//добавить рефреш токен!,мб у стаса попросить чекнуть проект,спросить про hiltviewmodel в mainavtivity,ну и продумать идею и ui
 

@@ -4,7 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.spotistats.data.dto.RecentlyPlayedDto
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.spotistats.domain.model.RecentlyPlayed
 import com.example.spotistats.domain.useCases.SpotifyAuthUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,7 +51,7 @@ class AuthViewModel @Inject constructor(
     fun logout(){
         viewModelScope.launch {
             try{
-                spotifyAuthUseCase.clearAccessToken()
+                spotifyAuthUseCase.clearTokens()
                 _isAuthenticated.value = false
             }
             catch (e:Exception){
@@ -64,7 +64,7 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             try{
                 val authDto = spotifyAuthUseCase.exchangeCodeForToken(code)
-                spotifyAuthUseCase.saveAccessToken(authDto.access_token)
+                spotifyAuthUseCase.saveTokens(authDto)
                 checkAuthStatus()
             }
             catch (e:Exception){
@@ -86,5 +86,20 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
+
+    fun refreshToken(){
+        viewModelScope.launch {
+            try {
+                val success = spotifyAuthUseCase.refreshTokenIfNeeded()
+                if (!success) {
+                    _isAuthenticated.value = false
+                }
+            }catch (e:Exception){
+                e.printStackTrace()
+                _isAuthenticated.value = false
+            }
+        }
+    }
+
 
 }

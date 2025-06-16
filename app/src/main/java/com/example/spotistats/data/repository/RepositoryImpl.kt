@@ -6,13 +6,11 @@ import android.net.Uri
 import com.example.spotistats.data.api.SpotifyAuthApi
 import com.example.spotistats.data.api.SpotifyConfig
 import com.example.spotistats.data.api.SpotifyUserApi
-import com.example.spotistats.data.dto.AuthorizationDto
-import com.example.spotistats.data.dto.RecentlyPlayedDto
+import com.example.spotistats.data.dto.AuthTokenDto
 import com.example.spotistats.data.dto.UserProfileDto
 import com.example.spotistats.data.mapper.toDomain
 import com.example.spotistats.domain.Repository
 import com.example.spotistats.domain.model.RecentlyPlayed
-import com.example.spotistats.domain.model.Track
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -47,16 +45,39 @@ class RepositoryImpl @Inject constructor(
         return (1..length).map{chars.random()}.joinToString("")
     }
 
-    override suspend fun exchangeCodeForToken(code: String): AuthorizationDto {
+    override suspend fun exchangeCodeForToken(code: String): AuthTokenDto {
         return spotifyAuthApi.exchangeCodeForToken(code = code,
             clientId = config.CLIENT_ID,
             clientSecret = config.CLIENT_SECRET,
-            redirectUri = config.REDIRECT_URI)
+            redirectUri = config.REDIRECT_URI,)
     }
 
-    override suspend fun saveAccessToken(token: String) {
+    override suspend fun saveTokens(authTokenDto: AuthTokenDto) {
         val prefs = context.getSharedPreferences("spotify_prefs",Context.MODE_PRIVATE)
-        prefs.edit().putString("access_token",token).apply()
+        val expiresAt = System.currentTimeMillis() + authTokenDto.expires_in * 1000
+
+        prefs.edit()
+            .putString("access_token",authTokenDto.access_token)
+            .putString("refresh_token",authTokenDto.refresh_token)
+            .putLong("expires_at",expiresAt)
+            .apply()
+    }
+
+    override suspend fun getRefreshToken(): String? {
+        val prefs = context.getSharedPreferences("spotify_prefs",Context.MODE_PRIVATE)
+        return prefs.getString("refresh_token",null)
+    }
+
+    override suspend fun refreshToken(refreshToken: String): AuthTokenDto {
+        return spotifyAuthApi.refreshToken(
+            refreshToken = refreshToken,
+            clientSecret = config.CLIENT_SECRET,
+            clientId = config.CLIENT_ID)
+    }
+
+    override suspend fun getExpiresAt(): Long {
+        val prefs = context.getSharedPreferences("spotify_prefs",Context.MODE_PRIVATE)
+        return prefs.getLong("expires_at",0)
     }
 
     override suspend fun getAccessToken(): String? {
@@ -75,8 +96,18 @@ class RepositoryImpl @Inject constructor(
         return dto.toDomain()
     }
 
-    override suspend fun clearAccessToken() {
+    override suspend fun isTokenExpired(): Boolean {
+        val expiresAt = getExpiresAt()
+        val currentTime = System.currentTimeMillis()
+        return currentTime > expiresAt
+    }
+
+    override suspend fun clearTokens() {
         val prefs = context.getSharedPreferences("spotify_prefs",Context.MODE_PRIVATE)
-        return prefs.edit().remove("access_token").apply()
+        return prefs.edit()
+            .remove("access_token")
+            .remove("refresh_token")
+            .remove("expires_at")
+            .apply()
     }
 }
