@@ -35,5 +35,9 @@ class SpotifyAuthUseCase @Inject constructor(
         return repository.getRecentlyPlayed()
     }
 
+    suspend fun clearAccessToken(){
+        return repository.clearAccessToken()
+    }
+
 
 }

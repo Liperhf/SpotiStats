@@ -1,6 +1,7 @@
 package com.example.spotistats.presentation.screen.authorization
 
 import android.content.Intent
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.spotistats.data.dto.RecentlyPlayedDto
@@ -28,7 +29,11 @@ class AuthViewModel @Inject constructor(
     }
 
     suspend fun getRecentlyPlayed(){
-        _recentlyPlayed.value = spotifyAuthUseCase.getRecentlyPlayed()
+        try {
+            _recentlyPlayed.value = spotifyAuthUseCase.getRecentlyPlayed()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     fun checkAuthStatus(){
@@ -43,7 +48,19 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun handleCallBack(code:String){
+    fun logout(){
+        viewModelScope.launch {
+            try{
+                spotifyAuthUseCase.clearAccessToken()
+                _isAuthenticated.value = false
+            }
+            catch (e:Exception){
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun processAuthorizationCode(code:String){
         viewModelScope.launch {
             try{
                 val authDto = spotifyAuthUseCase.exchangeCodeForToken(code)
@@ -55,4 +72,19 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
+
+    fun processSpotifyCallback(intent: Intent) {
+        val data: Uri? = intent.data
+        if (data?.scheme == "spotistats" && data.host == "callback") {
+            val code = data.getQueryParameter("code")
+            val error = data.getQueryParameter("error")
+
+            if (code != null) {
+                processAuthorizationCode(code)
+            } else if (error != null) {
+                println("Authorization error:$error")
+            }
+        }
+    }
+
 }

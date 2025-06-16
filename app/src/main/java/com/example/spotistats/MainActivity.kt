@@ -39,36 +39,26 @@ class MainActivity : ComponentActivity() {
                                 viewModel = authViewModel
                             )
                         }
-                        composable("main") { MainScreen(viewModel = authViewModel) }
+                        composable("main") { MainScreen(navController = navController,
+                            viewModel = authViewModel) }
                     }
                 }
             }
         }
-        handleSpotifyCallBack(intent)
+        if (intent?.data != null) {
+            authViewModel.processSpotifyCallback(intent)
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        intent?.let { handleSpotifyCallBack(it) }
+        intent?.let { authViewModel.processSpotifyCallback(it) }
     }
 
-    private fun handleSpotifyCallBack(intent: Intent) {
-        val data: Uri? = intent.data
-        if (data?.scheme == "spotistats" && data.host == "callback") {
-            val code = data.getQueryParameter("code")
-            val error = data.getQueryParameter("error")
-
-            if (code != null) {
-                authViewModel.handleCallBack(code)
-            } else if (error != null) {
-                println("Authorization error:$error")
-            }
-        }
-    }
 
     override fun onResume() {
         super.onResume()
         authViewModel.checkAuthStatus()
     }
-}
+}//добавить кнопку логаута для тестировки,спросить про hiltviewmodel в mainavtivity,ну и продумать идею и ui
 

@@ -74,4 +74,9 @@ class RepositoryImpl @Inject constructor(
         val dto = spotifyUserApi.getRecentlyPlayed("Bearer $token")
         return dto.toDomain()
     }
+
+    override suspend fun clearAccessToken() {
+        val prefs = context.getSharedPreferences("spotify_prefs",Context.MODE_PRIVATE)
+        return prefs.edit().remove("access_token").apply()
+    }
 }

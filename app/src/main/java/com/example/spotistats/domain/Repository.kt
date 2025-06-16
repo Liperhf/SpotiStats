@@ -13,4 +13,5 @@ interface Repository {
     suspend fun getAccessToken(): String?
     suspend fun getUserProfile(): UserProfileDto
     suspend fun getRecentlyPlayed(): RecentlyPlayed
+    suspend fun clearAccessToken():Unit
 }
