@@ -4,6 +4,7 @@ import android.content.Intent
 import com.example.spotistats.data.dto.AuthTokenDto
 import com.example.spotistats.domain.Repository
 import com.example.spotistats.domain.model.RecentlyPlayed
+import com.example.spotistats.domain.model.UserProfile
 import javax.inject.Inject
 
 class SpotifyAuthUseCase @Inject constructor(
@@ -69,6 +70,8 @@ class SpotifyAuthUseCase @Inject constructor(
     suspend fun isTokenExpired():Boolean{
         return repository.isTokenExpired()
     }
-
+    suspend fun getUserProfile():UserProfile{
+        return repository.getUserProfile()
+    }
 
 }

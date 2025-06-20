@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.spotistats.R
 import com.example.spotistats.data.dto.RecentlyPlayedDto
 import com.example.spotistats.domain.model.RecentlyPlayed
+import com.example.spotistats.domain.model.UserProfile
 import com.example.spotistats.domain.useCases.SpotifyAuthUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +29,8 @@ class AuthViewModel @Inject constructor(
     val recentlyPlayed:StateFlow<RecentlyPlayed?> = _recentlyPlayed
     private val _isAuthenticated = MutableStateFlow(false)
     val isAuthenticated: StateFlow<Boolean> = _isAuthenticated
+    private val _userProfile = MutableStateFlow<UserProfile?>(null)
+    val userProfile:StateFlow<UserProfile?> = _userProfile
 
     fun onLoginClicked(){
         _authIntent.value = spotifyAuthUseCase.createAuthIntent()
@@ -115,4 +118,13 @@ class AuthViewModel @Inject constructor(
         return resId
     }
 
+
+    suspend fun getUserProfile(){
+        try {
+            _userProfile.value = spotifyAuthUseCase.getUserProfile()
+            println("Profile loaded: ${_userProfile.value?.imagesUrl}")
+        } catch (e: Exception) {
+            println("Failed to load profile: ${e.message}")
+        }
+    }
 }

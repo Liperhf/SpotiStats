@@ -11,6 +11,7 @@ import com.example.spotistats.data.dto.UserProfileDto
 import com.example.spotistats.data.mapper.toDomain
 import com.example.spotistats.domain.Repository
 import com.example.spotistats.domain.model.RecentlyPlayed
+import com.example.spotistats.domain.model.UserProfile
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -85,9 +86,10 @@ class RepositoryImpl @Inject constructor(
         return prefs.getString("access_token",null)
     }
 
-    override suspend fun getUserProfile(): UserProfileDto {
+    override suspend fun getUserProfile(): UserProfile {
         val token = getAccessToken() ?: throw IllegalStateException("No access token")
-        return spotifyUserApi.getUserProfile("Bearer $token")
+        val dto = spotifyUserApi.getUserProfile("Bearer $token")
+        return dto.toDomain()
     }
 
     override suspend fun getRecentlyPlayed(): RecentlyPlayed {

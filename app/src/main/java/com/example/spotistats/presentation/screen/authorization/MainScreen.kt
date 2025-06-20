@@ -5,10 +5,16 @@ import android.content.res.Resources
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DrawerValue
@@ -40,6 +46,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.spotistats.R
 import kotlinx.coroutines.launch
 
@@ -56,10 +63,12 @@ fun MainScreen(
     val recentlyPlayed = viewModel.recentlyPlayed.collectAsState()
     val isAuthenticated = viewModel.isAuthenticated.collectAsState()
     val greeting = stringResource(id = viewModel.getGreeting())
+    val userProfile = viewModel.userProfile.collectAsState()
 
     LaunchedEffect(Unit) {
         if (isAuthenticated.value) {
             viewModel.getRecentlyPlayed()
+            viewModel.getUserProfile()
         }
     }
 
@@ -75,7 +84,7 @@ fun MainScreen(
     ModalNavigationDrawer(
         drawerContent = {
             ModalDrawerSheet {
-            Text("Nickname", modifier = Modifier.padding(16.dp))
+            userProfile.value?.display_name?.let { Text(it, modifier = Modifier.padding(16.dp)) }
             HorizontalDivider()
             DrawerItem(text = stringResource(R.string.settings), onClick = {
                 navController.navigate("settings")
@@ -91,12 +100,24 @@ fun MainScreen(
                 title = {Text(greeting)},
                 navigationIcon = {IconButton(
                     onClick = { scope.launch { drawerState.open() } },
-                    content = {Icon(imageVector = Icons.Default.Menu, contentDescription = "")}
+                    content = { AsyncImage(model = userProfile.value?.imagesUrl,
+                        contentDescription = "",
+                        modifier = Modifier.size(40.dp)) }
                 )},
             )
         },
     ){paddingValues ->
         LazyColumn(modifier = Modifier.padding(paddingValues)) {
+            item {
+                Box(modifier = Modifier.padding(paddingValues)){
+                    Icon(imageVector = Icons.Default.Home,
+                        contentDescription = "",
+                        modifier = Modifier
+                        .height(40.dp)
+                        .width(40.dp))
+            }
+            }
+
 
         }
     }
