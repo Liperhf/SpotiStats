@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.spotistats.presentation.screen.authorization.AuthScreen
 import com.example.spotistats.presentation.screen.authorization.AuthViewModel
 import com.example.spotistats.presentation.screen.authorization.MainScreen
+import com.example.spotistats.presentation.screen.authorization.SettingsScreen
 import com.example.spotistats.ui.theme.SpotiStatsTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -39,9 +40,16 @@ class MainActivity : ComponentActivity() {
                                 viewModel = authViewModel
                             )
                         }
-                        composable("main") { MainScreen(navController = navController,
+                        composable("main") { MainScreen(
+                            navController = navController,
                             viewModel = authViewModel) }
+
+                        composable("settings"){ SettingsScreen(
+                            navController = navController,
+                            viewModel = authViewModel
+                        ) }
                     }
+
                 }
             }
         }

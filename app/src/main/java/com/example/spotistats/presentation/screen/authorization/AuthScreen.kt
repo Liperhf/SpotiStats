@@ -10,8 +10,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.spotistats.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -42,7 +44,7 @@ fun AuthScreen(
         Button(onClick = {
             viewModel.onLoginClicked()
         }) {
-            Text("Login with Spotify")
+            Text(stringResource(R.string.login))
         }
     }
 }

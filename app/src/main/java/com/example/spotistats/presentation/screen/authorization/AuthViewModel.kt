@@ -2,15 +2,20 @@ package com.example.spotistats.presentation.screen.authorization
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.spotistats.R
+import com.example.spotistats.data.dto.RecentlyPlayedDto
 import com.example.spotistats.domain.model.RecentlyPlayed
 import com.example.spotistats.domain.useCases.SpotifyAuthUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,11 +34,7 @@ class AuthViewModel @Inject constructor(
     }
 
     suspend fun getRecentlyPlayed(){
-        try {
-            _recentlyPlayed.value = spotifyAuthUseCase.getRecentlyPlayed()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        _recentlyPlayed.value = spotifyAuthUseCase.getRecentlyPlayed()
     }
 
     fun checkAuthStatus(){
@@ -101,5 +102,17 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getGreeting():Int{
+        val hour = LocalTime.now().hour
+        val resId = when(hour){
+            in 6..11 -> R.string.good_morning
+            in 12..17 -> R.string.good_day
+            in 18..24 -> R.string.good_evening
+            else -> R.string.good_night
+        }
+        return resId
+    }
 
 }
