@@ -3,6 +3,7 @@ package com.example.spotistats.domain
 import android.content.Intent
 import com.example.spotistats.data.dto.AuthTokenDto
 import com.example.spotistats.data.dto.UserProfileDto
+import com.example.spotistats.domain.model.CurrentlyPlaying
 import com.example.spotistats.domain.model.RecentlyPlayed
 import com.example.spotistats.domain.model.UserProfile
 
@@ -18,4 +19,5 @@ interface Repository {
     suspend fun refreshToken(refreshToken:String):AuthTokenDto
     suspend fun getRecentlyPlayed(): RecentlyPlayed
     suspend fun clearTokens():Unit
+    suspend fun getCurrentlyPlaying():CurrentlyPlaying
 }

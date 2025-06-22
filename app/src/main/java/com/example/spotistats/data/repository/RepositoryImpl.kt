@@ -10,6 +10,7 @@ import com.example.spotistats.data.dto.AuthTokenDto
 import com.example.spotistats.data.dto.UserProfileDto
 import com.example.spotistats.data.mapper.toDomain
 import com.example.spotistats.domain.Repository
+import com.example.spotistats.domain.model.CurrentlyPlaying
 import com.example.spotistats.domain.model.RecentlyPlayed
 import com.example.spotistats.domain.model.UserProfile
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -111,5 +112,11 @@ class RepositoryImpl @Inject constructor(
             .remove("refresh_token")
             .remove("expires_at")
             .apply()
+    }
+
+    override suspend fun getCurrentlyPlaying(): CurrentlyPlaying {
+        val token = getAccessToken() ?: throw IllegalArgumentException("No access token")
+        val dto = spotifyUserApi.getCurrentlyPlaying("Bearer $token")
+        return dto.toDomain()
     }
 }

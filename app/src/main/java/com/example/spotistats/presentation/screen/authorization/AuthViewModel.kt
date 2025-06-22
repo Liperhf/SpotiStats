@@ -3,16 +3,19 @@ package com.example.spotistats.presentation.screen.authorization
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.spotistats.R
 import com.example.spotistats.data.dto.RecentlyPlayedDto
+import com.example.spotistats.domain.model.CurrentlyPlaying
 import com.example.spotistats.domain.model.RecentlyPlayed
 import com.example.spotistats.domain.model.UserProfile
 import com.example.spotistats.domain.useCases.SpotifyAuthUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -31,6 +34,9 @@ class AuthViewModel @Inject constructor(
     val isAuthenticated: StateFlow<Boolean> = _isAuthenticated
     private val _userProfile = MutableStateFlow<UserProfile?>(null)
     val userProfile:StateFlow<UserProfile?> = _userProfile
+    private val _currentlyPlaying = MutableStateFlow<CurrentlyPlaying?>(null)
+    val currentlyPlaying:StateFlow<CurrentlyPlaying?> = _currentlyPlaying
+
 
     fun onLoginClicked(){
         _authIntent.value = spotifyAuthUseCase.createAuthIntent()
@@ -126,5 +132,14 @@ class AuthViewModel @Inject constructor(
         } catch (e: Exception) {
             println("Failed to load profile: ${e.message}")
         }
+    }
+    suspend fun getCurrentlyPlaying(){
+        try {
+            _currentlyPlaying.value = spotifyAuthUseCase.getCurrentlyPlaying()
+        }catch (e:Exception){
+            _currentlyPlaying.value = null
+            Log.e("NowPlaying","Failed to load : ${e.message}")
+        }
+
     }
 }
