@@ -58,6 +58,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.accompanist.systemuicontroller)
     implementation(libs.android.auth)
 
     // Core

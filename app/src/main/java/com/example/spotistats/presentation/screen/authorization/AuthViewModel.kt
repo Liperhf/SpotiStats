@@ -140,6 +140,5 @@ class AuthViewModel @Inject constructor(
             _currentlyPlaying.value = null
             Log.e("NowPlaying","Failed to load : ${e.message}")
         }
-
     }
 }

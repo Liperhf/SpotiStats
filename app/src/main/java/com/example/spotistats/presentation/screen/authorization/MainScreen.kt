@@ -5,17 +5,22 @@ import android.content.res.Resources
 import android.os.Build
 import android.view.textclassifier.TextClassifierEvent.TextLinkifyEvent
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Home
@@ -28,6 +33,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -35,6 +41,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults.contentWindowInsets
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,10 +54,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.spotistats.R
@@ -87,7 +100,7 @@ fun MainScreen(
         }else{
             while(true){
                 viewModel.getCurrentlyPlaying()
-                kotlinx.coroutines.delay(3000)
+                kotlinx.coroutines.delay(1000)
             }
         }
     }
@@ -116,20 +129,16 @@ fun MainScreen(
                         contentDescription = "",
                         modifier = Modifier.size(40.dp)) }
                 )},
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor =
+                        MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                )
             )
         },
     ){paddingValues ->
         LazyColumn(modifier = Modifier.padding(paddingValues)) {
-            item {
-                Box(modifier = Modifier.padding(paddingValues)){
-                    Icon(imageVector = Icons.Default.Home,
-                        contentDescription = "",
-                        modifier = Modifier
-                        .height(40.dp)
-                        .width(40.dp))
-            }
-            }
-            val imageUrl = userProfile.value?.imagesUrl
+            val imageUrl = currentlyPlaying.value?.item?.imageUrl
             val trackName = currentlyPlaying.value?.item?.name
             val artistName = currentlyPlaying.value?.item?.artists
             val progressMs = currentlyPlaying.value?.progress_ms ?: 0
@@ -147,16 +156,28 @@ fun MainScreen(
 
 @Composable
 fun NowPlayingBox(imageUrl:String,name:String,artist:String,durationMs: Int,progressMs: Int){
-    Box(){
-        Column {
-            Text("Now Playing")
+    Box(modifier = Modifier
+        .padding(horizontal = 10.dp)
+        .clip(RoundedCornerShape(16.dp))
+        .background(MaterialTheme.colorScheme.primary)
+        .height(170.dp)){
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text("Now Playing",
+                modifier = Modifier.padding(bottom = 8.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp)
             Row {
-                AsyncImage(model = imageUrl, contentDescription = "")
-                Column {
-                    Text(name)
-                    Text(artist)
+                AsyncImage(model = imageUrl, contentDescription = "", modifier = Modifier.size(120.dp,120.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    )
+                Column(modifier = Modifier.padding(horizontal = 6.dp)) {
+                    Text(name,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp)
+                    Text(artist,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp)
                     TrackProgressBar(progressMs,durationMs)
-
                 }
             }
         }
@@ -190,11 +211,12 @@ fun TrackProgressBar(
             progress = { progress.coerceIn(0f, 1f) },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(6.dp),
+                .height(6.dp)
         )
         Text(
             text = "${(progressMs / 1000)} / ${(durationMs / 1000)} сек",
-            modifier = Modifier.padding(top = 4.dp)
+            modifier = Modifier
+                .padding(top = 4.dp)
         )
     }
-}//разбор и фиксы до конца,ну и viewmodel тожеее
+}//дальше заняться перекраской и улучшением этого по максимуму,потом узнать норм ли вообще делаю,всё по чистому коду или нет
