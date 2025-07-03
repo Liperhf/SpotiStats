@@ -33,10 +33,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults.contentWindowInsets
 import androidx.compose.material3.Text
@@ -66,6 +68,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.spotistats.R
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -100,7 +103,7 @@ fun MainScreen(
         }else{
             while(true){
                 viewModel.getCurrentlyPlaying()
-                kotlinx.coroutines.delay(1000)
+                delay(1000)
             }
         }
     }
@@ -108,8 +111,8 @@ fun MainScreen(
 
     ModalNavigationDrawer(
         drawerContent = {
-            ModalDrawerSheet {
-            userProfile.value?.display_name?.let { Text(it, modifier = Modifier.padding(16.dp)) }
+            ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.primary) {
+            userProfile.value?.display_name?.let { Text(it, modifier = Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onBackground) }
             HorizontalDivider()
             DrawerItem(text = stringResource(R.string.settings), onClick = {
                 navController.navigate("settings")
@@ -167,7 +170,8 @@ fun NowPlayingBox(imageUrl:String,name:String,artist:String,durationMs: Int,prog
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp)
             Row {
-                AsyncImage(model = imageUrl, contentDescription = "", modifier = Modifier.size(120.dp,120.dp)
+                AsyncImage(model = imageUrl, contentDescription = "", modifier = Modifier
+                    .size(120.dp, 120.dp)
                     .clip(RoundedCornerShape(20.dp))
                     )
                 Column(modifier = Modifier.padding(horizontal = 6.dp)) {
@@ -190,11 +194,21 @@ fun DrawerItem(
     text: String,
     onClick: () -> Unit,
     icon:ImageVector
-) {
-    ListItem(
-        headlineContent = { Text(text) },
-        modifier = Modifier.clickable { onClick() },
-        leadingContent = { Icon(imageVector = icon, contentDescription = "") },
+){
+    NavigationDrawerItem(
+        label = { Text(text) },
+        selected = false,
+        onClick = { onClick() },
+        modifier = Modifier,
+        icon = { Icon(imageVector = icon, contentDescription = "") },
+        colors = NavigationDrawerItemDefaults.colors(
+            selectedIconColor = MaterialTheme.colorScheme.onBackground,
+            unselectedIconColor = MaterialTheme.colorScheme.onBackground,
+            selectedContainerColor = MaterialTheme.colorScheme.primary,
+            unselectedContainerColor = MaterialTheme.colorScheme.primary,
+            selectedTextColor = MaterialTheme.colorScheme.onBackground,
+            unselectedTextColor = MaterialTheme.colorScheme.onBackground
+        )
     )
 }
 
@@ -207,16 +221,30 @@ fun TrackProgressBar(
     val progress = if (durationMs > 0) progressMs.toFloat() / durationMs else 0f
 
     Column {
+        Row(){
+            Text(
+                text = formatTime(progressMs),
+                modifier = Modifier
+                    .padding(top = 4.dp)
+            )
+            Text(text = formatTime(durationMs), modifier = Modifier.padding(start = 10.dp))
+        }
         LinearProgressIndicator(
             progress = { progress.coerceIn(0f, 1f) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(6.dp)
         )
-        Text(
-            text = "${(progressMs / 1000)} / ${(durationMs / 1000)} сек",
-            modifier = Modifier
-                .padding(top = 4.dp)
-        )
     }
-}//дальше заняться перекраской и улучшением этого по максимуму,потом узнать норм ли вообще делаю,всё по чистому коду или нет
+}
+@SuppressLint("DefaultLocale")
+fun formatTime(ms:Int): String {
+    val totalSeconds = ms / 1000
+    val minutes = totalSeconds / 60
+    val seconds = totalSeconds % 60
+    return String.format("%d:%02d",minutes,seconds)
+}
+
+//дальше заняться перекраской и улучшением этого по максимуму,
+// потом узнать норм ли вообще делаю,всё по чистому коду или нет
+//сделать экран настроек и начальный экран,дальше уже дорабатывать по функционалу
