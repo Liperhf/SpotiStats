@@ -72,5 +72,5 @@ class MainActivity : ComponentActivity() {
         authViewModel.refreshToken()
         authViewModel.checkAuthStatus()
     }
-}//,мб у стаса попросить чекнуть проект,делать Ui
+}
 

@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -39,6 +42,7 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults.contentWindowInsets
 import androidx.compose.material3.Text
@@ -55,14 +59,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -86,6 +93,7 @@ fun MainScreen(
     val greeting = stringResource(id = viewModel.getGreeting())
     val userProfile = viewModel.userProfile.collectAsState()
     val currentlyPlaying = viewModel.currentlyPlaying.collectAsState()
+    val progressMs = viewModel.progressMs.collectAsState()
 
     LaunchedEffect(Unit) {
         if (isAuthenticated.value) {
@@ -111,9 +119,16 @@ fun MainScreen(
 
     ModalNavigationDrawer(
         drawerContent = {
-            ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.primary) {
-            userProfile.value?.display_name?.let { Text(it, modifier = Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onBackground) }
-            HorizontalDivider()
+            ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.background) {
+                Row(modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically){
+                    AsyncImage(model = userProfile.value?.imagesUrl, contentDescription = "", modifier = Modifier
+                        .padding(start = 8.dp)
+                        .size(45.dp)
+                        .clip(CircleShape))
+                    userProfile.value?.display_name?.let { Text(it, modifier = Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold, fontSize = 20.sp) }
+                }
+            HorizontalDivider(color = MaterialTheme.colorScheme.primary)
             DrawerItem(text = stringResource(R.string.settings), onClick = {
                 navController.navigate("settings")
             },icon = Icons.Default.Settings)
@@ -144,12 +159,11 @@ fun MainScreen(
             val imageUrl = currentlyPlaying.value?.item?.imageUrl
             val trackName = currentlyPlaying.value?.item?.name
             val artistName = currentlyPlaying.value?.item?.artists
-            val progressMs = currentlyPlaying.value?.progress_ms ?: 0
             val track = currentlyPlaying.value?.item
             val durationMs = track?.duration_ms ?: 1
             if(imageUrl != null && trackName != null && artistName != null){
             item {
-                NowPlayingBox(imageUrl,trackName,artistName,durationMs,progressMs)
+                NowPlayingBox(imageUrl,trackName,artistName,durationMs,progressMs.value)
                 }
             } } }
         }
@@ -163,24 +177,28 @@ fun NowPlayingBox(imageUrl:String,name:String,artist:String,durationMs: Int,prog
         .padding(horizontal = 10.dp)
         .clip(RoundedCornerShape(16.dp))
         .background(MaterialTheme.colorScheme.primary)
-        .height(170.dp)){
+        .height(160.dp)){
         Column(modifier = Modifier.padding(12.dp)) {
             Text("Now Playing",
                 modifier = Modifier.padding(bottom = 8.dp),
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp)
+                fontSize = 20.sp,)
             Row {
                 AsyncImage(model = imageUrl, contentDescription = "", modifier = Modifier
-                    .size(120.dp, 120.dp)
-                    .clip(RoundedCornerShape(20.dp))
+                    .size(105.dp, 105.dp)
+                    .clip(RoundedCornerShape(10.dp))
                     )
                 Column(modifier = Modifier.padding(horizontal = 6.dp)) {
                     Text(name,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp)
+                        fontSize = 18.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis)
                     Text(artist,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp)
+                        fontSize = 16.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis)
                     TrackProgressBar(progressMs,durationMs)
                 }
             }
@@ -204,8 +222,8 @@ fun DrawerItem(
         colors = NavigationDrawerItemDefaults.colors(
             selectedIconColor = MaterialTheme.colorScheme.onBackground,
             unselectedIconColor = MaterialTheme.colorScheme.onBackground,
-            selectedContainerColor = MaterialTheme.colorScheme.primary,
-            unselectedContainerColor = MaterialTheme.colorScheme.primary,
+            selectedContainerColor = MaterialTheme.colorScheme.background,
+            unselectedContainerColor = MaterialTheme.colorScheme.background,
             selectedTextColor = MaterialTheme.colorScheme.onBackground,
             unselectedTextColor = MaterialTheme.colorScheme.onBackground
         )
@@ -225,15 +243,18 @@ fun TrackProgressBar(
             Text(
                 text = formatTime(progressMs),
                 modifier = Modifier
-                    .padding(top = 4.dp)
+                    .padding(top = 4.dp),
+                fontSize = 14.sp
             )
-            Text(text = formatTime(durationMs), modifier = Modifier.padding(start = 10.dp))
+            Text(text = formatTime(durationMs), modifier = Modifier.padding(start = 170.dp,top = 4.dp), fontSize = 14.sp)
         }
         LinearProgressIndicator(
             progress = { progress.coerceIn(0f, 1f) },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(6.dp)
+                .height(4.dp)
+                .clip(RoundedCornerShape(4.dp)),
+            color = MaterialTheme.colorScheme.secondary,
         )
     }
 }
@@ -245,6 +266,3 @@ fun formatTime(ms:Int): String {
     return String.format("%d:%02d",minutes,seconds)
 }
 
-//дальше заняться перекраской и улучшением этого по максимуму,
-// потом узнать норм ли вообще делаю,всё по чистому коду или нет
-//сделать экран настроек и начальный экран,дальше уже дорабатывать по функционалу

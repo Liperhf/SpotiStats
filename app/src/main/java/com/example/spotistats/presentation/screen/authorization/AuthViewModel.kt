@@ -5,6 +5,8 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,9 +17,12 @@ import com.example.spotistats.domain.model.RecentlyPlayed
 import com.example.spotistats.domain.model.UserProfile
 import com.example.spotistats.domain.useCases.SpotifyAuthUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 import javax.inject.Inject
@@ -36,6 +41,9 @@ class AuthViewModel @Inject constructor(
     val userProfile:StateFlow<UserProfile?> = _userProfile
     private val _currentlyPlaying = MutableStateFlow<CurrentlyPlaying?>(null)
     val currentlyPlaying:StateFlow<CurrentlyPlaying?> = _currentlyPlaying
+    private val _progressMs = MutableStateFlow(0)
+    val progressMs = _progressMs.asStateFlow()
+    var progressJob: Job? = null
 
 
     fun onLoginClicked(){
@@ -136,9 +144,25 @@ class AuthViewModel @Inject constructor(
     suspend fun getCurrentlyPlaying(){
         try {
             _currentlyPlaying.value = spotifyAuthUseCase.getCurrentlyPlaying()
+            val data = _currentlyPlaying.value
+            val durationMs = data?.item?.duration_ms ?: 0
+            _progressMs.value = data?.progress_ms ?: 0
+            progressJob?.cancel()
+            if(durationMs > 0 ){
+                progressJob = startProgress(durationMs)
+            }
         }catch (e:Exception){
             _currentlyPlaying.value = null
             Log.e("NowPlaying","Failed to load : ${e.message}")
+        }
+    }
+
+    private fun startProgress(durationMs:Int) : Job{
+        return viewModelScope.launch {
+            while(_progressMs.value < durationMs && _currentlyPlaying.value?.is_playing == true){
+                delay(100)
+                _progressMs.value += 100
+            }
         }
     }
 }
