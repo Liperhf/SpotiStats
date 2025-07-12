@@ -1,33 +1,21 @@
 package com.example.spotistats.presentation.screen.authorization
 
 import android.annotation.SuppressLint
-import android.content.res.Resources
 import android.os.Build
-import android.view.textclassifier.TextClassifierEvent.TextLinkifyEvent
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,38 +23,24 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
-import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScaffoldDefaults.contentWindowInsets
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.modifier.modifierLocalConsumer
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -75,6 +49,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.spotistats.R
+import com.example.spotistats.domain.model.RecentlyPlayed
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -94,6 +69,15 @@ fun MainScreen(
     val userProfile = viewModel.userProfile.collectAsState()
     val currentlyPlaying = viewModel.currentlyPlaying.collectAsState()
     val progressMs = viewModel.progressMs.collectAsState()
+    val lastPlayedTrack = recentlyPlayed.value?.tracks?.firstOrNull()
+    val lastPlayedImageUrl = lastPlayedTrack?.imageUrl
+    val lastPlayedName = lastPlayedTrack?.name
+    val lastPlayedArtist = lastPlayedTrack?.artists
+    val currentlyImageUrl = currentlyPlaying.value?.item?.imageUrl
+    val currentlyTrackName = currentlyPlaying.value?.item?.name
+    val currentlyArtistName = currentlyPlaying.value?.item?.artists
+    val currentlyTrack = currentlyPlaying.value?.item
+    val currentlyDurationMs = currentlyTrack?.duration_ms ?: 1
 
     LaunchedEffect(Unit) {
         if (isAuthenticated.value) {
@@ -156,14 +140,19 @@ fun MainScreen(
         },
     ){paddingValues ->
         LazyColumn(modifier = Modifier.padding(paddingValues)) {
-            val imageUrl = currentlyPlaying.value?.item?.imageUrl
-            val trackName = currentlyPlaying.value?.item?.name
-            val artistName = currentlyPlaying.value?.item?.artists
-            val track = currentlyPlaying.value?.item
-            val durationMs = track?.duration_ms ?: 1
-            if(imageUrl != null && trackName != null && artistName != null){
+
             item {
-                NowPlayingBox(imageUrl,trackName,artistName,durationMs,progressMs.value)
+                when{
+                    currentlyPlaying.value?.is_playing == true -> {
+                        if(currentlyImageUrl != null && currentlyTrackName != null && currentlyArtistName != null){
+                            NowPlayingBox(currentlyImageUrl,currentlyTrackName,currentlyArtistName,currentlyDurationMs,progressMs.value)
+                        }
+                    }
+                    lastPlayedTrack != null -> {
+                        if (lastPlayedImageUrl != null && lastPlayedName != null && lastPlayedArtist != null) {
+                            LastPlayedBox(lastPlayedImageUrl,lastPlayedName,lastPlayedArtist)
+                        }
+                    }
                 }
             } } }
         }
@@ -179,7 +168,7 @@ fun NowPlayingBox(imageUrl:String,name:String,artist:String,durationMs: Int,prog
         .background(MaterialTheme.colorScheme.primary)
         .height(160.dp)){
         Column(modifier = Modifier.padding(12.dp)) {
-            Text("Now Playing",
+            Text(text = stringResource(R.string.now_playing) ,
                 modifier = Modifier.padding(bottom = 8.dp),
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,)
@@ -200,6 +189,41 @@ fun NowPlayingBox(imageUrl:String,name:String,artist:String,durationMs: Int,prog
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis)
                     TrackProgressBar(progressMs,durationMs)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun LastPlayedBox(imageUrl:String,name:String,artist: String){
+    Box(modifier = Modifier
+        .padding(horizontal = 10.dp)
+        .clip(RoundedCornerShape(16.dp))
+        .background(MaterialTheme.colorScheme.primary)
+        .height(160.dp)
+        .fillMaxWidth()){
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(text = stringResource(R.string.last_played),
+                modifier = Modifier.padding(bottom = 8.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,)
+            Row {
+                AsyncImage(model = imageUrl, contentDescription = "", modifier = Modifier
+                    .size(105.dp, 105.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                )
+                Column(modifier = Modifier.padding(horizontal = 6.dp)) {
+                    Text(name,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis)
+                    Text(artist,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis)
                 }
             }
         }

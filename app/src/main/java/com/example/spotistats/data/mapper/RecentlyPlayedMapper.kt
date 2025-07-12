@@ -5,7 +5,7 @@ import com.example.spotistats.domain.model.RecentlyPlayed
 
 fun RecentlyPlayedDto.toDomain():RecentlyPlayed{
     return RecentlyPlayed(
-        tracks = items.map{it.track.toDomain()},
+        tracks =    items.map{it.track.toDomain()},
         total = total
     )
 }

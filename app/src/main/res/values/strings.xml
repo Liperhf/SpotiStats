@@ -7,5 +7,7 @@
     <string name="good_day">Good afternoon</string>
     <string name="good_evening">Good evening</string>
     <string name="good_night">Good night</string>
+    <string name="now_playing">Now Playing</string>
+    <string name="last_played">Last Played</string>
 
 </resources>
