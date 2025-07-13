@@ -9,5 +9,8 @@
     <string name="good_night">Good night</string>
     <string name="now_playing">Now Playing</string>
     <string name="last_played">Last Played</string>
+    <string name="account">Account</string>
+    <string name="language">Language</string>
+    <string name="back">Back</string>
 
 </resources>

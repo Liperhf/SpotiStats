@@ -1,6 +1,7 @@
 package com.example.spotistats.presentation.screen.authorization
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -35,12 +36,14 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource.Companion.SideEffect
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -50,6 +53,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.spotistats.R
 import com.example.spotistats.domain.model.RecentlyPlayed
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -78,6 +82,20 @@ fun MainScreen(
     val currentlyArtistName = currentlyPlaying.value?.item?.artists
     val currentlyTrack = currentlyPlaying.value?.item
     val currentlyDurationMs = currentlyTrack?.duration_ms ?: 1
+
+    val systemUiController = rememberSystemUiController()
+    val navBarColor = MaterialTheme.colorScheme.background
+
+    SideEffect {
+        systemUiController.setNavigationBarColor(
+            color = navBarColor,
+            darkIcons = false
+        )
+        systemUiController.setStatusBarColor(
+            color = navBarColor,
+            darkIcons = false
+        )
+    }
 
     LaunchedEffect(Unit) {
         if (isAuthenticated.value) {
