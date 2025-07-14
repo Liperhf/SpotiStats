@@ -78,4 +78,5 @@ class SpotifyAuthUseCase @Inject constructor(
     suspend fun getCurrentlyPlaying():CurrentlyPlaying{
         return repository.getCurrentlyPlaying()
     }
+
 }

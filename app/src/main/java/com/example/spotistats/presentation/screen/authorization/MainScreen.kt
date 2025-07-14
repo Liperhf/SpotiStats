@@ -124,7 +124,9 @@ fun MainScreen(
             ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.background) {
                 Row(modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically){
-                    AsyncImage(model = userProfile.value?.imagesUrl, contentDescription = "", modifier = Modifier
+                    AsyncImage(model = userProfile.value?.imagesUrl,
+                        contentDescription = stringResource(R.string.avatar),
+                        modifier = Modifier
                         .padding(start = 8.dp)
                         .size(45.dp)
                         .clip(CircleShape))
@@ -146,7 +148,7 @@ fun MainScreen(
                 navigationIcon = {IconButton(
                     onClick = { scope.launch { drawerState.open() } },
                     content = { AsyncImage(model = userProfile.value?.imagesUrl,
-                        contentDescription = "",
+                        contentDescription = stringResource(R.string.avatar),
                         modifier = Modifier.size(40.dp)) }
                 )},
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -191,7 +193,7 @@ fun NowPlayingBox(imageUrl:String,name:String,artist:String,durationMs: Int,prog
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,)
             Row {
-                AsyncImage(model = imageUrl, contentDescription = "", modifier = Modifier
+                AsyncImage(model = imageUrl, contentDescription = stringResource(R.string.track_image), modifier = Modifier
                     .size(105.dp, 105.dp)
                     .clip(RoundedCornerShape(10.dp))
                     )
@@ -227,7 +229,7 @@ fun LastPlayedBox(imageUrl:String,name:String,artist: String){
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,)
             Row {
-                AsyncImage(model = imageUrl, contentDescription = "", modifier = Modifier
+                AsyncImage(model = imageUrl, contentDescription = stringResource(R.string.track_image), modifier = Modifier
                     .size(105.dp, 105.dp)
                     .clip(RoundedCornerShape(10.dp))
                 )
@@ -260,7 +262,7 @@ fun DrawerItem(
         selected = false,
         onClick = { onClick() },
         modifier = Modifier,
-        icon = { Icon(imageVector = icon, contentDescription = "") },
+        icon = { Icon(imageVector = icon, contentDescription = stringResource(R.string.icon)) },
         colors = NavigationDrawerItemDefaults.colors(
             selectedIconColor = MaterialTheme.colorScheme.onBackground,
             unselectedIconColor = MaterialTheme.colorScheme.onBackground,
@@ -288,7 +290,9 @@ fun TrackProgressBar(
                     .padding(top = 4.dp),
                 fontSize = 14.sp
             )
-            Text(text = formatTime(durationMs), modifier = Modifier.padding(start = 170.dp,top = 4.dp), fontSize = 14.sp)
+            Text(text = formatTime(durationMs),
+                modifier = Modifier.padding(start = 170.dp,top = 4.dp),
+                fontSize = 14.sp)
         }
         LinearProgressIndicator(
             progress = { progress.coerceIn(0f, 1f) },

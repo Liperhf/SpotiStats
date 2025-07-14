@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">SpotiStats</string>
     <string name="login">Login with Spotify</string>
     <string name="settings">Settings</string>
     <string name="logout">Logout</string>
@@ -12,5 +11,11 @@
     <string name="account">Account</string>
     <string name="language">Language</string>
     <string name="back">Back</string>
+    <string name="avatar">Avatar</string>
+    <string name="track_image">Track image</string>
+    <string name="icon">Icon</string>
+    <string name="app_name">SpotiStats</string>
+    <string name="english">English</string>
+    <string name="russian">Russian</string>
 
 </resources>
