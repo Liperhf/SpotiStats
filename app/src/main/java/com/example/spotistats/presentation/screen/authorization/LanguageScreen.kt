@@ -1,21 +1,17 @@
 package com.example.spotistats.presentation.screen.authorization
 
 import android.app.Activity
-import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -24,16 +20,15 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import java.util.Locale
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.spotistats.R
 import com.example.spotistats.domain.model.AppLanguage
+import com.example.spotistats.util.LanguagePrefs
 import com.example.spotistats.util.UpdateLocale
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
@@ -41,7 +36,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 @Composable
 fun LanguageScreen(
     navController: NavController,
-    viewModel: LanguageViewModel
+    viewModel: SettingsViewModel
 ){
     val systemUiController = rememberSystemUiController()
     val navBarColor = MaterialTheme.colorScheme.background
@@ -79,12 +74,14 @@ fun LanguageScreen(
         LazyColumn(modifier = Modifier.padding(paddingValues)){
             item{
                 LanguageListItem(title = stringResource(R.string.english,), onClick = {
+                    LanguagePrefs.saveLanguage(context,"en")
                     viewModel.setLanguage(AppLanguage.ENGLISH)
                     UpdateLocale(context,Locale("en"))
                     (context as? Activity)?.recreate()
                 })
             }
             item { LanguageListItem(title = stringResource(R.string.russian), onClick = {
+                LanguagePrefs.saveLanguage(context,"ru")
                 viewModel.setLanguage(AppLanguage.RUSSIAN)
                 UpdateLocale(context,Locale("ru"))
                 (context as? Activity)?.recreate()

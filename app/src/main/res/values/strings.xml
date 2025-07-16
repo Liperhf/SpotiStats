@@ -17,5 +17,8 @@
     <string name="app_name">SpotiStats</string>
     <string name="english">English</string>
     <string name="russian">Russian</string>
+    <string name="name">Name</string>
+    <string name="change">Change</string>
+    <string name="save_changes">Save changes</string>
 
 </resources>

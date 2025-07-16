@@ -53,7 +53,7 @@ fun AuthScreen(
                 contentColor = MaterialTheme.colorScheme.background,
                 disabledContentColor = MaterialTheme.colorScheme.secondary,
                 disabledContainerColor = MaterialTheme.colorScheme.background)
-            )
+        )
         {
             Text(stringResource(R.string.login))
         }

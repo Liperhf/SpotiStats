@@ -1,0 +1,170 @@
+package com.example.spotistats.presentation.screen.authorization
+
+import android.annotation.SuppressLint
+import android.content.Context
+import android.net.Uri
+import android.widget.Space
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import com.example.spotistats.R
+import com.example.spotistats.util.AccountPrefs
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
+fun AccountScreen(
+    viewModel: SettingsViewModel,
+    navController: NavController
+){
+    val systemUiController = rememberSystemUiController()
+    val navBarColor = MaterialTheme.colorScheme.background
+    val statusBarColor = MaterialTheme.colorScheme.primary
+    val imageUri = viewModel.imageUri.collectAsState()
+    val nickname = viewModel.nickname.collectAsState()
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ){uri: Uri? ->
+        if (uri != null) {
+            viewModel.setAvatar(uri)
+        }
+    }
+
+    SideEffect {
+        systemUiController.setNavigationBarColor(
+            color = navBarColor,
+            darkIcons = false
+        )
+        systemUiController.setStatusBarColor(
+            color = statusBarColor,
+            darkIcons = false
+        )
+    }
+
+
+    Scaffold(
+        topBar = { CenterAlignedTopAppBar(
+            title = { Text(text = stringResource(R.string.account)) },
+            navigationIcon = {
+                IconButton(
+                onClick = {navController.popBackStack()},
+                content = { Icon(imageVector = Icons.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.back),
+                    tint = MaterialTheme.colorScheme.onBackground) },
+            )
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                titleContentColor = MaterialTheme.colorScheme.onBackground
+            ),
+        ) }
+    ) {paddingValues ->
+                    Column(modifier = Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally) {
+
+
+                        Box(
+                            modifier = Modifier
+                                .size(170.dp)
+                                .align(Alignment.CenterHorizontally)
+                                .padding(8.dp)
+                        ) {
+                                AsyncImage(
+                                    model = imageUri.value,
+                                    contentDescription = stringResource(R.string.avatar),
+                                    modifier = Modifier
+                                        .size(170.dp)
+                                        .clip(CircleShape)
+                                        .clickable {
+                                            launcher.launch("image/*")
+                                        }
+                                )
+                            Box(
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .align(Alignment.BottomEnd)
+                            ){
+                                Icon(imageVector = Icons.Default.Create,
+                                    contentDescription = stringResource(R.string.change),
+                                    modifier = Modifier.clickable {
+                                        launcher.launch("image/*")
+                                    },
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                            nickname.value?.let { it ->
+                                TextField(value = it,
+                                    onValueChange = {
+                                        viewModel.setNickName(it)
+                                    },
+                                    label = { Text(stringResource(R.string.name)) },
+                                    colors = TextFieldDefaults.textFieldColors(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                                        focusedLabelColor = MaterialTheme.colorScheme.onBackground,
+                                        unfocusedLabelColor = MaterialTheme.colorScheme.onBackground,
+                                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                                        cursorColor = MaterialTheme.colorScheme.onBackground
+                                    )
+                                    )
+                            }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+                            Button(onClick = {viewModel.saveProfile(context = context)}) {
+                                Text(stringResource(R.string.save_changes),
+                                    color = MaterialTheme.colorScheme.onBackground)
+                            }
+                    }
+                }
+    }

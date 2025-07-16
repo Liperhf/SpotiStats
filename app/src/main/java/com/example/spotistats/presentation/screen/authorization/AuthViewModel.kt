@@ -44,6 +44,9 @@ class AuthViewModel @Inject constructor(
     private val _progressMs = MutableStateFlow(0)
     val progressMs = _progressMs.asStateFlow()
     var progressJob: Job? = null
+    private val _callbackHandled = MutableStateFlow(false)
+    val callbackHandled: StateFlow<Boolean> = _callbackHandled
+    fun markCallbackHandled() { _callbackHandled.value = true }
 
 
     fun onLoginClicked(){
@@ -58,9 +61,11 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             try{
                 val isSuccess = spotifyAuthUseCase.isUserAuthorized()
+                Log.d("AuthViewModel", "checkAuthStatus: isUserAuthorized = $isSuccess")
                 _isAuthenticated.value = isSuccess
             }
             catch (e:Exception){
+                Log.e("AuthViewModel", "checkAuthStatus error", e)
                 _isAuthenticated.value = false
             }
         }
@@ -79,28 +84,32 @@ class AuthViewModel @Inject constructor(
     }
 
     fun processAuthorizationCode(code:String){
+        Log.d("AuthViewModel", "processAuthorizationCode: code = $code")
         viewModelScope.launch {
             try{
                 val authDto = spotifyAuthUseCase.exchangeCodeForToken(code)
+                Log.d("AuthViewModel", "exchangeCodeForToken success: $authDto")
                 spotifyAuthUseCase.saveTokens(authDto)
+                Log.d("AuthViewModel", "Tokens saved")
                 checkAuthStatus()
             }
             catch (e:Exception){
-                e.printStackTrace()
+                Log.e("AuthViewModel", "processAuthorizationCode error", e)
             }
         }
     }
 
     fun processSpotifyCallback(intent: Intent) {
         val data: Uri? = intent.data
+        Log.d("AuthViewModel", "processSpotifyCallback: data = $data")
         if (data?.scheme == "spotistats" && data.host == "callback") {
             val code = data.getQueryParameter("code")
             val error = data.getQueryParameter("error")
-
+            Log.d("AuthViewModel", "processSpotifyCallback: code = $code, error = $error")
             if (code != null) {
                 processAuthorizationCode(code)
             } else if (error != null) {
-                println("Authorization error:$error")
+                Log.e("AuthViewModel", "Authorization error: $error")
             }
         }
     }

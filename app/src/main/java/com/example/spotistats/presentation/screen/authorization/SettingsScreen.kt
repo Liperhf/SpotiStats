@@ -34,9 +34,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.spotistats.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import androidx.compose.runtime.collectAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -48,6 +50,7 @@ fun SettingsScreen(
     val systemUiController = rememberSystemUiController()
     val navBarColor = MaterialTheme.colorScheme.background
     val statusBarColor = MaterialTheme.colorScheme.primary
+    val isAuthenticated = viewModel.isAuthenticated.collectAsState()
 
     SideEffect {
         systemUiController.setNavigationBarColor(
@@ -79,16 +82,18 @@ fun SettingsScreen(
         ) }
     ) {paddingValues ->
         LazyColumn(modifier = Modifier.padding(paddingValues)) {
-            item{
-                SettingsItem(title = stringResource(R.string.account),
-                    icon = Icons.Default.AccountCircle,
-                    onClick = {})
-            }
-            item{
-                SettingsItem(title = stringResource(R.string.language),
-                    icon = ImageVector.vectorResource(R.drawable.language_24px),
-                    onClick = {navController.navigate("language")}
-                )
+            if (isAuthenticated.value) {
+                item{
+                    SettingsItem(title = stringResource(R.string.account),
+                        icon = Icons.Default.AccountCircle,
+                        onClick = {navController.navigate("account")})
+                }
+                item{
+                    SettingsItem(title = stringResource(R.string.language),
+                        icon = ImageVector.vectorResource(R.drawable.language_24px),
+                        onClick = {navController.navigate("language")}
+                    )
+                }
             }
         }
 

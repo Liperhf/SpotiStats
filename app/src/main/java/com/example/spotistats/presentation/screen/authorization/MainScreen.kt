@@ -1,7 +1,6 @@
 package com.example.spotistats.presentation.screen.authorization
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -43,16 +42,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource.Companion.SideEffect
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.spotistats.R
-import com.example.spotistats.domain.model.RecentlyPlayed
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -63,16 +61,17 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(
     navController: NavController,
-    viewModel: AuthViewModel
+    authViewModel: AuthViewModel = hiltViewModel(),
+    settingsViewModel: SettingsViewModel
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val recentlyPlayed = viewModel.recentlyPlayed.collectAsState()
-    val isAuthenticated = viewModel.isAuthenticated.collectAsState()
-    val greeting = stringResource(id = viewModel.getGreeting())
-    val userProfile = viewModel.userProfile.collectAsState()
-    val currentlyPlaying = viewModel.currentlyPlaying.collectAsState()
-    val progressMs = viewModel.progressMs.collectAsState()
+    val recentlyPlayed = authViewModel.recentlyPlayed.collectAsState()
+    val isAuthenticated = authViewModel.isAuthenticated.collectAsState()
+    val greeting = stringResource(id = authViewModel.getGreeting())
+    val userProfile = authViewModel.userProfile.collectAsState()
+    val currentlyPlaying = authViewModel.currentlyPlaying.collectAsState()
+    val progressMs = authViewModel.progressMs.collectAsState()
     val lastPlayedTrack = recentlyPlayed.value?.tracks?.firstOrNull()
     val lastPlayedImageUrl = lastPlayedTrack?.imageUrl
     val lastPlayedName = lastPlayedTrack?.name
@@ -82,6 +81,7 @@ fun MainScreen(
     val currentlyArtistName = currentlyPlaying.value?.item?.artists
     val currentlyTrack = currentlyPlaying.value?.item
     val currentlyDurationMs = currentlyTrack?.duration_ms ?: 1
+    val currentlyUserName = settingsViewModel.nickname.collectAsState()
 
     val systemUiController = rememberSystemUiController()
     val navBarColor = MaterialTheme.colorScheme.background
@@ -99,9 +99,9 @@ fun MainScreen(
 
     LaunchedEffect(Unit) {
         if (isAuthenticated.value) {
-            viewModel.getRecentlyPlayed()
-            viewModel.getUserProfile()
-            viewModel.getCurrentlyPlaying()
+            authViewModel.getRecentlyPlayed()
+            authViewModel.getUserProfile()
+            authViewModel.getCurrentlyPlaying()
         }
     }
 
@@ -112,7 +112,7 @@ fun MainScreen(
             }
         }else{
             while(true){
-                viewModel.getCurrentlyPlaying()
+                authViewModel.getCurrentlyPlaying()
                 delay(1000)
             }
         }
@@ -130,13 +130,17 @@ fun MainScreen(
                         .padding(start = 8.dp)
                         .size(45.dp)
                         .clip(CircleShape))
-                    userProfile.value?.display_name?.let { Text(it, modifier = Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold, fontSize = 20.sp) }
+                    currentlyUserName.value.let {
+                        if (it != null) {
+                            Text(it, modifier = Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                        }
+                    }
                 }
             HorizontalDivider(color = MaterialTheme.colorScheme.primary)
             DrawerItem(text = stringResource(R.string.settings), onClick = {
                 navController.navigate("settings")
             },icon = Icons.Default.Settings)
-            DrawerItem(text = stringResource(R.string.logout), onClick = { viewModel.logout() },icon = Icons.Default.Delete)
+            DrawerItem(text = stringResource(R.string.logout), onClick = { authViewModel.logout() },icon = Icons.Default.Delete)
         }
         },
         drawerState = drawerState,

@@ -11,24 +11,26 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.currentComposer
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.spotistats.presentation.screen.authorization.AccountScreen
 import com.example.spotistats.presentation.screen.authorization.AuthScreen
 import com.example.spotistats.presentation.screen.authorization.AuthViewModel
 import com.example.spotistats.presentation.screen.authorization.LanguageScreen
-import com.example.spotistats.presentation.screen.authorization.LanguageViewModel
 import com.example.spotistats.presentation.screen.authorization.MainScreen
 import com.example.spotistats.presentation.screen.authorization.SettingsScreen
+import com.example.spotistats.presentation.screen.authorization.SettingsViewModel
 import com.example.spotistats.ui.theme.SpotiStatsTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     val authViewModel: AuthViewModel by viewModels()
-    val languageViewModel:LanguageViewModel by viewModels()
+    val settingsViewModel: SettingsViewModel by viewModels()
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +50,8 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("main") { MainScreen(
                             navController = navController,
-                            viewModel = authViewModel) }
+                            authViewModel = authViewModel,
+                            settingsViewModel) }
 
                         composable("settings"){ SettingsScreen(
                             navController = navController,
@@ -56,8 +59,15 @@ class MainActivity : ComponentActivity() {
                         ) }
                         composable("language"){ LanguageScreen(
                             navController = navController,
-                            viewModel = languageViewModel
+                            viewModel = settingsViewModel
                         ) }
+                        composable("account") {
+                            AccountScreen(
+                                navController = navController,
+                                viewModel = settingsViewModel
+                            )
+
+                        }
                     }
 
                 }
@@ -80,4 +90,3 @@ class MainActivity : ComponentActivity() {
         authViewModel.checkAuthStatus()
     }
 }
-
