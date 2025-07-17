@@ -58,6 +58,10 @@ android {
 }
 
 dependencies {
+    //UCrop
+    implementation (libs.yalantis.ucrop)
+
+
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.android.auth)
 

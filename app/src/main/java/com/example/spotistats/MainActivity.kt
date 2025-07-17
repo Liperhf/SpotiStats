@@ -1,9 +1,16 @@
 package com.example.spotistats
 
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -21,13 +28,37 @@ import com.example.spotistats.presentation.screen.authorization.MainScreen
 import com.example.spotistats.presentation.screen.authorization.SettingsScreen
 import com.example.spotistats.presentation.screen.authorization.SettingsViewModel
 import com.example.spotistats.ui.theme.SpotiStatsTheme
+import com.yalantis.ucrop.UCrop
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
+    private lateinit var uCropLauncher: ActivityResultLauncher<Intent>
+    private var currentCropCallback:((Uri?) -> Unit)? = null
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        uCropLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.let { intentData ->
+                    UCrop.getOutput(intentData)?.let { resultUri ->
+                        currentCropCallback?.invoke(resultUri)
+                    } ?: currentCropCallback?.invoke(null)
+                } ?: currentCropCallback?.invoke(null)
+            } else if (result.resultCode == UCrop.RESULT_ERROR) {
+                val cropError = result.data?.let { UCrop.getError(it) }
+                Log.e("UCROP_MAIN", "Crop error: $cropError")
+                currentCropCallback?.invoke(null)
+            } else {
+                currentCropCallback?.invoke(null)
+            }
+            currentCropCallback = null
+        }
+
         setContent {
             SpotiStatsTheme {
                 Surface(
@@ -37,6 +68,9 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     val authViewModel:AuthViewModel = hiltViewModel()
                     val settingsViewModel:SettingsViewModel = hiltViewModel()
+                    val startImageCrop: (Uri, (Uri?) -> Unit) -> Unit = { source, callback ->
+                        startCropActivityForResult(source, callback)
+                    }
                             NavHost(navController = navController, startDestination = "auth") {
                         composable("auth") {
                             AuthScreen(
@@ -60,14 +94,35 @@ class MainActivity : ComponentActivity() {
                         composable("account") {
                             AccountScreen(
                                 navController = navController,
-                                viewModel = settingsViewModel
+                                viewModel = settingsViewModel,
+                                onStartImageCrop = startImageCrop
                             )
 
                         }
                     }
 
                 }
+
             }
         }
+    }
+    @SuppressLint("SuspiciousIndentation")
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun startCropActivityForResult(sourceUri: Uri,  callback: (Uri?) -> Unit) {
+        this.currentCropCallback = callback
+        val destinationFileName = "cropped_avatar_${System.currentTimeMillis()}.jpg"
+        val destinationUri = Uri.fromFile(File(cacheDir, destinationFileName))
+
+
+        val options = UCrop.Options().apply {
+            setCompressionQuality(90)
+            withAspectRatio(1f, 1f)
+            withMaxResultSize(500, 500)
+        }
+
+        val uCropIntent = UCrop.of(sourceUri, destinationUri)
+            .withOptions(options)
+            .getIntent(this)
+            uCropLauncher.launch(uCropIntent)
     }
 }

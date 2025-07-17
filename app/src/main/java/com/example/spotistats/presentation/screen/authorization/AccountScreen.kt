@@ -64,7 +64,8 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 @Composable
 fun AccountScreen(
     viewModel: SettingsViewModel,
-    navController: NavController
+    navController: NavController,
+    onStartImageCrop: (sourceUri: Uri, callback: (Uri?) -> Unit) -> Unit
 ){
     val systemUiController = rememberSystemUiController()
     val navBarColor = MaterialTheme.colorScheme.background
@@ -72,11 +73,17 @@ fun AccountScreen(
     val imageUri = viewModel.imageUri.collectAsState()
     val nickname = viewModel.nickname.collectAsState()
     val context = LocalContext.current
-    val launcher = rememberLauncherForActivityResult(
+    val pickImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
-    ){uri: Uri? ->
-        if (uri != null) {
-            viewModel.setAvatar(uri)
+    ){
+        uri:Uri? ->
+        uri?.let { sourceImageUri ->
+            onStartImageCrop(sourceImageUri){croppedUri->
+                croppedUri?.let {
+                    viewModel.setAvatar(croppedUri)
+                }
+            }
+
         }
     }
 
@@ -128,7 +135,7 @@ fun AccountScreen(
                                         .size(170.dp)
                                         .clip(CircleShape)
                                         .clickable {
-                                            launcher.launch("image/*")
+                                            pickImageLauncher.launch("image/*")
                                         }
                                 )
                             Box(
@@ -139,7 +146,7 @@ fun AccountScreen(
                                 Icon(imageVector = Icons.Default.Create,
                                     contentDescription = stringResource(R.string.change),
                                     modifier = Modifier.clickable {
-                                        launcher.launch("image/*")
+                                        pickImageLauncher.launch("image/*")
                                     },
                                 )
                             }
