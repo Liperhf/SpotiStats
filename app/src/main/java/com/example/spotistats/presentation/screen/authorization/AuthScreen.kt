@@ -1,5 +1,6 @@
 package com.example.spotistats.presentation.screen.authorization
 
+import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,8 +28,20 @@ fun AuthScreen(
     viewModel: AuthViewModel
 ){
     val context = LocalContext.current
+    val activity = context as? Activity
     val authIntent = viewModel.authIntent.collectAsState()
     val isAuthenticated = viewModel.isAuthenticated.collectAsState()
+
+
+    LaunchedEffect(Unit) {
+        val intent = activity?.intent
+        if (intent?.data != null && !viewModel.callbackHandled.value){
+            viewModel.processSpotifyCallback(intent)
+            viewModel.markCallbackHandled()
+        } else {
+            viewModel.checkAuthStatus()
+        }
+    }
 
     LaunchedEffect(authIntent.value) {
         authIntent.value?.let {intent ->

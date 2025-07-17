@@ -1,17 +1,13 @@
 package com.example.spotistats
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.currentComposer
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
@@ -29,8 +25,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    val authViewModel: AuthViewModel by viewModels()
-    val settingsViewModel: SettingsViewModel by viewModels()
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +35,9 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "auth") {
+                    val authViewModel:AuthViewModel = hiltViewModel()
+                    val settingsViewModel:SettingsViewModel = hiltViewModel()
+                            NavHost(navController = navController, startDestination = "auth") {
                         composable("auth") {
                             AuthScreen(
                                 navController = navController,
@@ -51,7 +47,7 @@ class MainActivity : ComponentActivity() {
                         composable("main") { MainScreen(
                             navController = navController,
                             authViewModel = authViewModel,
-                            settingsViewModel) }
+                            settingsViewModel = settingsViewModel) }
 
                         composable("settings"){ SettingsScreen(
                             navController = navController,
@@ -73,20 +69,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        if (intent?.data != null) {
-            authViewModel.processSpotifyCallback(intent)
-        }
-    }
-
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        intent?.let { authViewModel.processSpotifyCallback(it) }
-    }
-
-
-    override fun onResume() {
-        super.onResume()
-        authViewModel.refreshToken()
-        authViewModel.checkAuthStatus()
     }
 }

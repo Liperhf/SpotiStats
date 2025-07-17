@@ -20,5 +20,6 @@
     <string name="name">Name</string>
     <string name="change">Change</string>
     <string name="save_changes">Save changes</string>
+    <string name="reset_changes">Reset changes</string>
 
 </resources>

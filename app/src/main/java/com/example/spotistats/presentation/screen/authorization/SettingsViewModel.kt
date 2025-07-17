@@ -89,6 +89,15 @@ class SettingsViewModel @Inject constructor(
             AccountPrefs.saveAvatar(context, _imageUri.value.toString())
         }
 
+    fun resetProfile(){
+        viewModelScope.launch {
+        val userProfile = spotifyAuthUseCase.getUserProfile()
+        _profile.value = userProfile
+        _nickname.value = profile.value?.display_name
+        _imageUri.value = Uri.parse(profile.value?.imagesUrl)
+            saveProfile(context)
+    }
+    }
 
 }
 

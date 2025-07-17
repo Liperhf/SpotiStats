@@ -61,7 +61,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(
     navController: NavController,
-    authViewModel: AuthViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel,
     settingsViewModel: SettingsViewModel
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -82,6 +82,7 @@ fun MainScreen(
     val currentlyTrack = currentlyPlaying.value?.item
     val currentlyDurationMs = currentlyTrack?.duration_ms ?: 1
     val currentlyUserName = settingsViewModel.nickname.collectAsState()
+    val currentlyUserAvatar = settingsViewModel.imageUri.collectAsState()
 
     val systemUiController = rememberSystemUiController()
     val navBarColor = MaterialTheme.colorScheme.background
@@ -124,7 +125,7 @@ fun MainScreen(
             ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.background) {
                 Row(modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically){
-                    AsyncImage(model = userProfile.value?.imagesUrl,
+                    AsyncImage(model = currentlyUserAvatar.value,
                         contentDescription = stringResource(R.string.avatar),
                         modifier = Modifier
                         .padding(start = 8.dp)
@@ -151,7 +152,7 @@ fun MainScreen(
                 title = {Text(greeting)},
                 navigationIcon = {IconButton(
                     onClick = { scope.launch { drawerState.open() } },
-                    content = { AsyncImage(model = userProfile.value?.imagesUrl,
+                    content = { AsyncImage(model = currentlyUserAvatar.value,
                         contentDescription = stringResource(R.string.avatar),
                         modifier = Modifier.size(40.dp)) }
                 )},
