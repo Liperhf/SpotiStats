@@ -23,5 +23,6 @@
     <string name="reset_changes">Reset changes</string>
     <string name="home">Home</string>
     <string name="stats">Stats</string>
+    <string name="listened_recently">Recently Listened</string>
 
 </resources>

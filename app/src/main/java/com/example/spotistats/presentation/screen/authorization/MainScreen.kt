@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -51,6 +53,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.spotistats.R
+import com.example.spotistats.domain.model.Track
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -67,6 +70,7 @@ fun MainScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val recentlyPlayed = authViewModel.recentlyPlayed.collectAsState()
+    val recentlyPlayedTracks = recentlyPlayed.value?.tracks
     val isAuthenticated = authViewModel.isAuthenticated.collectAsState()
     val greeting = stringResource(id = authViewModel.getGreeting())
     val userProfile = authViewModel.userProfile.collectAsState()
@@ -179,7 +183,14 @@ fun MainScreen(
                         }
                     }
                 }
-            } } }
+            }
+            item {
+                if (recentlyPlayedTracks != null) {
+                RecentlyPlayedBox(recentlyPlayedTracks = recentlyPlayedTracks)
+            }
+            }
+
+        } }
         }
     }
 
@@ -254,6 +265,52 @@ fun LastPlayedBox(imageUrl:String,name:String,artist: String){
         }
     }
 }
+
+@Composable
+fun RecentlyPlayedBox(recentlyPlayedTracks:List<Track>){
+    Box(modifier = Modifier
+        .padding(top = 30.dp)
+        .clip(RoundedCornerShape(16.dp))
+        .background(MaterialTheme.colorScheme.background)
+        .height(250.dp)){
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(text = stringResource(R.string.listened_recently) ,
+                modifier = Modifier.padding(bottom = 8.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,)
+            LazyRow() {
+                items(recentlyPlayedTracks.size){
+                    val track = recentlyPlayedTracks[it]
+                    val imageUrl = track.imageUrl
+                    val title = track.name
+                    val artist = track.artists
+                    Column(modifier = Modifier
+                        .width(150.dp)
+                        .padding(7.dp)
+                    ) {
+                        AsyncImage(model = imageUrl,
+                            contentDescription = stringResource(R.string.track_image),
+                            modifier = Modifier
+                                .size(130.dp)
+                                .clip(RoundedCornerShape(10.dp)))
+                        Text(title, fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis)
+                        Text(text = artist,
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis)
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
 
 
 @Composable

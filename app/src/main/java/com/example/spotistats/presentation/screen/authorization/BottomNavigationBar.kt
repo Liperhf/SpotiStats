@@ -11,6 +11,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -47,7 +48,7 @@ fun AppBottomNavigationBar(navController: NavController){
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.85f),
         contentColor = MaterialTheme.colorScheme.onBackground,
-        modifier = Modifier.height(50.dp)
+        modifier = Modifier.height(65.dp)
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
@@ -58,7 +59,7 @@ fun AppBottomNavigationBar(navController: NavController){
                 icon = {Icon(item.icon,
                     contentDescription = stringResource(item.labelResId),
                     modifier = Modifier.size(30.dp))},
-                label = {item.labelResId},
+                label = {Text(stringResource(item.labelResId))},
                 onClick = {navController.navigate(item.route){
                     popUpTo(navController.graph.startDestinationId){
                         saveState = true
@@ -70,7 +71,7 @@ fun AppBottomNavigationBar(navController: NavController){
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.onBackground,
                     unselectedIconColor = MaterialTheme.colorScheme.onSurface,
-                    unselectedTextColor = MaterialTheme.colorScheme.onBackground,
+                    unselectedTextColor = MaterialTheme.colorScheme.onSurface,
                     selectedTextColor = MaterialTheme.colorScheme.onBackground,
                     indicatorColor = MaterialTheme.colorScheme.background
                 )
