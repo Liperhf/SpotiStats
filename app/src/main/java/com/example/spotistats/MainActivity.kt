@@ -13,20 +13,26 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.spotistats.presentation.screen.authorization.AccountScreen
+import com.example.spotistats.presentation.screen.authorization.AppBottomNavigationBar
 import com.example.spotistats.presentation.screen.authorization.AuthScreen
 import com.example.spotistats.presentation.screen.authorization.AuthViewModel
 import com.example.spotistats.presentation.screen.authorization.LanguageScreen
 import com.example.spotistats.presentation.screen.authorization.MainScreen
 import com.example.spotistats.presentation.screen.authorization.SettingsScreen
 import com.example.spotistats.presentation.screen.authorization.SettingsViewModel
+import com.example.spotistats.presentation.screen.authorization.StatsScreen
 import com.example.spotistats.ui.theme.SpotiStatsTheme
 import com.yalantis.ucrop.UCrop
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,6 +44,8 @@ class MainActivity : ComponentActivity() {
     private lateinit var uCropLauncher: ActivityResultLauncher<Intent>
     private var currentCropCallback:((Uri?) -> Unit)? = null
 
+
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +69,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SpotiStatsTheme {
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -68,39 +77,58 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     val authViewModel:AuthViewModel = hiltViewModel()
                     val settingsViewModel:SettingsViewModel = hiltViewModel()
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
+                    val currentRoute = navBackStackEntry?.destination?.route
+
                     val startImageCrop: (Uri, (Uri?) -> Unit) -> Unit = { source, callback ->
                         startCropActivityForResult(source, callback)
                     }
-                            NavHost(navController = navController, startDestination = "auth") {
-                        composable("auth") {
-                            AuthScreen(
+                    val screensWithBottomBar = listOf("main","stats","settings","language","account")
+                    val shouldShowBottomBar = currentRoute in screensWithBottomBar
+
+                    Scaffold(
+                            bottomBar =
+                            {
+                                if(shouldShowBottomBar) {
+                                AppBottomNavigationBar(navController)
+                            }
+                            }
+                    ) {
+                        paddingValues ->
+                        NavHost(navController = navController, startDestination = "auth", modifier = Modifier.padding(paddingValues)) {
+                            composable("auth") {
+                                AuthScreen(
+                                    navController = navController,
+                                    viewModel = authViewModel
+                                )
+                            }
+                            composable("main") { MainScreen(
+                                navController = navController,
+                                authViewModel = authViewModel,
+                                settingsViewModel = settingsViewModel) }
+
+                            composable("settings"){ SettingsScreen(
                                 navController = navController,
                                 viewModel = authViewModel
-                            )
-                        }
-                        composable("main") { MainScreen(
-                            navController = navController,
-                            authViewModel = authViewModel,
-                            settingsViewModel = settingsViewModel) }
-
-                        composable("settings"){ SettingsScreen(
-                            navController = navController,
-                            viewModel = authViewModel
-                        ) }
-                        composable("language"){ LanguageScreen(
-                            navController = navController,
-                            viewModel = settingsViewModel
-                        ) }
-                        composable("account") {
-                            AccountScreen(
+                            ) }
+                            composable("language"){ LanguageScreen(
                                 navController = navController,
-                                viewModel = settingsViewModel,
-                                onStartImageCrop = startImageCrop
-                            )
-
+                                viewModel = settingsViewModel
+                            ) }
+                            composable("account") {
+                                AccountScreen(
+                                    navController = navController,
+                                    viewModel = settingsViewModel,
+                                    onStartImageCrop = startImageCrop
+                                )
+                            }
+                            composable("stats"){
+                                StatsScreen(
+                                    navController = navController,
+                                )
+                            }
                         }
                     }
-
                 }
 
             }

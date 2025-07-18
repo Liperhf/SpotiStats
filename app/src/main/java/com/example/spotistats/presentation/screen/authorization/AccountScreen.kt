@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -73,6 +74,8 @@ fun AccountScreen(
     val imageUri = viewModel.imageUri.collectAsState()
     val nickname = viewModel.nickname.collectAsState()
     val context = LocalContext.current
+
+
     val pickImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ){
@@ -114,7 +117,7 @@ fun AccountScreen(
                 containerColor = MaterialTheme.colorScheme.primary,
                 titleContentColor = MaterialTheme.colorScheme.onBackground
             ),
-        ) }
+        ) },
     ) {paddingValues ->
                     Column(modifier = Modifier
                         .padding(paddingValues)
