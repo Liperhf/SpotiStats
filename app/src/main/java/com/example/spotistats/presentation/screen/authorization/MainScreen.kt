@@ -37,8 +37,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,6 +57,8 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.spotistats.R
 import com.example.spotistats.domain.model.Track
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -90,6 +95,17 @@ fun MainScreen(
 
     val systemUiController = rememberSystemUiController()
     val navBarColor = MaterialTheme.colorScheme.background
+
+    val isRefreshing = remember{ mutableStateOf(false) }
+
+    val refreshRecentlyPlayed = {
+        scope.launch {
+            isRefreshing.value = true
+            authViewModel.getRecentlyPlayed()
+            delay(1000)
+            isRefreshing.value = false
+        }
+    }
 
     SideEffect {
         systemUiController.setNavigationBarColor(
@@ -168,6 +184,10 @@ fun MainScreen(
             )
         },
     ){paddingValues ->
+        SwipeRefresh(
+            state = rememberSwipeRefreshState(isRefreshing = isRefreshing.value),
+            onRefresh = {refreshRecentlyPlayed()},
+        ) {
         LazyColumn(modifier = Modifier.padding(paddingValues)) {
 
             item {
@@ -191,6 +211,7 @@ fun MainScreen(
             }
 
         } }
+    }
         }
     }
 

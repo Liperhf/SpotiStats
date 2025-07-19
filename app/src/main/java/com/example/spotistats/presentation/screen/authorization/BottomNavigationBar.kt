@@ -44,6 +44,7 @@ fun AppBottomNavigationBar(navController: NavController){
             route = "stats"
         ),
     )
+    val homeAssociatedRoutes = setOf("main", "settings", "account", "language")
 
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.85f),
@@ -54,19 +55,42 @@ fun AppBottomNavigationBar(navController: NavController){
         val currentRoute = navBackStackEntry?.destination?.route
 
         items.forEach { item ->
+            val isSelected = if(item.route == "main"){
+                currentRoute in homeAssociatedRoutes
+            }else {
+                currentRoute == item.route
+            }
             NavigationBarItem(
-                selected = currentRoute == item.route,
+                selected = isSelected,
                 icon = {Icon(item.icon,
                     contentDescription = stringResource(item.labelResId),
                     modifier = Modifier.size(30.dp))},
                 label = {Text(stringResource(item.labelResId))},
-                onClick = {navController.navigate(item.route){
-                    popUpTo(navController.graph.startDestinationId){
-                        saveState = true
-                    }
-                    launchSingleTop = true
-                    restoreState = true
-                } },
+                onClick = {
+                    if(item.route == "main") {
+                        if (currentRoute != "main") {
+                            navController.navigate("main") {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+
+
+                            }
+                        }
+                        } else {
+                                if (currentRoute != item.route) {
+                                    navController.navigate(item.route) {
+                                        popUpTo(navController.graph.startDestinationId) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }
+                            }
+                          },
                 alwaysShowLabel = true,
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.onBackground,

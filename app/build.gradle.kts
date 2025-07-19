@@ -58,6 +58,9 @@ android {
 }
 
 dependencies {
+    //SwipeRefresh
+    implementation(libs.google.accompanist.swiperefresh)
+
     //UCrop
     implementation (libs.yalantis.ucrop)
 
