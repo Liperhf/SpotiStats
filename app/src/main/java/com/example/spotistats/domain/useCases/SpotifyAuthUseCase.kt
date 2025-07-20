@@ -4,9 +4,9 @@ import android.content.Intent
 import com.example.spotistats.data.dto.AuthTokenDto
 import com.example.spotistats.domain.Repository
 import com.example.spotistats.domain.model.CurrentlyPlaying
-import com.example.spotistats.domain.model.Item
 import com.example.spotistats.domain.model.RecentlyPlayed
 import com.example.spotistats.domain.model.UserProfile
+import com.example.spotistats.domain.model.UserTopArtists
 import javax.inject.Inject
 
 class SpotifyAuthUseCase @Inject constructor(
@@ -77,6 +77,9 @@ class SpotifyAuthUseCase @Inject constructor(
     }
     suspend fun getCurrentlyPlaying():CurrentlyPlaying{
         return repository.getCurrentlyPlaying()
+    }
+    suspend fun getUserTopArtistsShort():UserTopArtists{
+        return repository.getUserTopArtistsShort()
     }
 
 }

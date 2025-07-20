@@ -15,6 +15,8 @@ import com.example.spotistats.data.dto.RecentlyPlayedDto
 import com.example.spotistats.domain.model.CurrentlyPlaying
 import com.example.spotistats.domain.model.RecentlyPlayed
 import com.example.spotistats.domain.model.UserProfile
+import com.example.spotistats.domain.model.UserTopArtists
+import com.example.spotistats.domain.model.UserTopArtistsItem
 import com.example.spotistats.domain.useCases.SpotifyAuthUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -37,6 +39,8 @@ class AuthViewModel @Inject constructor(
     val recentlyPlayed:StateFlow<RecentlyPlayed?> = _recentlyPlayed
     private val _isAuthenticated = MutableStateFlow(false)
     val isAuthenticated: StateFlow<Boolean> = _isAuthenticated
+    private val _userTopArtists = MutableStateFlow<UserTopArtists?>(null)
+    val userTopArtists:StateFlow<UserTopArtists?> = _userTopArtists
     private val _userProfile = MutableStateFlow<UserProfile?>(null)
     val userProfile:StateFlow<UserProfile?> = _userProfile
     private val _currentlyPlaying = MutableStateFlow<CurrentlyPlaying?>(null)
@@ -165,6 +169,17 @@ class AuthViewModel @Inject constructor(
             Log.e("NowPlaying","Failed to load : ${e.message}")
         }
     }
+
+    suspend fun getUserTopArtists() {
+        try {
+            val result = spotifyAuthUseCase.getUserTopArtistsShort()
+            println("Mapped top artists: $result")
+            _userTopArtists.value = result
+        } catch (e: Exception) {
+            println("Failed to load top artists: ${e.message}")
+        }
+    }
+
 
     private fun startProgress(durationMs:Int) : Job{
         return viewModelScope.launch {

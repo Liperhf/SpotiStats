@@ -2,6 +2,7 @@ package com.example.spotistats.data.mapper
 
 import CurrentlyPlayingDto
 import com.example.spotistats.domain.model.CurrentlyPlaying
+import com.example.spotistats.data.mapper.*
 
 fun CurrentlyPlayingDto.toDomain():CurrentlyPlaying{
     return CurrentlyPlaying(

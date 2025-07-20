@@ -1,6 +1,8 @@
 package com.example.spotistats.data.dto
 
+import com.example.spotistats.data.dto.common.ExplicitContentDto
 import com.example.spotistats.data.dto.common.ExternalUrlsDto
+import com.example.spotistats.data.dto.common.FollowersDto
 import com.example.spotistats.data.dto.common.ImageDto
 import kotlinx.serialization.Serializable
 
@@ -20,14 +22,3 @@ data class UserProfileDto(
     val uri: String
 )
 
-@Serializable
-data class ExplicitContentDto(
-    val filter_enabled: Boolean,
-    val filter_locked: Boolean
-)
-
-@Serializable
-data class FollowersDto(
-    val href: String,
-    val total: Int
-)

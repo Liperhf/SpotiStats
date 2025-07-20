@@ -6,6 +6,7 @@ import com.example.spotistats.data.dto.UserProfileDto
 import com.example.spotistats.domain.model.CurrentlyPlaying
 import com.example.spotistats.domain.model.RecentlyPlayed
 import com.example.spotistats.domain.model.UserProfile
+import com.example.spotistats.domain.model.UserTopArtists
 
 interface Repository {
     fun buildAuthIntent(): Intent
@@ -20,4 +21,5 @@ interface Repository {
     suspend fun getRecentlyPlayed(): RecentlyPlayed
     suspend fun clearTokens():Unit
     suspend fun getCurrentlyPlaying():CurrentlyPlaying
+    suspend fun getUserTopArtistsShort():UserTopArtists
 }

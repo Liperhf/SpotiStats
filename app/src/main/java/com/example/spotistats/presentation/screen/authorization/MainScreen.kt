@@ -37,7 +37,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -52,11 +51,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.spotistats.R
 import com.example.spotistats.domain.model.Track
+import com.example.spotistats.domain.model.UserTopArtists
+import com.example.spotistats.domain.model.UserTopArtistsItem
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -92,6 +92,7 @@ fun MainScreen(
     val currentlyDurationMs = currentlyTrack?.duration_ms ?: 1
     val currentlyUserName = settingsViewModel.nickname.collectAsState()
     val currentlyUserAvatar = settingsViewModel.imageUri.collectAsState()
+    val userTopArtists = authViewModel.userTopArtists.collectAsState()
 
     val systemUiController = rememberSystemUiController()
     val navBarColor = MaterialTheme.colorScheme.background
@@ -123,6 +124,7 @@ fun MainScreen(
             authViewModel.getRecentlyPlayed()
             authViewModel.getUserProfile()
             authViewModel.getCurrentlyPlaying()
+            authViewModel.getUserTopArtists()
         }
     }
 
@@ -209,8 +211,12 @@ fun MainScreen(
                 RecentlyPlayedBox(recentlyPlayedTracks = recentlyPlayedTracks)
             }
             }
+            item{
+                userTopArtists.value?.let { TestBox(it) }
+            }
+        }
 
-        } }
+        }
     }
         }
     }
@@ -326,6 +332,14 @@ fun RecentlyPlayedBox(recentlyPlayedTracks:List<Track>){
                     }
                 }
             }
+        }
+    }
+}
+@Composable
+fun TestBox(artists: UserTopArtists){
+    LazyRow {
+        items(artists.items.size){
+            Text(artists.items[it].name)
         }
     }
 }

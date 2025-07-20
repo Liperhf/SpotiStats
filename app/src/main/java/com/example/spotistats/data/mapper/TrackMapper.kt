@@ -1,6 +1,6 @@
 package com.example.spotistats.data.mapper
 
-import com.example.spotistats.data.dto.TrackDto
+import com.example.spotistats.data.dto.common.TrackDto
 import com.example.spotistats.domain.model.Track
 
 fun TrackDto.toDomain() : Track{

@@ -3,6 +3,7 @@ package com.example.spotistats.data.api
 import CurrentlyPlayingDto
 import com.example.spotistats.data.dto.RecentlyPlayedDto
 import com.example.spotistats.data.dto.UserProfileDto
+import com.example.spotistats.data.dto.UserTopArtistsDto
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Query
@@ -23,4 +24,11 @@ interface SpotifyUserApi {
     suspend fun getCurrentlyPlaying(
         @Header("Authorization") authorization: String,
     ):CurrentlyPlayingDto
+
+    @GET("me/top/artists")
+    suspend fun getTopArtistsShort(
+        @Header("Authorization") authorization: String,
+        @Query("limit") limit:Int = 50,
+        @Query("time_range") time_range:String = "short_term"
+    ):UserTopArtistsDto
 }

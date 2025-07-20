@@ -8,6 +8,7 @@ object SpotifyConfig{
     const val API_BASE_URL = "https://api.spotify.com/v1/"
     val SCOPES = listOf(
         "user-read-recently-played",
-        "user-read-currently-playing"
+        "user-read-currently-playing",
+        "user-top-read"
 )
 }
