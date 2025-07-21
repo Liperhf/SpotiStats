@@ -1,10 +1,10 @@
 package com.example.spotistats.data.dto
 
-import com.example.spotistats.data.dto.common.UserTopItemDto
+import com.example.spotistats.data.dto.common.UserTopArtistsItemDto
 
-data class UserTopArtistsDto(
+data class UserTopArtistDto(
     val href: String,
-    val items: List<UserTopItemDto>,
+    val items: List<UserTopArtistsItemDto>,
     val limit: Int,
     val next: String,
     val offset: Int,

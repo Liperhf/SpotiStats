@@ -2,11 +2,13 @@ package com.example.spotistats.domain.useCases
 
 import android.content.Intent
 import com.example.spotistats.data.dto.AuthTokenDto
+import com.example.spotistats.data.dto.UserTopTracksDto
 import com.example.spotistats.domain.Repository
 import com.example.spotistats.domain.model.CurrentlyPlaying
 import com.example.spotistats.domain.model.RecentlyPlayed
 import com.example.spotistats.domain.model.UserProfile
 import com.example.spotistats.domain.model.UserTopArtists
+import com.example.spotistats.domain.model.UserTopTracks
 import javax.inject.Inject
 
 class SpotifyAuthUseCase @Inject constructor(
@@ -80,6 +82,9 @@ class SpotifyAuthUseCase @Inject constructor(
     }
     suspend fun getUserTopArtistsShort():UserTopArtists{
         return repository.getUserTopArtistsShort()
+    }
+    suspend fun getUserTopTracksShort():UserTopTracks{
+        return repository.getUserTopTracksShort()
     }
 
 }

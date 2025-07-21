@@ -14,6 +14,7 @@ import com.example.spotistats.domain.model.CurrentlyPlaying
 import com.example.spotistats.domain.model.RecentlyPlayed
 import com.example.spotistats.domain.model.UserProfile
 import com.example.spotistats.domain.model.UserTopArtists
+import com.example.spotistats.domain.model.UserTopTracks
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -124,7 +125,12 @@ class RepositoryImpl @Inject constructor(
     override suspend fun getUserTopArtistsShort(): UserTopArtists {
         val token = getAccessToken() ?: throw IllegalArgumentException("No access token")
         val dto = spotifyUserApi.getTopArtistsShort("Bearer $token")
-        println("DTO from API: $dto")
+        return dto.toDomain()
+    }
+
+    override suspend fun getUserTopTracksShort(): UserTopTracks {
+        val token = getAccessToken() ?: throw IllegalArgumentException("No access token")
+        val dto = spotifyUserApi.getTopTracksShort("Bearer $token")
         return dto.toDomain()
     }
 

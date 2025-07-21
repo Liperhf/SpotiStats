@@ -3,7 +3,7 @@ package com.example.spotistats.data.dto.common
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UserTopItemDto(
+data class UserTopArtistsItemDto(
     val external_urls: ExternalUrlsDto,
     val followers: FollowersDto,
     val genres: List<String>,

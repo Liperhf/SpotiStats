@@ -17,6 +17,7 @@ import com.example.spotistats.domain.model.RecentlyPlayed
 import com.example.spotistats.domain.model.UserProfile
 import com.example.spotistats.domain.model.UserTopArtists
 import com.example.spotistats.domain.model.UserTopArtistsItem
+import com.example.spotistats.domain.model.UserTopTracks
 import com.example.spotistats.domain.useCases.SpotifyAuthUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -41,6 +42,8 @@ class AuthViewModel @Inject constructor(
     val isAuthenticated: StateFlow<Boolean> = _isAuthenticated
     private val _userTopArtists = MutableStateFlow<UserTopArtists?>(null)
     val userTopArtists:StateFlow<UserTopArtists?> = _userTopArtists
+    private val _userTopTracks = MutableStateFlow<UserTopTracks?>(null)
+    val userTopTracks:StateFlow<UserTopTracks?> = _userTopTracks
     private val _userProfile = MutableStateFlow<UserProfile?>(null)
     val userProfile:StateFlow<UserProfile?> = _userProfile
     private val _currentlyPlaying = MutableStateFlow<CurrentlyPlaying?>(null)
@@ -173,13 +176,19 @@ class AuthViewModel @Inject constructor(
     suspend fun getUserTopArtists() {
         try {
             val result = spotifyAuthUseCase.getUserTopArtistsShort()
-            println("Mapped top artists: $result")
             _userTopArtists.value = result
         } catch (e: Exception) {
             println("Failed to load top artists: ${e.message}")
         }
     }
-
+    suspend fun getUserTopTracks() {
+        try {
+            val result = spotifyAuthUseCase.getUserTopTracksShort()
+            _userTopTracks.value = result
+        }catch (e:Exception){
+            println("Failed to load top artists: ${e.message}")
+        }
+    }
 
     private fun startProgress(durationMs:Int) : Job{
         return viewModelScope.launch {
