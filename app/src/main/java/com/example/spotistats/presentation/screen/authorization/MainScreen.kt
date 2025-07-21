@@ -46,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -57,6 +58,8 @@ import com.example.spotistats.R
 import com.example.spotistats.domain.model.Track
 import com.example.spotistats.domain.model.UserTopArtists
 import com.example.spotistats.domain.model.UserTopArtistsItem
+import com.example.spotistats.domain.model.UserTopTracks
+import com.example.spotistats.domain.model.UserTopTracksItem
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -93,6 +96,7 @@ fun MainScreen(
     val currentlyUserName = settingsViewModel.nickname.collectAsState()
     val currentlyUserAvatar = settingsViewModel.imageUri.collectAsState()
     val userTopArtists = authViewModel.userTopArtists.collectAsState()
+    val userTopTracks = authViewModel.userTopTracks.collectAsState()
 
     val systemUiController = rememberSystemUiController()
     val navBarColor = MaterialTheme.colorScheme.background
@@ -125,6 +129,7 @@ fun MainScreen(
             authViewModel.getUserProfile()
             authViewModel.getCurrentlyPlaying()
             authViewModel.getUserTopArtists()
+            authViewModel.getUserTopTracks()
         }
     }
 
@@ -212,7 +217,10 @@ fun MainScreen(
             }
             }
             item{
-                userTopArtists.value?.let { TestBox(it) }
+                userTopArtists.value?.let { UserTopArtistsBox(it) }
+            }
+            item {
+                userTopTracks.value?.let { UserTopTracksBox(it) }
             }
         }
 
@@ -335,11 +343,91 @@ fun RecentlyPlayedBox(recentlyPlayedTracks:List<Track>){
         }
     }
 }
+
 @Composable
-fun TestBox(artists: UserTopArtists){
-    LazyRow {
-        items(artists.items.size){
-            Text(artists.items[it].name)
+fun UserTopTracksBox(userTopTracks:UserTopTracks){
+    Box(modifier = Modifier
+        .padding(top = 30.dp)
+        .clip(RoundedCornerShape(16.dp))
+        .background(MaterialTheme.colorScheme.background)
+        .height(250.dp)){
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(text = stringResource(R.string.top_tracks_month) ,
+                modifier = Modifier.padding(bottom = 8.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,)
+            LazyRow() {
+                items(userTopTracks.items.size){
+                    val track = userTopTracks.items[it]
+                    val imageUrl = track.album.images.firstOrNull()?.url
+                    val title = track.name
+                    val artist = track.artists.firstOrNull()?.name
+                    Column(modifier = Modifier
+                        .width(150.dp)
+                        .padding(7.dp)
+                    ) {
+                        AsyncImage(model = imageUrl,
+                            contentDescription = stringResource(R.string.track_image),
+                            modifier = Modifier
+                                .size(130.dp)
+                                .clip(RoundedCornerShape(10.dp)),
+                            contentScale = ContentScale.Crop)
+                        Text(title, fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis)
+                        if (artist != null) {
+                            Text(text = artist,
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
+@Composable
+fun UserTopArtistsBox(userTopArtists:UserTopArtists){
+    Box(modifier = Modifier
+        .padding(top = 30.dp)
+        .clip(RoundedCornerShape(16.dp))
+        .background(MaterialTheme.colorScheme.background)
+        .height(250.dp)){
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(text = stringResource(R.string.top_artists_month) ,
+                modifier = Modifier.padding(bottom = 8.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,)
+            LazyRow() {
+                items(userTopArtists.items.size){
+                    val artist = userTopArtists.items[it]
+                    val imageUrl = artist.images.firstOrNull()?.url
+                    val title = artist.name
+                    Column(modifier = Modifier
+                        .width(150.dp)
+                        .padding(7.dp)
+                    ) {
+                        AsyncImage(model = imageUrl,
+                            contentDescription = stringResource(R.string.track_image),
+                            modifier = Modifier
+                                .size(130.dp)
+                                .clip(RoundedCornerShape(10.dp)),
+                            contentScale = ContentScale.Crop)
+                        Text(title, fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis)
+                    }
+                }
+            }
         }
     }
 }

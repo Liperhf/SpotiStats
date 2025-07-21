@@ -23,5 +23,9 @@ interface Repository {
     suspend fun clearTokens():Unit
     suspend fun getCurrentlyPlaying():CurrentlyPlaying
     suspend fun getUserTopArtistsShort():UserTopArtists
+    suspend fun getUserTopArtistsMedium():UserTopArtists
+    suspend fun getUserTopArtistsLong():UserTopArtists
     suspend fun getUserTopTracksShort():UserTopTracks
+    suspend fun getUserTopTracksMedium():UserTopTracks
+    suspend fun getUserTopTracksLong():UserTopTracks
 }

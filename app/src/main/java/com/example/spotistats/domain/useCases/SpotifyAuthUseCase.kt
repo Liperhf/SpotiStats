@@ -86,5 +86,17 @@ class SpotifyAuthUseCase @Inject constructor(
     suspend fun getUserTopTracksShort():UserTopTracks{
         return repository.getUserTopTracksShort()
     }
+    suspend fun getUserTopArtistsMedium():UserTopArtists{
+        return repository.getUserTopArtistsMedium()
+    }
+    suspend fun getUserTopArtistsLong():UserTopArtists{
+        return repository.getUserTopArtistsLong()
+    }
+    suspend fun getUserTopTracksMedium():UserTopTracks{
+        return repository.getUserTopTracksMedium()
+    }
+    suspend fun getUserTopTracksLong():UserTopTracks{
+        return repository.getUserTopTracksLong()
+    }
 
 }

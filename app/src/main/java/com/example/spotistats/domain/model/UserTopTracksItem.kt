@@ -4,7 +4,7 @@ import com.example.spotistats.data.dto.common.AlbumDto
 import com.example.spotistats.data.dto.common.ArtistXDto
 
 data class UserTopTracksItem (
-    val album: AlbumDto,
-    val artists: List<ArtistXDto>,
+    val album: Album,
+    val artists: List<ArtistX>,
     val name: String,
 )

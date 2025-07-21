@@ -24,5 +24,7 @@
     <string name="home">Home</string>
     <string name="stats">Stats</string>
     <string name="listened_recently">Recently Listened</string>
+    <string name="top_tracks_month">Your top tracks this month</string>
+    <string name="top_artists_month">Your top artists this month</string>
 
 </resources>

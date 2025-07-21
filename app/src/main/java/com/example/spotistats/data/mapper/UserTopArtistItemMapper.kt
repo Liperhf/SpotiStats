@@ -5,7 +5,7 @@ import com.example.spotistats.domain.model.UserTopArtistsItem
 
 fun UserTopArtistsItemDto.toDomain():UserTopArtistsItem{
     return UserTopArtistsItem(
-        images = this.images,
+        images = this.images.map { it.toDomain() },
         name = this.name
     )
 }

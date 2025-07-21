@@ -134,4 +134,27 @@ class RepositoryImpl @Inject constructor(
         return dto.toDomain()
     }
 
+    override suspend fun getUserTopArtistsMedium(): UserTopArtists {
+        val token = getAccessToken() ?: throw IllegalArgumentException("No access token")
+        val dto = spotifyUserApi.getTopArtistsMedium("Bearer $token")
+        return dto.toDomain()
+    }
+
+    override suspend fun getUserTopArtistsLong(): UserTopArtists {
+        val token = getAccessToken() ?: throw IllegalArgumentException("No access token")
+        val dto = spotifyUserApi.getTopArtistsLong("Bearer $token")
+        return dto.toDomain()
+    }
+
+    override suspend fun getUserTopTracksMedium(): UserTopTracks {
+        val token = getAccessToken() ?: throw IllegalArgumentException("No access token")
+        val dto = spotifyUserApi.getTopTracksMedium("Bearer $token")
+        return dto.toDomain()
+    }
+
+    override suspend fun getUserTopTracksLong(): UserTopTracks {
+        val token = getAccessToken() ?: throw IllegalArgumentException("No access token")
+        val dto = spotifyUserApi.getTopTracksLong("Bearer $token")
+        return dto.toDomain()
+    }
 }

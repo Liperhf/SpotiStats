@@ -2,7 +2,7 @@ package com.example.spotistats.data.dto
 
 import com.example.spotistats.data.dto.common.UserTopArtistsItemDto
 
-data class UserTopArtistDto(
+data class UserTopArtistsDto(
     val href: String,
     val items: List<UserTopArtistsItemDto>,
     val limit: Int,

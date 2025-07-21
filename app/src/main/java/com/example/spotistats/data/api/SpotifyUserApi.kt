@@ -3,9 +3,8 @@ package com.example.spotistats.data.api
 import CurrentlyPlayingDto
 import com.example.spotistats.data.dto.RecentlyPlayedDto
 import com.example.spotistats.data.dto.UserProfileDto
-import com.example.spotistats.data.dto.UserTopArtistDto
+import com.example.spotistats.data.dto.UserTopArtistsDto
 import com.example.spotistats.data.dto.UserTopTracksDto
-import com.example.spotistats.domain.model.UserTopTracks
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Query
@@ -32,7 +31,21 @@ interface SpotifyUserApi {
         @Header("Authorization") authorization: String,
         @Query("limit") limit:Int = 50,
         @Query("time_range") time_range:String = "short_term"
-    ):UserTopArtistDto
+    ):UserTopArtistsDto
+
+    @GET("me/top/tracks")
+    suspend fun getTopArtistsMedium(
+        @Header("Authorization") authorization: String,
+        @Query("limit") limit:Int = 50,
+        @Query("time_range") time_range: String = "medium_term"
+    ):UserTopArtistsDto
+
+    @GET("me/top/tracks")
+    suspend fun getTopArtistsLong(
+        @Header("Authorization") authorization: String,
+        @Query("limit") limit:Int = 50,
+        @Query("time_range") time_range: String = "long_term"
+    ):UserTopArtistsDto
 
     @GET("me/top/tracks")
     suspend fun getTopTracksShort(
@@ -40,4 +53,19 @@ interface SpotifyUserApi {
         @Query("limit") limit:Int = 50,
         @Query("time_range") time_range: String = "short_term"
     ):UserTopTracksDto
+
+    @GET("me/top/tracks")
+    suspend fun getTopTracksMedium(
+        @Header("Authorization") authorization: String,
+        @Query("limit") limit:Int = 50,
+        @Query("time_range") time_range: String = "medium_term"
+    ):UserTopTracksDto
+
+    @GET("me/top/tracks")
+    suspend fun getTopTracksLong(
+        @Header("Authorization") authorization: String,
+        @Query("limit") limit:Int = 50,
+        @Query("time_range") time_range: String = "long_term"
+    ):UserTopTracksDto
+
 }
