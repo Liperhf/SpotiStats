@@ -12,8 +12,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.spotistats.R
 import com.example.spotistats.data.dto.RecentlyPlayedDto
+import com.example.spotistats.domain.model.Album
 import com.example.spotistats.domain.model.CurrentlyPlaying
 import com.example.spotistats.domain.model.RecentlyPlayed
+import com.example.spotistats.domain.model.TopAlbum
 import com.example.spotistats.domain.model.UserProfile
 import com.example.spotistats.domain.model.UserTopArtists
 import com.example.spotistats.domain.model.UserTopArtistsItem
@@ -26,6 +28,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 import javax.inject.Inject
@@ -44,6 +47,8 @@ class AuthViewModel @Inject constructor(
     val userTopArtists:StateFlow<UserTopArtists?> = _userTopArtists
     private val _userTopTracks = MutableStateFlow<UserTopTracks?>(null)
     val userTopTracks:StateFlow<UserTopTracks?> = _userTopTracks
+    private val _userTopAlbums = MutableStateFlow<List<TopAlbum?>>(emptyList())
+    val userTopAlbums: StateFlow<List<TopAlbum?>> = _userTopAlbums
     private val _userProfile = MutableStateFlow<UserProfile?>(null)
     val userProfile:StateFlow<UserProfile?> = _userProfile
     private val _currentlyPlaying = MutableStateFlow<CurrentlyPlaying?>(null)
@@ -187,6 +192,28 @@ class AuthViewModel @Inject constructor(
             _userTopTracks.value = result
         }catch (e:Exception){
             println("Failed to load top artists: ${e.message}")
+        }
+    }
+
+    fun calculatedUserTopAlbums(){
+        if(userTopTracks == null){
+            _userTopAlbums.value = emptyList()
+            return
+        }
+        val albumsCount = mutableMapOf<String, Pair<Album,Int>>()
+        userTopTracks.value?.items?.forEach() { track ->
+            val album = track.album
+            albumsCount.compute(album.id){_,pair ->
+                if(pair == null){
+                    Pair(album,1)
+                }else{
+                    Pair(album,pair.second + 1)
+                }
+            }
+            val sortedTopAlbums = albumsCount.values
+                .map {pair -> TopAlbum(pair.first,pair.second)  }
+                .sortedByDescending {topAlbum: TopAlbum -> topAlbum.trackCount  }
+            _userTopAlbums.value = sortedTopAlbums.take(10)
         }
     }
 

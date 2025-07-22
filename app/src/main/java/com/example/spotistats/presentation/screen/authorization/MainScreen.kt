@@ -47,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -55,11 +56,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.spotistats.R
+import com.example.spotistats.domain.model.Album
+import com.example.spotistats.domain.model.TopAlbum
 import com.example.spotistats.domain.model.Track
 import com.example.spotistats.domain.model.UserTopArtists
-import com.example.spotistats.domain.model.UserTopArtistsItem
 import com.example.spotistats.domain.model.UserTopTracks
-import com.example.spotistats.domain.model.UserTopTracksItem
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -97,6 +98,7 @@ fun MainScreen(
     val currentlyUserAvatar = settingsViewModel.imageUri.collectAsState()
     val userTopArtists = authViewModel.userTopArtists.collectAsState()
     val userTopTracks = authViewModel.userTopTracks.collectAsState()
+    val userTopAlbums = authViewModel.userTopAlbums.collectAsState()
 
     val systemUiController = rememberSystemUiController()
     val navBarColor = MaterialTheme.colorScheme.background
@@ -130,6 +132,7 @@ fun MainScreen(
             authViewModel.getCurrentlyPlaying()
             authViewModel.getUserTopArtists()
             authViewModel.getUserTopTracks()
+            authViewModel.calculatedUserTopAlbums()
         }
     }
 
@@ -222,6 +225,9 @@ fun MainScreen(
             item {
                 userTopTracks.value?.let { UserTopTracksBox(it) }
             }
+            item{
+                UserTopAlbumsBox(userTopAlbums.value)
+            }
         }
 
         }
@@ -282,7 +288,9 @@ fun LastPlayedBox(imageUrl:String,name:String,artist: String){
             Row {
                 AsyncImage(model = imageUrl, contentDescription = stringResource(R.string.track_image), modifier = Modifier
                     .size(105.dp, 105.dp)
-                    .clip(RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(10.dp),),
+                    placeholder = painterResource(R.drawable.place_holder_track),
+                    error = painterResource(R.drawable.place_holder_track)
                 )
                 Column(modifier = Modifier.padding(horizontal = 6.dp)) {
                     Text(name,
@@ -314,7 +322,7 @@ fun RecentlyPlayedBox(recentlyPlayedTracks:List<Track>){
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,)
             LazyRow() {
-                items(recentlyPlayedTracks.size){
+                items(recentlyPlayedTracks.take(20).size){
                     val track = recentlyPlayedTracks[it]
                     val imageUrl = track.imageUrl
                     val title = track.name
@@ -327,7 +335,8 @@ fun RecentlyPlayedBox(recentlyPlayedTracks:List<Track>){
                             contentDescription = stringResource(R.string.track_image),
                             modifier = Modifier
                                 .size(130.dp)
-                                .clip(RoundedCornerShape(10.dp)))
+                                .clip(RoundedCornerShape(10.dp)),
+                                placeholder = painterResource(R.drawable.place_holder_track))
                         Text(title, fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             maxLines = 1,
@@ -357,7 +366,7 @@ fun UserTopTracksBox(userTopTracks:UserTopTracks){
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,)
             LazyRow() {
-                items(userTopTracks.items.size){
+                items(userTopTracks.items.take(10).size){
                     val track = userTopTracks.items[it]
                     val imageUrl = track.album.images.firstOrNull()?.url
                     val title = track.name
@@ -371,7 +380,8 @@ fun UserTopTracksBox(userTopTracks:UserTopTracks){
                             modifier = Modifier
                                 .size(130.dp)
                                 .clip(RoundedCornerShape(10.dp)),
-                            contentScale = ContentScale.Crop)
+                            contentScale = ContentScale.Crop,
+                            placeholder = painterResource(R.drawable.place_holder_track))
                         Text(title, fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             maxLines = 1,
@@ -407,7 +417,7 @@ fun UserTopArtistsBox(userTopArtists:UserTopArtists){
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,)
             LazyRow() {
-                items(userTopArtists.items.size){
+                items(userTopArtists.items.take(10).size){
                     val artist = userTopArtists.items[it]
                     val imageUrl = artist.images.firstOrNull()?.url
                     val title = artist.name
@@ -420,7 +430,8 @@ fun UserTopArtistsBox(userTopArtists:UserTopArtists){
                             modifier = Modifier
                                 .size(130.dp)
                                 .clip(RoundedCornerShape(10.dp)),
-                            contentScale = ContentScale.Crop)
+                            contentScale = ContentScale.Crop,
+                            placeholder = painterResource(R.drawable.place_holder_artist))
                         Text(title, fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             maxLines = 1,
@@ -435,65 +446,131 @@ fun UserTopArtistsBox(userTopArtists:UserTopArtists){
 
 
 
-
 @Composable
-fun DrawerItem(
-    text: String,
-    onClick: () -> Unit,
-    icon:ImageVector
-){
-    NavigationDrawerItem(
-        label = { Text(text) },
-        selected = false,
-        onClick = { onClick() },
-        modifier = Modifier,
-        icon = { Icon(imageVector = icon, contentDescription = stringResource(R.string.icon)) },
-        colors = NavigationDrawerItemDefaults.colors(
-            selectedIconColor = MaterialTheme.colorScheme.onBackground,
-            unselectedIconColor = MaterialTheme.colorScheme.onBackground,
-            selectedContainerColor = MaterialTheme.colorScheme.background,
-            unselectedContainerColor = MaterialTheme.colorScheme.background,
-            selectedTextColor = MaterialTheme.colorScheme.onBackground,
-            unselectedTextColor = MaterialTheme.colorScheme.onBackground
-        )
-    )
-}
-
-
-@Composable
-fun TrackProgressBar(
-    progressMs: Int,
-    durationMs: Int
-) {
-    val progress = if (durationMs > 0) progressMs.toFloat() / durationMs else 0f
-
-    Column {
-        Row(){
+fun UserTopAlbumsBox(userTopAlbums: List<TopAlbum?>) {
+    Box(
+        modifier = Modifier
+            .padding(top = 30.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.background)
+            .height(250.dp)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
             Text(
-                text = formatTime(progressMs),
-                modifier = Modifier
-                    .padding(top = 4.dp),
-                fontSize = 14.sp
+                text = stringResource(R.string.top_albums_month),
+                modifier = Modifier.padding(bottom = 8.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
             )
-            Text(text = formatTime(durationMs),
-                modifier = Modifier.padding(start = 170.dp,top = 4.dp),
-                fontSize = 14.sp)
+            LazyRow() {
+                items(userTopAlbums.size) {
+                    val album = userTopAlbums[it]?.album
+                    val artist = album?.artists?.firstOrNull()?.name
+                    val imageUrl = album?.images?.firstOrNull()?.url
+                    val title = album?.name
+                    Column(
+                        modifier = Modifier
+                            .width(150.dp)
+                            .padding(7.dp)
+                    ) {
+                        AsyncImage(
+                            model = imageUrl,
+                            contentDescription = stringResource(R.string.track_image),
+                            modifier = Modifier
+                                .size(130.dp)
+                                .clip(RoundedCornerShape(10.dp)),
+                            contentScale = ContentScale.Crop,
+                            placeholder = painterResource(R.drawable.place_holder_track)
+                        )
+                        if (title != null) {
+                            Text(
+                                title, fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                        if (artist != null) {
+                            Text(
+                                text = artist,
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                }
+            }
         }
-        LinearProgressIndicator(
-            progress = { progress.coerceIn(0f, 1f) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(4.dp)
-                .clip(RoundedCornerShape(4.dp)),
-            color = MaterialTheme.colorScheme.secondary,
-        )
     }
 }
-@SuppressLint("DefaultLocale")
-fun formatTime(ms:Int): String {
-    val totalSeconds = ms / 1000
-    val minutes = totalSeconds / 60
-    val seconds = totalSeconds % 60
-    return String.format("%d:%02d",minutes,seconds)
-}
+
+
+
+
+
+    @Composable
+    fun DrawerItem(
+        text: String,
+        onClick: () -> Unit,
+        icon: ImageVector
+    ) {
+        NavigationDrawerItem(
+            label = { Text(text) },
+            selected = false,
+            onClick = { onClick() },
+            modifier = Modifier,
+            icon = { Icon(imageVector = icon, contentDescription = stringResource(R.string.icon)) },
+            colors = NavigationDrawerItemDefaults.colors(
+                selectedIconColor = MaterialTheme.colorScheme.onBackground,
+                unselectedIconColor = MaterialTheme.colorScheme.onBackground,
+                selectedContainerColor = MaterialTheme.colorScheme.background,
+                unselectedContainerColor = MaterialTheme.colorScheme.background,
+                selectedTextColor = MaterialTheme.colorScheme.onBackground,
+                unselectedTextColor = MaterialTheme.colorScheme.onBackground
+            )
+        )
+    }
+
+
+    @Composable
+    fun TrackProgressBar(
+        progressMs: Int,
+        durationMs: Int
+    ) {
+        val progress = if (durationMs > 0) progressMs.toFloat() / durationMs else 0f
+
+        Column {
+            Row() {
+                Text(
+                    text = formatTime(progressMs),
+                    modifier = Modifier
+                        .padding(top = 4.dp),
+                    fontSize = 14.sp
+                )
+                Text(
+                    text = formatTime(durationMs),
+                    modifier = Modifier.padding(start = 170.dp, top = 4.dp),
+                    fontSize = 14.sp
+                )
+            }
+            LinearProgressIndicator(
+                progress = { progress.coerceIn(0f, 1f) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(4.dp)
+                    .clip(RoundedCornerShape(4.dp)),
+                color = MaterialTheme.colorScheme.secondary,
+            )
+        }
+    }
+
+    @SuppressLint("DefaultLocale")
+    fun formatTime(ms: Int): String {
+        val totalSeconds = ms / 1000
+        val minutes = totalSeconds / 60
+        val seconds = totalSeconds % 60
+        return String.format("%d:%02d", minutes, seconds)
+    }
 
