@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -47,7 +48,7 @@ fun AppBottomNavigationBar(navController: NavController){
     val homeAssociatedRoutes = setOf("main", "settings", "account", "language")
 
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.85f),
+        containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
         contentColor = MaterialTheme.colorScheme.onBackground,
         modifier = Modifier.height(65.dp)
     ) {
@@ -64,7 +65,7 @@ fun AppBottomNavigationBar(navController: NavController){
                 selected = isSelected,
                 icon = {Icon(item.icon,
                     contentDescription = stringResource(item.labelResId),
-                    modifier = Modifier.size(30.dp))},
+                    modifier = Modifier.size(35.dp))},
                 label = {Text(stringResource(item.labelResId))},
                 onClick = {
                     if(item.route == "main") {

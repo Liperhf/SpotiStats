@@ -18,7 +18,7 @@ interface SpotifyUserApi {
     @GET ("me/player/recently-played")
     suspend fun getRecentlyPlayed(
         @Header("Authorization") authorization: String,
-        @Query("limit") limit:Int = 20
+        @Query("limit") limit:Int = 50
     ): RecentlyPlayedDto
 
     @GET ("me/player/currently-playing")

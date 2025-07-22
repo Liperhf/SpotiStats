@@ -30,6 +30,7 @@ import com.example.spotistats.presentation.screen.authorization.AuthScreen
 import com.example.spotistats.presentation.screen.authorization.AuthViewModel
 import com.example.spotistats.presentation.screen.authorization.LanguageScreen
 import com.example.spotistats.presentation.screen.authorization.MainScreen
+import com.example.spotistats.presentation.screen.authorization.RecentlyScreen
 import com.example.spotistats.presentation.screen.authorization.SettingsScreen
 import com.example.spotistats.presentation.screen.authorization.SettingsViewModel
 import com.example.spotistats.presentation.screen.authorization.StatsScreen
@@ -83,7 +84,7 @@ class MainActivity : ComponentActivity() {
                     val startImageCrop: (Uri, (Uri?) -> Unit) -> Unit = { source, callback ->
                         startCropActivityForResult(source, callback)
                     }
-                    val screensWithBottomBar = listOf("main","stats","settings","language","account")
+                    val screensWithBottomBar = listOf("main","stats","settings","language","account","recently")
                     val shouldShowBottomBar = currentRoute in screensWithBottomBar
 
                     Scaffold(
@@ -95,7 +96,9 @@ class MainActivity : ComponentActivity() {
                             }
                     ) {
                         paddingValues ->
-                        NavHost(navController = navController, startDestination = "auth", modifier = Modifier.padding(paddingValues)) {
+                        NavHost(navController = navController,
+                            startDestination = "auth",
+                            modifier = Modifier.padding(paddingValues)) {
                             composable("auth") {
                                 AuthScreen(
                                     navController = navController,
@@ -125,6 +128,12 @@ class MainActivity : ComponentActivity() {
                             composable("stats"){
                                 StatsScreen(
                                     navController = navController,
+                                )
+                            }
+                            composable("recently"){
+                                RecentlyScreen(
+                                    navController = navController,
+                                    viewModel = authViewModel
                                 )
                             }
                         }

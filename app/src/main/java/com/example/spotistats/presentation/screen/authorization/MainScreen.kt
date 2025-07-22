@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -216,7 +218,7 @@ fun MainScreen(
             }
             item {
                 if (recentlyPlayedTracks != null) {
-                RecentlyPlayedBox(recentlyPlayedTracks = recentlyPlayedTracks)
+                RecentlyPlayedBox(recentlyPlayedTracks = recentlyPlayedTracks,navController)
             }
             }
             item{
@@ -310,17 +312,28 @@ fun LastPlayedBox(imageUrl:String,name:String,artist: String){
 }
 
 @Composable
-fun RecentlyPlayedBox(recentlyPlayedTracks:List<Track>){
+fun RecentlyPlayedBox(recentlyPlayedTracks:List<Track>,navController: NavController){
     Box(modifier = Modifier
         .padding(top = 30.dp)
         .clip(RoundedCornerShape(16.dp))
         .background(MaterialTheme.colorScheme.background)
         .height(250.dp)){
         Column(modifier = Modifier.padding(12.dp)) {
-            Text(text = stringResource(R.string.listened_recently) ,
-                modifier = Modifier.padding(bottom = 8.dp),
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,)
+            Row(modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween){
+                Text(text = stringResource(R.string.listened_recently) ,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,)
+                Text(text = stringResource(R.string.show_all),
+                    fontSize = 15.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier
+                        .padding(bottom = 8.dp)
+                        .clickable {
+                            navController.navigate("recently")
+                        })
+            }
             LazyRow() {
                 items(recentlyPlayedTracks.take(20).size){
                     val track = recentlyPlayedTracks[it]
