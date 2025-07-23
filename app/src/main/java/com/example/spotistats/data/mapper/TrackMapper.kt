@@ -7,7 +7,7 @@ fun TrackDto.toDomain() : Track{
     return Track(
         id = this.id,
         album = this.album.name,
-        artists = this.artists.firstOrNull()?.name ?: "Unknown",
+        artists = artists.joinToString(", ") { it.name },
         duration_ms = this.duration_ms,
         name = this.name,
         type = this.type,

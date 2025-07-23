@@ -6,7 +6,7 @@ import com.example.spotistats.domain.model.UserTopTracksItem
 fun UserTopTracksItemDto.toDomain():UserTopTracksItem{
     return UserTopTracksItem(
         album = this.album.toDomain(),
-        artists = this.artists.map { it.toDomain() },
+        artists = artists.map { it.toDomain() },
         name = this.name
     )
 }

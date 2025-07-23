@@ -349,7 +349,9 @@ fun RecentlyPlayedBox(recentlyPlayedTracks:List<Track>,navController: NavControl
                             modifier = Modifier
                                 .size(130.dp)
                                 .clip(RoundedCornerShape(10.dp)),
-                                placeholder = painterResource(R.drawable.place_holder_track))
+                                placeholder = painterResource(R.drawable.place_holder_track),
+                            error = painterResource(R.drawable.place_holder_track)
+                        )
                         Text(title, fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             maxLines = 1,
@@ -383,7 +385,7 @@ fun UserTopTracksBox(userTopTracks:UserTopTracks){
                     val track = userTopTracks.items[it]
                     val imageUrl = track.album.images.firstOrNull()?.url
                     val title = track.name
-                    val artist = track.artists.firstOrNull()?.name
+                    val artist = track.artists.joinToString(",") {it.name}
                     Column(modifier = Modifier
                         .width(150.dp)
                         .padding(7.dp)

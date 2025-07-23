@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -97,7 +98,9 @@ import java.util.Locale
                                 contentDescription = stringResource(R.string.listened_recently),
                                 modifier = Modifier
                                     .size(60.dp)
-                                    .clip(RoundedCornerShape(10.dp))
+                                    .clip(RoundedCornerShape(10.dp)),
+                                placeholder = painterResource(R.drawable.place_holder_track),
+                                error = painterResource(R.drawable.place_holder_track)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Column() {
