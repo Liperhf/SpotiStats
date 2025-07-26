@@ -7,6 +7,7 @@ fun UserTopTracksItemDto.toDomain():UserTopTracksItem{
     return UserTopTracksItem(
         album = this.album.toDomain(),
         artists = artists.map { it.toDomain() },
-        name = this.name
+        name = this.name,
+        externalUrls = this.external_urls.toDomain()
     )
 }
