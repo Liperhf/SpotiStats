@@ -34,6 +34,7 @@ import com.example.spotistats.presentation.screen.authorization.RecentlyScreen
 import com.example.spotistats.presentation.screen.authorization.SettingsScreen
 import com.example.spotistats.presentation.screen.authorization.SettingsViewModel
 import com.example.spotistats.presentation.screen.authorization.StatsScreen
+import com.example.spotistats.presentation.screen.authorization.StatsViewModel
 import com.example.spotistats.ui.theme.SpotiStatsTheme
 import com.yalantis.ucrop.UCrop
 import dagger.hilt.android.AndroidEntryPoint
@@ -78,6 +79,7 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     val authViewModel:AuthViewModel = hiltViewModel()
                     val settingsViewModel:SettingsViewModel = hiltViewModel()
+                    val statsViewModel:StatsViewModel = hiltViewModel()
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
                     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -128,6 +130,7 @@ class MainActivity : ComponentActivity() {
                             composable("stats"){
                                 StatsScreen(
                                     navController = navController,
+                                    viewModel = statsViewModel
                                 )
                             }
                             composable("recently"){

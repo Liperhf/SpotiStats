@@ -33,14 +33,14 @@ interface SpotifyUserApi {
         @Query("time_range") time_range:String = "short_term"
     ):UserTopArtistsDto
 
-    @GET("me/top/tracks")
+    @GET("me/top/artists")
     suspend fun getTopArtistsMedium(
         @Header("Authorization") authorization: String,
         @Query("limit") limit:Int = 50,
         @Query("time_range") time_range: String = "medium_term"
     ):UserTopArtistsDto
 
-    @GET("me/top/tracks")
+    @GET("me/top/artists")
     suspend fun getTopArtistsLong(
         @Header("Authorization") authorization: String,
         @Query("limit") limit:Int = 50,

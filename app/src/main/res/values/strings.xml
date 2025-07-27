@@ -28,5 +28,12 @@
     <string name="top_artists_month">Your top artists this month</string>
     <string name="top_albums_month">Your top albums this month</string>
     <string name="show_all">Show all</string>
+    <string name="top">Top</string>
+    <string name="last_months">Month</string>
+    <string name="last_six_months">6 Months</string>
+    <string name="last_year">Last year</string>
+    <string name="artists">Artists</string>
+    <string name="tracks">Tracks</string>
+    <string name="albums">Albums</string>
 
 </resources>
