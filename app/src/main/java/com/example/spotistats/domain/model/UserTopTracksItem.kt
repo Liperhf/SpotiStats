@@ -8,5 +8,4 @@ data class UserTopTracksItem (
     val album: Album,
     val artists: List<ArtistX>,
     val name: String,
-    val externalUrls: ExternalUrls,
 )

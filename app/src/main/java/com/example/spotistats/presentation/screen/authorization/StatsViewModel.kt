@@ -45,8 +45,7 @@ class StatsViewModel @Inject constructor(
 
     fun loadStats() {
         viewModelScope.launch {
-
-            _isLoading.value = false
+            _isLoading.value = true
             try {
                 val currentType = _selectedContentType.value
                 val currentRange = _selectedTimeRange.value
@@ -74,25 +73,21 @@ class StatsViewModel @Inject constructor(
                     }
 
                     ContentType.ALBUMS -> {
-                        viewModelScope.launch {
-                            val tracks = when (currentRange) {
-                                TimeRange.SHORT -> spotifyAuthUseCase.getUserTopTracksShort()
-                                TimeRange.MEDIUM -> spotifyAuthUseCase.getUserTopTracksMedium()
-                                TimeRange.LONG -> spotifyAuthUseCase.getUserTopTracksLong()
-                            }
-                            calculatedUserTopAlbums(tracks)
+                        val tracks = when (currentRange) {
+                            TimeRange.SHORT -> spotifyAuthUseCase.getUserTopTracksShort()
+                            TimeRange.MEDIUM -> spotifyAuthUseCase.getUserTopTracksMedium()
+                            TimeRange.LONG -> spotifyAuthUseCase.getUserTopTracksLong()
                         }
+                        calculatedUserTopAlbums(tracks)
                     }
                 }
             }catch (e:Exception){
                 e.printStackTrace()
             }finally {
-                _isLoading.value = true
+                _isLoading.value = false
             }
-            }
-
-
         }
+    }
 
 
     private fun calculatedUserTopAlbums(userTopTracks:UserTopTracks){

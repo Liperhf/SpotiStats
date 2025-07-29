@@ -142,7 +142,7 @@ fun StatsScreen(navController: NavController,
         Column(modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)) {
-            if(isLoading.value == false) {
+            if(isLoading.value == true) {
                 CircularProgressIndicator(modifier = Modifier
                     .align(Alignment.CenterHorizontally),
                     color = MaterialTheme.colorScheme.onBackground)

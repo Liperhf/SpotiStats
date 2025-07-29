@@ -1,6 +1,5 @@
-package com.example.spotistats.data.mapper
+package com.example.spotistats.data.mapper.DtoMappers
 
-import androidx.compose.ui.Modifier
 import com.example.spotistats.data.dto.common.ImageDto
 import com.example.spotistats.domain.model.Image
 

@@ -2,6 +2,7 @@ package com.example.spotistats.presentation.screen.authorization
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -105,7 +106,7 @@ fun MainScreen(
     val systemUiController = rememberSystemUiController()
     val navBarColor = MaterialTheme.colorScheme.background
 
-    val isRefreshing = remember{ mutableStateOf(false) }
+    val isRefreshing = remember { mutableStateOf(false) }
 
     val refreshRecentlyPlayed = {
         scope.launch {
@@ -129,383 +130,334 @@ fun MainScreen(
 
     LaunchedEffect(Unit) {
         if (isAuthenticated.value) {
-            authViewModel.getRecentlyPlayed()
-            authViewModel.getUserProfile()
-            authViewModel.getCurrentlyPlaying()
-            authViewModel.getUserTopArtists()
-            authViewModel.getUserTopTracks()
-            authViewModel.calculatedUserTopAlbums()
+            try {
+                authViewModel.getRecentlyPlayed()
+            } catch (e: Exception) {
+                Log.e("MainScreen", "Failed to get recently played: ${e.message}")
+            }
+
+            try {
+                authViewModel.getUserProfile()
+            } catch (e: Exception) {
+                Log.e("MainScreen", "Failed to get profile: ${e.message}")
+            }
+
+            try {
+                authViewModel.getCurrentlyPlaying()
+            } catch (e: Exception) {
+                Log.e("MainScreen", "Failed to get currently playing: ${e.message}")
+            }
+
+            try {
+                authViewModel.getUserTopArtists()
+            } catch (e: Exception) {
+                Log.e("MainScreen", "Failed to get top artists: ${e.message}")
+            }
+
+            try {
+                authViewModel.getUserTopTracks()
+            } catch (e: Exception) {
+                Log.e("MainScreen", "Failed to get top tracks: ${e.message}")
+            }
+
         }
     }
 
+
     LaunchedEffect(isAuthenticated.value) {
-        if (isAuthenticated.value == false) {
+        if (!isAuthenticated.value) {
             navController.navigate("auth") {
                 popUpTo("main") { inclusive = true }
             }
-        }else{
-            while(true){
-                authViewModel.getCurrentlyPlaying()
+        } else {
+            while (true) {
+                try {
+                    authViewModel.getCurrentlyPlaying()
+                } catch (e: Exception) {
+                    Log.e("MainScreen", "Ошибка при обновлении now playing: ${e.message}")
+                }
                 delay(1000)
             }
         }
     }
 
 
-    ModalNavigationDrawer(
-        drawerContent = {
-            ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.background) {
-                Row(modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically){
-                    AsyncImage(model = currentlyUserAvatar.value,
-                        contentDescription = stringResource(R.string.avatar),
-                        modifier = Modifier
-                        .padding(start = 8.dp)
-                        .size(45.dp)
-                        .clip(CircleShape))
-                    currentlyUserName.value.let {
-                        if (it != null) {
-                            Text(it, modifier = Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                        }
-                    }
-                }
-            HorizontalDivider(color = MaterialTheme.colorScheme.primary)
-            DrawerItem(text = stringResource(R.string.settings), onClick = {
-                navController.navigate("settings")
-            },icon = Icons.Default.Settings)
-            DrawerItem(text = stringResource(R.string.logout), onClick = { authViewModel.logout() },icon = Icons.Default.Delete)
-        }
-        },
-        drawerState = drawerState,
-    ){
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {Text(greeting)},
-                navigationIcon = {IconButton(
-                    onClick = { scope.launch { drawerState.open() } },
-                    content = { AsyncImage(model = currentlyUserAvatar.value,
-                        contentDescription = stringResource(R.string.avatar),
-                        modifier = Modifier.size(40.dp)) }
-                )},
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor =
-                        MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground
-                )
-            )
-        },
-    ){paddingValues ->
-        SwipeRefresh(
-            state = rememberSwipeRefreshState(isRefreshing = isRefreshing.value),
-            onRefresh = {refreshRecentlyPlayed()},
-        ) {
-        LazyColumn(modifier = Modifier.padding(paddingValues)) {
-
-            item {
-                when{
-                    currentlyPlaying.value?.is_playing == true -> {
-                        if(currentlyImageUrl != null && currentlyTrackName != null && currentlyArtistName != null){
-                            NowPlayingBox(currentlyImageUrl,currentlyTrackName,currentlyArtistName,currentlyDurationMs,progressMs.value)
-                        }
-                    }
-                    lastPlayedTrack != null -> {
-                        if (lastPlayedImageUrl != null && lastPlayedName != null && lastPlayedArtist != null) {
-                            LastPlayedBox(lastPlayedImageUrl,lastPlayedName,lastPlayedArtist)
-                        }
-                    }
-                }
-            }
-            item {
-                if (recentlyPlayedTracks != null) {
-                RecentlyPlayedBox(recentlyPlayedTracks = recentlyPlayedTracks,navController)
-            }
-            }
-            item{
-                userTopArtists.value?.let { UserTopArtistsBox(it) }
-            }
-            item {
-                userTopTracks.value?.let { UserTopTracksBox(it) }
-            }
-            item{
-                UserTopAlbumsBox(userTopAlbums.value)
-            }
-        }
-
-        }
-    }
-        }
-    }
-
-
-
-@Composable
-fun NowPlayingBox(imageUrl:String,name:String,artist:String,durationMs: Int,progressMs: Int){
-    Box(modifier = Modifier
-        .padding(horizontal = 10.dp)
-        .clip(RoundedCornerShape(16.dp))
-        .background(MaterialTheme.colorScheme.primary)
-        .height(160.dp)){
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(text = stringResource(R.string.now_playing) ,
-                modifier = Modifier.padding(bottom = 8.dp),
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,)
-            Row {
-                AsyncImage(model = imageUrl, contentDescription = stringResource(R.string.track_image), modifier = Modifier
-                    .size(105.dp, 105.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    )
-                Column(modifier = Modifier.padding(horizontal = 6.dp)) {
-                    Text(name,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis)
-                    Text(artist,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis)
-                    TrackProgressBar(progressMs,durationMs)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun LastPlayedBox(imageUrl:String,name:String,artist: String){
-    Box(modifier = Modifier
-        .padding(horizontal = 10.dp)
-        .clip(RoundedCornerShape(16.dp))
-        .background(MaterialTheme.colorScheme.primary)
-        .height(160.dp)
-        .fillMaxWidth()){
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(text = stringResource(R.string.last_played),
-                modifier = Modifier.padding(bottom = 8.dp),
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,)
-            Row {
-                AsyncImage(model = imageUrl, contentDescription = stringResource(R.string.track_image), modifier = Modifier
-                    .size(105.dp, 105.dp)
-                    .clip(RoundedCornerShape(10.dp),),
-                    placeholder = painterResource(R.drawable.place_holder_track),
-                    error = painterResource(R.drawable.place_holder_track)
-                )
-                Column(modifier = Modifier.padding(horizontal = 6.dp)) {
-                    Text(name,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis)
-                    Text(artist,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun RecentlyPlayedBox(recentlyPlayedTracks:List<Track>,navController: NavController){
-    Box(modifier = Modifier
-        .padding(top = 30.dp)
-        .clip(RoundedCornerShape(16.dp))
-        .background(MaterialTheme.colorScheme.background)
-        .height(250.dp)){
-        Column(modifier = Modifier.padding(12.dp)) {
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween){
-                Text(text = stringResource(R.string.listened_recently) ,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,)
-                Text(text = stringResource(R.string.show_all),
-                    fontSize = 15.sp,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .padding(bottom = 8.dp)
-                        .clickable {
-                            navController.navigate("recently")
-                        })
-            }
-            LazyRow() {
-                items(recentlyPlayedTracks.take(20).size){
-                    val track = recentlyPlayedTracks[it]
-                    val imageUrl = track.imageUrl
-                    val title = track.name
-                    val artist = track.artists
-                    Column(modifier = Modifier
-                        .width(150.dp)
-                        .padding(7.dp)
-                    ) {
-                        AsyncImage(model = imageUrl,
-                            contentDescription = stringResource(R.string.track_image),
-                            modifier = Modifier
-                                .size(130.dp)
-                                .clip(RoundedCornerShape(10.dp)),
-                                placeholder = painterResource(R.drawable.place_holder_track),
-                            error = painterResource(R.drawable.place_holder_track)
-                        )
-                        Text(title, fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis)
-                        Text(text = artist,
-                            fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis)
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun UserTopTracksBox(userTopTracks:UserTopTracks){
-    Box(modifier = Modifier
-        .padding(top = 30.dp)
-        .clip(RoundedCornerShape(16.dp))
-        .background(MaterialTheme.colorScheme.background)
-        .height(250.dp)){
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(text = stringResource(R.string.top_tracks_month) ,
-                modifier = Modifier.padding(bottom = 8.dp),
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,)
-            LazyRow() {
-                items(userTopTracks.items.take(10).size){
-                    val track = userTopTracks.items[it]
-                    val imageUrl = track.album.images.firstOrNull()?.url
-                    val title = track.name
-                    val artist = track.artists.joinToString(",") {it.name}
-                    Column(modifier = Modifier
-                        .width(150.dp)
-                        .padding(7.dp)
-                    ) {
-                        AsyncImage(model = imageUrl,
-                            contentDescription = stringResource(R.string.track_image),
-                            modifier = Modifier
-                                .size(130.dp)
-                                .clip(RoundedCornerShape(10.dp)),
-                            contentScale = ContentScale.Crop,
-                            placeholder = painterResource(R.drawable.place_holder_track))
-                        Text(title, fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis)
-                        if (artist != null) {
-                            Text(text = artist,
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis)
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-
-
-
-
-@Composable
-fun UserTopArtistsBox(userTopArtists:UserTopArtists){
-    Box(modifier = Modifier
-        .padding(top = 30.dp)
-        .clip(RoundedCornerShape(16.dp))
-        .background(MaterialTheme.colorScheme.background)
-        .height(250.dp)){
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(text = stringResource(R.string.top_artists_month) ,
-                modifier = Modifier.padding(bottom = 8.dp),
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,)
-            LazyRow() {
-                items(userTopArtists.items.take(10).size){
-                    val artist = userTopArtists.items[it]
-                    val imageUrl = artist.images.firstOrNull()?.url
-                    val title = artist.name
-                    Column(modifier = Modifier
-                        .width(150.dp)
-                        .padding(7.dp)
-                    ) {
-                        AsyncImage(model = imageUrl,
-                            contentDescription = stringResource(R.string.track_image),
-                            modifier = Modifier
-                                .size(130.dp)
-                                .clip(RoundedCornerShape(10.dp)),
-                            contentScale = ContentScale.Crop,
-                            placeholder = painterResource(R.drawable.place_holder_artist))
-                        Text(title, fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis)
-                    }
-                }
-            }
-        }
-    }
-}
-
-
-
-
-@Composable
-fun UserTopAlbumsBox(userTopAlbums: List<TopAlbum?>) {
-    Box(
-        modifier = Modifier
-            .padding(top = 30.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.background)
-            .height(250.dp)
-    ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(
-                text = stringResource(R.string.top_albums_month),
-                modifier = Modifier.padding(bottom = 8.dp),
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-            )
-            LazyRow() {
-                items(userTopAlbums.size) {
-                    val album = userTopAlbums[it]?.album
-                    val artist = album?.artists?.firstOrNull()?.name
-                    val imageUrl = album?.images?.firstOrNull()?.url
-                    val title = album?.name
-                    Column(
-                        modifier = Modifier
-                            .width(150.dp)
-                            .padding(7.dp)
+        ModalNavigationDrawer(
+            drawerContent = {
+                ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.background) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         AsyncImage(
-                            model = imageUrl,
-                            contentDescription = stringResource(R.string.track_image),
+                            model = currentlyUserAvatar.value,
+                            contentDescription = stringResource(R.string.avatar),
                             modifier = Modifier
-                                .size(130.dp)
-                                .clip(RoundedCornerShape(10.dp)),
-                            contentScale = ContentScale.Crop,
-                            placeholder = painterResource(R.drawable.place_holder_track)
+                                .padding(start = 8.dp)
+                                .size(45.dp)
+                                .clip(CircleShape)
                         )
-                        if (title != null) {
+                        currentlyUserName.value.let {
+                            if (it != null) {
+                                Text(
+                                    it,
+                                    modifier = Modifier.padding(16.dp),
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 20.sp
+                                )
+                            }
+                        }
+                    }
+                    HorizontalDivider(color = MaterialTheme.colorScheme.primary)
+                    DrawerItem(text = stringResource(R.string.settings), onClick = {
+                        navController.navigate("settings")
+                    }, icon = Icons.Default.Settings)
+                    DrawerItem(
+                        text = stringResource(R.string.logout),
+                        onClick = { authViewModel.logout() },
+                        icon = Icons.Default.Delete
+                    )
+                }
+            },
+            drawerState = drawerState,
+        ) {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = { Text(greeting) },
+                        navigationIcon = {
+                            IconButton(
+                                onClick = { scope.launch { drawerState.open() } },
+                                content = {
+                                    AsyncImage(
+                                        model = currentlyUserAvatar.value,
+                                        contentDescription = stringResource(R.string.avatar),
+                                        modifier = Modifier.size(40.dp)
+                                    )
+                                }
+                            )
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor =
+                            MaterialTheme.colorScheme.background,
+                            titleContentColor = MaterialTheme.colorScheme.onBackground
+                        )
+                    )
+                },
+            ) { paddingValues ->
+                SwipeRefresh(
+                    state = rememberSwipeRefreshState(isRefreshing = isRefreshing.value),
+                    onRefresh = { refreshRecentlyPlayed() },
+                ) {
+                    LazyColumn(modifier = Modifier.padding(paddingValues)) {
+
+                        item {
+                            when {
+                                currentlyPlaying.value?.is_playing == true -> {
+                                    if (currentlyImageUrl != null && currentlyTrackName != null && currentlyArtistName != null) {
+                                        NowPlayingBox(
+                                            currentlyImageUrl,
+                                            currentlyTrackName,
+                                            currentlyArtistName,
+                                            currentlyDurationMs,
+                                            progressMs.value
+                                        )
+                                    }
+                                }
+
+                                lastPlayedTrack != null -> {
+                                    if (lastPlayedImageUrl != null && lastPlayedName != null && lastPlayedArtist != null) {
+                                        LastPlayedBox(
+                                            lastPlayedImageUrl,
+                                            lastPlayedName,
+                                            lastPlayedArtist
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        item {
+                            if (recentlyPlayedTracks != null) {
+                                RecentlyPlayedBox(
+                                    recentlyPlayedTracks = recentlyPlayedTracks,
+                                    navController
+                                )
+                            }
+                        }
+                        item {
+                            userTopArtists.value?.let { UserTopArtistsBox(it) }
+                        }
+                        item {
+                            userTopTracks.value?.let { UserTopTracksBox(it) }
+                        }
+                        item {
+                            UserTopAlbumsBox(userTopAlbums.value)
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+
+
+    @Composable
+    fun NowPlayingBox(
+        imageUrl: String,
+        name: String,
+        artist: String,
+        durationMs: Int,
+        progressMs: Int
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.primary)
+                .height(160.dp)
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(
+                    text = stringResource(R.string.now_playing),
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                )
+                Row {
+                    AsyncImage(
+                        model = imageUrl,
+                        contentDescription = stringResource(R.string.track_image),
+                        modifier = Modifier
+                            .size(105.dp, 105.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                    )
+                    Column(modifier = Modifier.padding(horizontal = 6.dp)) {
+                        Text(
+                            name,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            artist,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        TrackProgressBar(progressMs, durationMs)
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun LastPlayedBox(imageUrl: String, name: String, artist: String) {
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.primary)
+                .height(160.dp)
+                .fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(
+                    text = stringResource(R.string.last_played),
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                )
+                Row {
+                    AsyncImage(
+                        model = imageUrl,
+                        contentDescription = stringResource(R.string.track_image),
+                        modifier = Modifier
+                            .size(105.dp, 105.dp)
+                            .clip(RoundedCornerShape(10.dp),),
+                        placeholder = painterResource(R.drawable.place_holder_track),
+                        error = painterResource(R.drawable.place_holder_track)
+                    )
+                    Column(modifier = Modifier.padding(horizontal = 6.dp)) {
+                        Text(
+                            name,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            artist,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun RecentlyPlayedBox(recentlyPlayedTracks: List<Track>, navController: NavController) {
+        Box(
+            modifier = Modifier
+                .padding(top = 30.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.background)
+                .height(250.dp)
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(R.string.listened_recently),
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                    )
+                    Text(text = stringResource(R.string.show_all),
+                        fontSize = 15.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier
+                            .padding(bottom = 8.dp)
+                            .clickable {
+                                navController.navigate("recently")
+                            })
+                }
+                LazyRow() {
+                    items(recentlyPlayedTracks.take(20).size) {
+                        val track = recentlyPlayedTracks[it]
+                        val imageUrl = track.imageUrl
+                        val title = track.name
+                        val artist = track.artists
+                        Column(
+                            modifier = Modifier
+                                .width(150.dp)
+                                .padding(7.dp)
+                        ) {
+                            AsyncImage(
+                                model = imageUrl,
+                                contentDescription = stringResource(R.string.track_image),
+                                modifier = Modifier
+                                    .size(130.dp)
+                                    .clip(RoundedCornerShape(10.dp)),
+                                placeholder = painterResource(R.drawable.place_holder_track),
+                                error = painterResource(R.drawable.place_holder_track)
+                            )
                             Text(
                                 title, fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
-                        }
-                        if (artist != null) {
                             Text(
                                 text = artist,
                                 fontSize = 14.sp,
@@ -519,10 +471,174 @@ fun UserTopAlbumsBox(userTopAlbums: List<TopAlbum?>) {
             }
         }
     }
-}
+
+    @Composable
+    fun UserTopTracksBox(userTopTracks: UserTopTracks) {
+        Box(
+            modifier = Modifier
+                .padding(top = 30.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.background)
+                .height(250.dp)
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(
+                    text = stringResource(R.string.top_tracks_month),
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                )
+                LazyRow() {
+                    items(userTopTracks.items.take(10).size) {
+                        val track = userTopTracks.items[it]
+                        val imageUrl = track.album.images.firstOrNull()?.url
+                        val title = track.name
+                        val artist = track.artists.joinToString(",") { it.name }
+                        Column(
+                            modifier = Modifier
+                                .width(150.dp)
+                                .padding(7.dp)
+                        ) {
+                            AsyncImage(
+                                model = imageUrl,
+                                contentDescription = stringResource(R.string.track_image),
+                                modifier = Modifier
+                                    .size(130.dp)
+                                    .clip(RoundedCornerShape(10.dp)),
+                                contentScale = ContentScale.Crop,
+                                placeholder = painterResource(R.drawable.place_holder_track)
+                            )
+                            Text(
+                                title, fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            if (artist != null) {
+                                Text(
+                                    text = artist,
+                                    fontSize = 14.sp,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 
+    @Composable
+    fun UserTopArtistsBox(userTopArtists: UserTopArtists) {
+        Box(
+            modifier = Modifier
+                .padding(top = 30.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.background)
+                .height(250.dp)
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(
+                    text = stringResource(R.string.top_artists_month),
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                )
+                LazyRow() {
+                    items(userTopArtists.items.take(10).size) {
+                        val artist = userTopArtists.items[it]
+                        val imageUrl = artist.images.firstOrNull()?.url
+                        val title = artist.name
+                        Column(
+                            modifier = Modifier
+                                .width(150.dp)
+                                .padding(7.dp)
+                        ) {
+                            AsyncImage(
+                                model = imageUrl,
+                                contentDescription = stringResource(R.string.track_image),
+                                modifier = Modifier
+                                    .size(130.dp)
+                                    .clip(RoundedCornerShape(10.dp)),
+                                contentScale = ContentScale.Crop,
+                                placeholder = painterResource(R.drawable.place_holder_artist)
+                            )
+                            Text(
+                                title, fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 
+
+    @Composable
+    fun UserTopAlbumsBox(userTopAlbums: List<TopAlbum?>) {
+        Box(
+            modifier = Modifier
+                .padding(top = 30.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.background)
+                .height(250.dp)
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(
+                    text = stringResource(R.string.top_albums_month),
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                )
+                LazyRow() {
+                    items(userTopAlbums.size) {
+                        val album = userTopAlbums[it]?.album
+                        val artist = album?.artists?.firstOrNull()?.name
+                        val imageUrl = album?.images?.firstOrNull()?.url
+                        val title = album?.name
+                        Column(
+                            modifier = Modifier
+                                .width(150.dp)
+                                .padding(7.dp)
+                        ) {
+                            AsyncImage(
+                                model = imageUrl,
+                                contentDescription = stringResource(R.string.track_image),
+                                modifier = Modifier
+                                    .size(130.dp)
+                                    .clip(RoundedCornerShape(10.dp)),
+                                contentScale = ContentScale.Crop,
+                                placeholder = painterResource(R.drawable.place_holder_track)
+                            )
+                            if (title != null) {
+                                Text(
+                                    title, fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                            if (artist != null) {
+                                Text(
+                                    text = artist,
+                                    fontSize = 14.sp,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 
     @Composable
@@ -588,4 +704,3 @@ fun UserTopAlbumsBox(userTopAlbums: List<TopAlbum?>) {
         val seconds = totalSeconds % 60
         return String.format("%d:%02d", minutes, seconds)
     }
-

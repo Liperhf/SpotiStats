@@ -1,8 +1,13 @@
 package com.example.spotistats.di
 
+import android.content.Context
+import androidx.room.Room
 import com.example.spotistats.data.api.SpotifyAuthApi
 import com.example.spotistats.data.api.SpotifyConfig
 import com.example.spotistats.data.api.SpotifyUserApi
+import com.example.spotistats.data.local.AppDataBase
+import com.example.spotistats.data.local.dao.TopArtistsDao
+import com.example.spotistats.data.local.dao.TopTracksDao
 import com.example.spotistats.data.repository.RepositoryImpl
 import com.example.spotistats.domain.Repository
 import dagger.Module
@@ -11,8 +16,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Singleton
 import javax.inject.Named
+import javax.inject.Singleton
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -58,5 +64,29 @@ object Module{
     @Singleton
     fun provideSpotifyConfig(): SpotifyConfig {
         return SpotifyConfig
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppDataBase(@ApplicationContext context: Context):AppDataBase{
+        return Room.databaseBuilder(
+            context,
+            AppDataBase::class.java,
+            "spotistats.db"
+        )
+            .fallbackToDestructiveMigration()
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTopArtistsDao(appDataBase:AppDataBase):TopArtistsDao{
+        return appDataBase.topArtistsDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTopTracksDao(appDataBase: AppDataBase):TopTracksDao{
+        return appDataBase.topTracksDao()
     }
 }   

@@ -65,8 +65,12 @@ class AuthViewModel @Inject constructor(
         _authIntent.value = spotifyAuthUseCase.createAuthIntent()
     }
 
-    suspend fun getRecentlyPlayed(){
-        _recentlyPlayed.value = spotifyAuthUseCase.getRecentlyPlayed()
+    suspend fun getRecentlyPlayed() {
+        try {
+            _recentlyPlayed.value = spotifyAuthUseCase.getRecentlyPlayed()
+        } catch (e: Exception) {
+            Log.e("getRecentlyPlayed", "No network: ${e.message}")
+        }
     }
 
     fun checkAuthStatus(){
@@ -190,6 +194,7 @@ class AuthViewModel @Inject constructor(
         try {
             val result = spotifyAuthUseCase.getUserTopTracksShort()
             _userTopTracks.value = result
+            calculatedUserTopAlbums()
         }catch (e:Exception){
             println("Failed to load top artists: ${e.message}")
         }
