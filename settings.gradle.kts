@@ -23,4 +23,6 @@ dependencyResolutionManagement {
 rootProject.name = "SpotiStats"
 include(":app")
 }
- 
+
+include(":data")
+include(":domain")

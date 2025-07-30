@@ -1,0 +1,101 @@
+package com.example.spotistats.domain.useCases
+
+import android.content.Intent
+import com.example.spotistats.domain.Repository
+import com.example.spotistats.domain.model.AuthToken
+import com.example.spotistats.domain.model.CurrentlyPlaying
+import com.example.spotistats.domain.model.RecentlyPlayed
+import com.example.spotistats.domain.model.UserProfile
+import com.example.spotistats.domain.model.UserTopArtists
+import com.example.spotistats.domain.model.UserTopTracks
+import javax.inject.Inject
+
+class SpotifyAuthUseCase @Inject constructor(
+    private val repository:Repository
+) {
+    fun createAuthIntent():Intent{
+        return repository.buildAuthIntent()
+    }
+
+    suspend fun exchangeCodeForToken(code:String): AuthToken {
+        return repository.exchangeCodeForToken(code)
+    }
+
+    suspend fun saveTokens(authTokenDto: AuthToken){
+        return repository.saveTokens(authTokenDto)
+    }
+
+    suspend fun getAccessToken():String?{
+        return repository.getAccessToken()
+    }
+
+    suspend fun getRefreshToken():String?{
+        return repository.getRefreshToken()
+    }
+
+    suspend fun refreshTokenIfNeeded():Boolean{
+        return try {
+            if(isTokenExpired()){
+                val refreshToken = getRefreshToken()
+                if(refreshToken != null){
+                    val newAuthDto = repository.refreshToken(refreshToken)
+                    saveTokens(newAuthDto)
+                    true
+                }else false
+            }else true
+        }catch (e:Exception){
+            false
+        }
+    }
+
+    suspend fun getExpiresAt():Long{
+        return repository.getExpiresAt()
+    }
+
+
+    suspend fun isUserAuthorized():Boolean{
+        val token = getAccessToken()
+        if(token == null) return false
+        if(isTokenExpired()){
+            return refreshTokenIfNeeded()
+        }
+        return true
+    }
+
+    suspend fun getRecentlyPlayed():RecentlyPlayed{
+        return repository.getRecentlyPlayed()
+    }
+
+    suspend fun clearTokens(){
+        return repository.clearTokens()
+    }
+
+    suspend fun isTokenExpired():Boolean{
+        return repository.isTokenExpired()
+    }
+    suspend fun getUserProfile():UserProfile{
+        return repository.getUserProfile()
+    }
+    suspend fun getCurrentlyPlaying():CurrentlyPlaying{
+        return repository.getCurrentlyPlaying()
+    }
+    suspend fun getUserTopArtistsShort():UserTopArtists{
+        return repository.getUserTopArtistsShort()
+    }
+    suspend fun getUserTopTracksShort():UserTopTracks{
+        return repository.getUserTopTracksShort()
+    }
+    suspend fun getUserTopArtistsMedium():UserTopArtists{
+        return repository.getUserTopArtistsMedium()
+    }
+    suspend fun getUserTopArtistsLong():UserTopArtists{
+        return repository.getUserTopArtistsLong()
+    }
+    suspend fun getUserTopTracksMedium():UserTopTracks{
+        return repository.getUserTopTracksMedium()
+    }
+    suspend fun getUserTopTracksLong():UserTopTracks{
+        return repository.getUserTopTracksLong()
+    }
+
+}
