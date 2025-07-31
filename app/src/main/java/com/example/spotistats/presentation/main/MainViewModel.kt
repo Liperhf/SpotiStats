@@ -30,7 +30,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val authUseCase: AuthUseCase,
     private val playbackUseCase: PlaybackUseCase,
     private val userUseCase: UserUseCase,
     private val topContentUseCase: TopContentUseCase,
@@ -51,8 +50,7 @@ class MainViewModel @Inject constructor(
     val userTopTracks: StateFlow<UserTopTracks?> = _userTopTracks
     private val _userTopAlbums = MutableStateFlow<List<TopAlbum?>>(emptyList())
     val userTopAlbums: StateFlow<List<TopAlbum?>> = _userTopAlbums
-    private val _isAuthenticated = MutableStateFlow(false)
-    val isAuthenticated: StateFlow<Boolean> = _isAuthenticated
+
 
 
     suspend fun getRecentlyPlayed() {
@@ -122,31 +120,9 @@ class MainViewModel @Inject constructor(
         _userTopAlbums.value = topAlbums
     }
 
-    fun logout(){
-        viewModelScope.launch {
-            try{
-                authUseCase.clearTokens()
-                _isAuthenticated.value = false
-            }
-            catch (e:Exception){
-                e.printStackTrace()
-            }
-        }
-    }
 
-    fun refreshToken(){
-        viewModelScope.launch {
-            try {
-                val success = authUseCase.refreshTokenIfNeeded()
-                if (!success) {
-                    _isAuthenticated.value = false
-                }
-            }catch (e:Exception){
-                e.printStackTrace()
-                _isAuthenticated.value = false
-            }
-        }
-    }
+
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun getGreeting():Int{
@@ -159,5 +135,7 @@ class MainViewModel @Inject constructor(
         }
         return resId
     }
+
+
 
 }

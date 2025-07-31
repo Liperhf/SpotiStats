@@ -112,6 +112,7 @@ class MainActivity : ComponentActivity() {
                             composable("main") { MainScreen(
                                 navController = navController,
                                 mainViewModel = mainViewModel,
+                                authViewModel = authViewModel,
                                 settingsViewModel = settingsViewModel) }
 
                             composable("settings"){ SettingsScreen(

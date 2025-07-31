@@ -42,6 +42,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -63,6 +64,7 @@ import com.example.spotistats.domain.model.TopAlbum
 import com.example.spotistats.domain.model.Track
 import com.example.spotistats.domain.model.UserTopArtists
 import com.example.spotistats.domain.model.UserTopTracks
+import com.example.spotistats.presentation.auth.AuthViewModel
 import com.example.spotistats.presentation.settings.SettingsViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -77,13 +79,14 @@ import kotlinx.coroutines.launch
 fun MainScreen(
     navController: NavController,
     mainViewModel: MainViewModel,
+    authViewModel: AuthViewModel,
     settingsViewModel: SettingsViewModel
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val recentlyPlayed = mainViewModel.recentlyPlayed.collectAsState()
     val recentlyPlayedTracks = recentlyPlayed.value?.tracks
-    val isAuthenticated = mainViewModel.isAuthenticated.collectAsState()
+    val isAuthenticated = authViewModel.isAuthenticated.collectAsState()
     val greeting = stringResource(id = mainViewModel.getGreeting())
     val userProfile = mainViewModel.userProfile.collectAsState()
     val currentlyPlaying = mainViewModel.currentlyPlaying.collectAsState()
@@ -215,7 +218,7 @@ fun MainScreen(
                     }, icon = Icons.Default.Settings)
                     DrawerItem(
                         text = stringResource(R.string.logout),
-                        onClick = { mainViewModel.logout() },
+                        onClick = { authViewModel.logout() },
                         icon = Icons.Default.Delete
                     )
                 }

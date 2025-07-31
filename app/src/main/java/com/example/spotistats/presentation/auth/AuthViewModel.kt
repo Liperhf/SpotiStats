@@ -89,6 +89,39 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
+
+    fun logout(){
+
+
+
+        viewModelScope.launch {
+
+
+            try{
+
+
+                authUseCase.clearTokens()
+
+
+                _isAuthenticated.value = false
+
+
+            }
+
+
+            catch (e:Exception){
+
+
+                e.printStackTrace()
+
+
+            }
+
+
+        }
+
+
+    }
 }
 
 
