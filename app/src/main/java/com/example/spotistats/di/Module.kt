@@ -8,8 +8,14 @@ import com.example.spotistats.data.api.SpotifyUserApi
 import com.example.spotistats.data.local.AppDataBase
 import com.example.spotistats.data.local.dao.TopArtistsDao
 import com.example.spotistats.data.local.dao.TopTracksDao
-import com.example.spotistats.data.repository.RepositoryImpl
-import com.example.spotistats.domain.Repository
+import com.example.spotistats.data.repository.AuthRepositoryImpl
+import com.example.spotistats.data.repository.PlaybackRepositoryImpl
+import com.example.spotistats.data.repository.TopContentRepositoryImpl
+import com.example.spotistats.data.repository.UserRepositoryImpl
+import com.example.spotistats.domain.repository.AuthRepository
+import com.example.spotistats.domain.repository.PlaybackRepository
+import com.example.spotistats.domain.repository.TopContentRepository
+import com.example.spotistats.domain.repository.UserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -58,7 +64,19 @@ object Module{
 
     @Provides
     @Singleton
-    fun provideRepository(repositoryImpl: RepositoryImpl): Repository = repositoryImpl
+    fun provideAuthRepository(authRepositoryImpl: AuthRepositoryImpl): AuthRepository = authRepositoryImpl
+
+    @Provides
+    @Singleton
+    fun provideTopContentRepository(topContentRepositoryImpl: TopContentRepositoryImpl): TopContentRepository = topContentRepositoryImpl
+
+    @Provides
+    @Singleton
+    fun providePlaybackRepository(playbackRepositoryImpl: PlaybackRepositoryImpl): PlaybackRepository = playbackRepositoryImpl
+
+    @Provides
+    @Singleton
+    fun provideUserRepository(userRepositoryImpl: UserRepositoryImpl): UserRepository = userRepositoryImpl
 
     @Provides
     @Singleton

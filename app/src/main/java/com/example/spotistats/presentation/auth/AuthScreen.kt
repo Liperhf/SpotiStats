@@ -1,7 +1,6 @@
-package com.example.spotistats.presentation.screen.authorization
+package com.example.spotistats.presentation.auth
 
 import android.app.Activity
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
@@ -13,14 +12,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.spotistats.R
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 
 @Composable
 fun AuthScreen(

@@ -1,4 +1,4 @@
-package com.example.spotistats.presentation.screen.authorization
+package com.example.spotistats.presentation.settings
 
 import android.app.Activity
 import androidx.compose.foundation.clickable
@@ -24,7 +24,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import java.util.Locale
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.spotistats.R
 import com.example.spotistats.domain.model.AppLanguage
@@ -85,7 +84,8 @@ fun LanguageScreen(
                 viewModel.setLanguage(AppLanguage.RUSSIAN)
                 UpdateLocale(context,Locale("ru"))
                 (context as? Activity)?.recreate()
-            })}
+            })
+            }
         }
     }
 }

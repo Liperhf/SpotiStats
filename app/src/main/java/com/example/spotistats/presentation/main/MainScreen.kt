@@ -1,4 +1,4 @@
-package com.example.spotistats.presentation.screen.authorization
+package com.example.spotistats.presentation.main
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -59,11 +59,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.spotistats.R
-import com.example.spotistats.domain.model.Album
 import com.example.spotistats.domain.model.TopAlbum
 import com.example.spotistats.domain.model.Track
 import com.example.spotistats.domain.model.UserTopArtists
 import com.example.spotistats.domain.model.UserTopTracks
+import com.example.spotistats.presentation.settings.SettingsViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -76,18 +76,18 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(
     navController: NavController,
-    authViewModel: AuthViewModel,
+    mainViewModel: MainViewModel,
     settingsViewModel: SettingsViewModel
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val recentlyPlayed = authViewModel.recentlyPlayed.collectAsState()
+    val recentlyPlayed = mainViewModel.recentlyPlayed.collectAsState()
     val recentlyPlayedTracks = recentlyPlayed.value?.tracks
-    val isAuthenticated = authViewModel.isAuthenticated.collectAsState()
-    val greeting = stringResource(id = authViewModel.getGreeting())
-    val userProfile = authViewModel.userProfile.collectAsState()
-    val currentlyPlaying = authViewModel.currentlyPlaying.collectAsState()
-    val progressMs = authViewModel.progressMs.collectAsState()
+    val isAuthenticated = mainViewModel.isAuthenticated.collectAsState()
+    val greeting = stringResource(id = mainViewModel.getGreeting())
+    val userProfile = mainViewModel.userProfile.collectAsState()
+    val currentlyPlaying = mainViewModel.currentlyPlaying.collectAsState()
+    val progressMs = mainViewModel.progressMs.collectAsState()
     val lastPlayedTrack = recentlyPlayed.value?.tracks?.firstOrNull()
     val lastPlayedImageUrl = lastPlayedTrack?.imageUrl
     val lastPlayedName = lastPlayedTrack?.name
@@ -99,9 +99,9 @@ fun MainScreen(
     val currentlyDurationMs = currentlyTrack?.duration_ms ?: 1
     val currentlyUserName = settingsViewModel.nickname.collectAsState()
     val currentlyUserAvatar = settingsViewModel.imageUri.collectAsState()
-    val userTopArtists = authViewModel.userTopArtists.collectAsState()
-    val userTopTracks = authViewModel.userTopTracks.collectAsState()
-    val userTopAlbums = authViewModel.userTopAlbums.collectAsState()
+    val userTopArtists = mainViewModel.userTopArtists.collectAsState()
+    val userTopTracks = mainViewModel.userTopTracks.collectAsState()
+    val userTopAlbums = mainViewModel.userTopAlbums.collectAsState()
 
     val systemUiController = rememberSystemUiController()
     val navBarColor = MaterialTheme.colorScheme.background
@@ -111,7 +111,7 @@ fun MainScreen(
     val refreshRecentlyPlayed = {
         scope.launch {
             isRefreshing.value = true
-            authViewModel.getRecentlyPlayed()
+            mainViewModel.getRecentlyPlayed()
             delay(1000)
             isRefreshing.value = false
         }
@@ -131,31 +131,31 @@ fun MainScreen(
     LaunchedEffect(Unit) {
         if (isAuthenticated.value) {
             try {
-                authViewModel.getRecentlyPlayed()
+                mainViewModel.getRecentlyPlayed()
             } catch (e: Exception) {
                 Log.e("MainScreen", "Failed to get recently played: ${e.message}")
             }
 
             try {
-                authViewModel.getUserProfile()
+                mainViewModel.getUserProfile()
             } catch (e: Exception) {
                 Log.e("MainScreen", "Failed to get profile: ${e.message}")
             }
 
             try {
-                authViewModel.getCurrentlyPlaying()
+                mainViewModel.getCurrentlyPlaying()
             } catch (e: Exception) {
                 Log.e("MainScreen", "Failed to get currently playing: ${e.message}")
             }
 
             try {
-                authViewModel.getUserTopArtists()
+                mainViewModel.getUserTopArtists()
             } catch (e: Exception) {
                 Log.e("MainScreen", "Failed to get top artists: ${e.message}")
             }
 
             try {
-                authViewModel.getUserTopTracks()
+                mainViewModel.getUserTopTracks()
             } catch (e: Exception) {
                 Log.e("MainScreen", "Failed to get top tracks: ${e.message}")
             }
@@ -172,7 +172,7 @@ fun MainScreen(
         } else {
             while (true) {
                 try {
-                    authViewModel.getCurrentlyPlaying()
+                    mainViewModel.getCurrentlyPlaying()
                 } catch (e: Exception) {
                     Log.e("MainScreen", "Ошибка при обновлении now playing: ${e.message}")
                 }
@@ -215,7 +215,7 @@ fun MainScreen(
                     }, icon = Icons.Default.Settings)
                     DrawerItem(
                         text = stringResource(R.string.logout),
-                        onClick = { authViewModel.logout() },
+                        onClick = { mainViewModel.logout() },
                         icon = Icons.Default.Delete
                     )
                 }

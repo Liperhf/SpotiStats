@@ -1,7 +1,6 @@
-package com.example.spotistats.presentation.screen.authorization
+package com.example.spotistats.presentation.stats
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,7 +41,8 @@ import com.example.spotistats.domain.model.UserTopTracksItem
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun StatsScreen(navController: NavController,
-                viewModel:StatsViewModel){
+                viewModel: StatsViewModel
+){
 
     val topTracks = viewModel.topTracks.collectAsState()
     val topArtists = viewModel.topArtists.collectAsState()

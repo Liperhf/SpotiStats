@@ -24,17 +24,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.spotistats.presentation.screen.authorization.AccountScreen
-import com.example.spotistats.presentation.screen.authorization.AppBottomNavigationBar
-import com.example.spotistats.presentation.screen.authorization.AuthScreen
-import com.example.spotistats.presentation.screen.authorization.AuthViewModel
-import com.example.spotistats.presentation.screen.authorization.LanguageScreen
-import com.example.spotistats.presentation.screen.authorization.MainScreen
-import com.example.spotistats.presentation.screen.authorization.RecentlyScreen
-import com.example.spotistats.presentation.screen.authorization.SettingsScreen
-import com.example.spotistats.presentation.screen.authorization.SettingsViewModel
-import com.example.spotistats.presentation.screen.authorization.StatsScreen
-import com.example.spotistats.presentation.screen.authorization.StatsViewModel
+import com.example.spotistats.presentation.settings.AccountScreen
+import com.example.spotistats.presentation.common.AppBottomNavigationBar
+import com.example.spotistats.presentation.auth.AuthScreen
+import com.example.spotistats.presentation.auth.AuthViewModel
+import com.example.spotistats.presentation.settings.LanguageScreen
+import com.example.spotistats.presentation.main.MainScreen
+import com.example.spotistats.presentation.main.MainViewModel
+import com.example.spotistats.presentation.stats.RecentlyScreen
+import com.example.spotistats.presentation.settings.SettingsScreen
+import com.example.spotistats.presentation.settings.SettingsViewModel
+import com.example.spotistats.presentation.stats.StatsScreen
+import com.example.spotistats.presentation.stats.StatsViewModel
 import com.example.spotistats.ui.theme.SpotiStatsTheme
 import com.yalantis.ucrop.UCrop
 import dagger.hilt.android.AndroidEntryPoint
@@ -77,9 +78,10 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    val authViewModel:AuthViewModel = hiltViewModel()
-                    val settingsViewModel:SettingsViewModel = hiltViewModel()
-                    val statsViewModel:StatsViewModel = hiltViewModel()
+                    val mainViewModel: MainViewModel = hiltViewModel()
+                    val authViewModel: AuthViewModel = hiltViewModel()
+                    val settingsViewModel: SettingsViewModel = hiltViewModel()
+                    val statsViewModel: StatsViewModel = hiltViewModel()
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
                     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -109,7 +111,7 @@ class MainActivity : ComponentActivity() {
                             }
                             composable("main") { MainScreen(
                                 navController = navController,
-                                authViewModel = authViewModel,
+                                mainViewModel = mainViewModel,
                                 settingsViewModel = settingsViewModel) }
 
                             composable("settings"){ SettingsScreen(
@@ -136,7 +138,7 @@ class MainActivity : ComponentActivity() {
                             composable("recently"){
                                 RecentlyScreen(
                                     navController = navController,
-                                    viewModel = authViewModel
+                                    viewModel = mainViewModel
                                 )
                             }
                         }

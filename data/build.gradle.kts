@@ -15,30 +15,47 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-
-        buildConfigField(
-            "String",
-            "SPOTIFY_CLIENT_ID",
-            "\"${project.properties["SPOTIFY_CLIENT_ID"]}\""
-        )
-        buildConfigField(
-            "String",
-            "SPOTIFY_CLIENT_SECRET",
-            "\"${project.properties["SPOTIFY_CLIENT_SECRET"]}\""
-        )
-        buildConfigField(
-            "String",
-            "SPOTIFY_REDIRECT_URI",
-            "\"${project.properties["SPOTIFY_REDIRECT_URI"]}\""
-        )
     }
 
     buildTypes {
+        debug {
+            buildConfigField(
+                "String",
+                "SPOTIFY_CLIENT_ID",
+                "\"${project.properties["SPOTIFY_CLIENT_ID"]}\""
+            )
+            buildConfigField(
+                "String",
+                "SPOTIFY_CLIENT_SECRET",
+                "\"${project.properties["SPOTIFY_CLIENT_SECRET"]}\""
+            )
+            buildConfigField(
+                "String",
+                "SPOTIFY_REDIRECT_URI",
+                "\"${project.properties["SPOTIFY_REDIRECT_URI"]}\""
+            )
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
+            )
+
+            buildConfigField(
+                "String",
+                "SPOTIFY_CLIENT_ID",
+                "\"${project.properties["SPOTIFY_CLIENT_ID"]}\""
+            )
+            buildConfigField(
+                "String",
+                "SPOTIFY_CLIENT_SECRET",
+                "\"${project.properties["SPOTIFY_CLIENT_SECRET"]}\""
+            )
+            buildConfigField(
+                "String",
+                "SPOTIFY_REDIRECT_URI",
+                "\"${project.properties["SPOTIFY_REDIRECT_URI"]}\""
             )
         }
     }

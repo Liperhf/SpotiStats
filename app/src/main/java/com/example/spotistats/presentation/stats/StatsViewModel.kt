@@ -1,4 +1,4 @@
-package com.example.spotistats.presentation.screen.authorization
+package com.example.spotistats.presentation.stats
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,7 +6,8 @@ import com.example.spotistats.domain.model.Album
 import com.example.spotistats.domain.model.TopAlbum
 import com.example.spotistats.domain.model.UserTopArtists
 import com.example.spotistats.domain.model.UserTopTracks
-import com.example.spotistats.domain.useCases.SpotifyAuthUseCase
+import com.example.spotistats.domain.useCases.CalculateTopAlbumsUseCase
+import com.example.spotistats.domain.useCases.TopContentUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StatsViewModel @Inject constructor(
-    private val spotifyAuthUseCase: SpotifyAuthUseCase,
+    private val topContentUseCase: TopContentUseCase,
+    private val calculateTopAlbumsUseCase: CalculateTopAlbumsUseCase,
 ):ViewModel() {
     enum class ContentType{TRACKS,ARTISTS,ALBUMS}
     enum class TimeRange{SHORT,MEDIUM,LONG}
@@ -33,7 +35,7 @@ class StatsViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading:StateFlow<Boolean?> = _isLoading
 
-    fun updateContentType(contentType:ContentType){
+    fun updateContentType(contentType: ContentType){
         _selectedContentType.value = contentType
         loadStats()
     }
@@ -58,25 +60,25 @@ class StatsViewModel @Inject constructor(
 
                     ContentType.TRACKS -> {
                         _topTracks.value = when (currentRange) {
-                            TimeRange.SHORT -> spotifyAuthUseCase.getUserTopTracksShort()
-                            TimeRange.MEDIUM -> spotifyAuthUseCase.getUserTopTracksMedium()
-                            TimeRange.LONG -> spotifyAuthUseCase.getUserTopTracksLong()
+                            TimeRange.SHORT -> topContentUseCase.getUserTopTracksShort()
+                            TimeRange.MEDIUM -> topContentUseCase.getUserTopTracksMedium()
+                            TimeRange.LONG -> topContentUseCase.getUserTopTracksLong()
                         }
                     }
 
                     ContentType.ARTISTS -> {
                         _topArtists.value = when (currentRange) {
-                            TimeRange.SHORT -> spotifyAuthUseCase.getUserTopArtistsShort()
-                            TimeRange.MEDIUM -> spotifyAuthUseCase.getUserTopArtistsMedium()
-                            TimeRange.LONG -> spotifyAuthUseCase.getUserTopArtistsLong()
+                            TimeRange.SHORT -> topContentUseCase.getUserTopArtistsShort()
+                            TimeRange.MEDIUM -> topContentUseCase.getUserTopArtistsMedium()
+                            TimeRange.LONG -> topContentUseCase.getUserTopArtistsLong()
                         }
                     }
 
                     ContentType.ALBUMS -> {
                         val tracks = when (currentRange) {
-                            TimeRange.SHORT -> spotifyAuthUseCase.getUserTopTracksShort()
-                            TimeRange.MEDIUM -> spotifyAuthUseCase.getUserTopTracksMedium()
-                            TimeRange.LONG -> spotifyAuthUseCase.getUserTopTracksLong()
+                            TimeRange.SHORT -> topContentUseCase.getUserTopTracksShort()
+                            TimeRange.MEDIUM -> topContentUseCase.getUserTopTracksMedium()
+                            TimeRange.LONG -> topContentUseCase.getUserTopTracksLong()
                         }
                         calculatedUserTopAlbums(tracks)
                     }
@@ -90,30 +92,8 @@ class StatsViewModel @Inject constructor(
     }
 
 
-    private fun calculatedUserTopAlbums(userTopTracks:UserTopTracks){
-        viewModelScope.launch {
-            if(userTopTracks.items.isEmpty()){
-                _topAlbums.value = emptyList()
-                return@launch
-            }
-
-            val albumsCount = mutableMapOf<String, Pair<Album,Int>>()
-            userTopTracks.items.forEach() { track ->
-                val album = track.album
-                albumsCount.compute(album.id){_,pair ->
-                    if(pair == null){
-                        Pair(album,1)
-                    }else{
-                        Pair(album,pair.second + 1)
-                    }
-                }
-                val sortedTopAlbums = albumsCount.values
-                    .map {pair -> TopAlbum(pair.first,pair.second)  }
-                    .sortedByDescending {topAlbum: TopAlbum -> topAlbum.trackCount  }
-                _topAlbums.value = sortedTopAlbums.take(10)
-            }
-
-        }
+    private fun calculatedUserTopAlbums(userTopTracks:UserTopTracks) {
+        val topAlbums = calculateTopAlbumsUseCase(userTopTracks)
+        _topAlbums.value = topAlbums
     }
-
-    }
+}

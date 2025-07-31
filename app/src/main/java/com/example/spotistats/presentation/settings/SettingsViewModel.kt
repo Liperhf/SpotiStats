@@ -1,17 +1,15 @@
-package com.example.spotistats.presentation.screen.authorization
+package com.example.spotistats.presentation.settings
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.spotistats.domain.model.AppLanguage
 import com.example.spotistats.domain.model.UserProfile
-import com.example.spotistats.domain.useCases.SpotifyAuthUseCase
+import com.example.spotistats.domain.useCases.UserUseCase
 import com.example.spotistats.util.AccountPrefs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -19,14 +17,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import android.util.Log
 
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val spotifyAuthUseCase: SpotifyAuthUseCase
+    private val userUseCase: UserUseCase
 ):ViewModel(
 ) {
     private val _language = mutableStateOf(AppLanguage.ENGLISH)
@@ -45,7 +42,7 @@ class SettingsViewModel @Inject constructor(
             val savedAvatar = AccountPrefs.getAvatar(context)
             val userProfile = if ((savedAvatar.isNullOrEmpty() || savedNickname.isNullOrEmpty())) {
                 try {
-                    spotifyAuthUseCase.getUserProfile()
+                    userUseCase.getUserProfile()
                 } catch (e: Exception) {
                     null
                 }
@@ -91,7 +88,7 @@ class SettingsViewModel @Inject constructor(
 
     fun resetProfile(){
         viewModelScope.launch {
-        val userProfile = spotifyAuthUseCase.getUserProfile()
+        val userProfile = userUseCase.getUserProfile()
         _profile.value = userProfile
         _nickname.value = profile.value?.display_name
         _imageUri.value = Uri.parse(profile.value?.imagesUrl)

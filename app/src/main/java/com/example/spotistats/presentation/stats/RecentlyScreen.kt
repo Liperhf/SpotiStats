@@ -1,6 +1,5 @@
-package com.example.spotistats.presentation.screen.authorization
+package com.example.spotistats.presentation.stats
 
-import android.app.Activity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -26,8 +24,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -37,17 +33,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.spotistats.R
-import com.example.spotistats.domain.model.AppLanguage
-import com.example.spotistats.util.LanguagePrefs
-import com.example.spotistats.util.UpdateLocale
+import com.example.spotistats.presentation.auth.AuthViewModel
+import com.example.spotistats.presentation.main.MainViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import java.util.Locale
 
-    @OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun RecentlyScreen(
         navController: NavController,
-        viewModel: AuthViewModel
+        viewModel: MainViewModel
     ){
         val systemUiController = rememberSystemUiController()
         val navBarColor = MaterialTheme.colorScheme.background
