@@ -24,14 +24,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.spotistats.presentation.settings.AccountScreen
+import com.example.spotistats.presentation.account.AccountScreen
 import com.example.spotistats.presentation.common.AppBottomNavigationBar
 import com.example.spotistats.presentation.auth.AuthScreen
 import com.example.spotistats.presentation.auth.AuthViewModel
-import com.example.spotistats.presentation.settings.LanguageScreen
+import com.example.spotistats.presentation.language.LanguageScreen
 import com.example.spotistats.presentation.main.MainScreen
 import com.example.spotistats.presentation.main.MainViewModel
-import com.example.spotistats.presentation.stats.RecentlyScreen
+import com.example.spotistats.presentation.recently.RecentlyScreen
 import com.example.spotistats.presentation.settings.SettingsScreen
 import com.example.spotistats.presentation.settings.SettingsViewModel
 import com.example.spotistats.presentation.stats.StatsScreen

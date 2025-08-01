@@ -1,4 +1,4 @@
-package com.example.spotistats.presentation.stats
+package com.example.spotistats.presentation.recently
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.spotistats.R
-import com.example.spotistats.presentation.auth.AuthViewModel
 import com.example.spotistats.presentation.main.MainViewModel
+import com.example.spotistats.presentation.recently.components.RecentlyContent
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,43 +78,6 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
                 ),
             ) }
         ) {paddingValues ->
-            LazyColumn(modifier = Modifier.padding(paddingValues)){
-                if (recentlyPlayedTracks != null) {
-                    items(recentlyPlayedTracks.size){
-                        val track = recentlyPlayedTracks[it]
-                        val imageUrl = track.imageUrl
-                        val name = track.name
-                        val artist = track.artists
-                        Row(modifier = Modifier
-                            .padding(horizontal = 15.dp, vertical = 7.dp)
-                            .fillMaxWidth()){
-                            AsyncImage(model = imageUrl,
-                                contentDescription = stringResource(R.string.listened_recently),
-                                modifier = Modifier
-                                    .size(60.dp)
-                                    .clip(RoundedCornerShape(10.dp)),
-                                placeholder = painterResource(R.drawable.place_holder_track),
-                                error = painterResource(R.drawable.place_holder_track)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Column() {
-                                Text(text = name,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    overflow = TextOverflow.Ellipsis,
-                                    maxLines = 1)
-
-                                Text(text = artist,
-                                    fontSize = 12.sp,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    overflow = TextOverflow.Ellipsis,
-                                    maxLines = 1
-                                )
-                            }
-                        }
-                    }
-                }
-                }
+            RecentlyContent(paddingValues,recentlyPlayedTracks)
             }
         }

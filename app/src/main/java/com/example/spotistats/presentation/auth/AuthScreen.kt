@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.example.spotistats.R
+import com.example.spotistats.presentation.auth.components.AuthContent
 
 @Composable
 fun AuthScreen(
@@ -50,20 +51,8 @@ fun AuthScreen(
             }
         }
     }
+    AuthContent(
+        viewModel = viewModel
+    )
 
-    Box(modifier = Modifier
-        .fillMaxSize(),
-        contentAlignment = Alignment.Center){
-        Button(onClick = {
-            viewModel.onLoginClicked()
-        },
-            colors = ButtonColors(containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.background,
-                disabledContentColor = MaterialTheme.colorScheme.secondary,
-                disabledContainerColor = MaterialTheme.colorScheme.background)
-        )
-        {
-            Text(stringResource(R.string.login))
-        }
-    }
 }

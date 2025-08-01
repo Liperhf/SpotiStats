@@ -1,46 +1,60 @@
-package com.example.spotistats.presentation.settings
+package com.example.spotistats.presentation.account
 
-import android.app.Activity
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import android.annotation.SuppressLint
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import java.util.Locale
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.spotistats.R
-import com.example.spotistats.domain.model.AppLanguage
-import com.example.spotistats.util.LanguagePrefs
-import com.example.spotistats.util.UpdateLocale
+import com.example.spotistats.presentation.account.components.AccountContent
+import com.example.spotistats.presentation.settings.SettingsViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
+
 @OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun LanguageScreen(
+fun AccountScreen(
+    viewModel: SettingsViewModel,
     navController: NavController,
-    viewModel: SettingsViewModel
+    onStartImageCrop: (sourceUri: Uri, callback: (Uri?) -> Unit) -> Unit
 ){
     val systemUiController = rememberSystemUiController()
     val navBarColor = MaterialTheme.colorScheme.background
     val statusBarColor = MaterialTheme.colorScheme.primary
+    val imageUri = viewModel.imageUri.collectAsState()
+    val nickname = viewModel.nickname.collectAsState()
     val context = LocalContext.current
+
+
+    val pickImageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ){
+        uri:Uri? ->
+        uri?.let { sourceImageUri ->
+            onStartImageCrop(sourceImageUri){croppedUri->
+                croppedUri?.let {
+                    viewModel.setAvatar(croppedUri)
+                }
+            }
+
+        }
+    }
 
     SideEffect {
         systemUiController.setNavigationBarColor(
@@ -53,9 +67,10 @@ fun LanguageScreen(
         )
     }
 
+
     Scaffold(
         topBar = { CenterAlignedTopAppBar(
-            title = {Text(text = stringResource(R.string.language))},
+            title = { Text(text = stringResource(R.string.account)) },
             navigationIcon = {
                 IconButton(
                 onClick = {navController.popBackStack()},
@@ -68,37 +83,17 @@ fun LanguageScreen(
                 containerColor = MaterialTheme.colorScheme.primary,
                 titleContentColor = MaterialTheme.colorScheme.onBackground
             ),
-        ) }
+        ) },
     ) {paddingValues ->
-        LazyColumn(modifier = Modifier.padding(paddingValues)){
-            item{
-                LanguageListItem(title = stringResource(R.string.english,), onClick = {
-                    LanguagePrefs.saveLanguage(context,"en")
-                    viewModel.setLanguage(AppLanguage.ENGLISH)
-                    UpdateLocale(context,Locale("en"))
-                    (context as? Activity)?.recreate()
-                })
-            }
-            item { LanguageListItem(title = stringResource(R.string.russian), onClick = {
-                LanguagePrefs.saveLanguage(context,"ru")
-                viewModel.setLanguage(AppLanguage.RUSSIAN)
-                UpdateLocale(context,Locale("ru"))
-                (context as? Activity)?.recreate()
-            })
-            }
-        }
+                AccountContent(
+                    paddingValues = paddingValues,
+                    pickImageLauncher = pickImageLauncher,
+                    imageUri = imageUri,
+                    nickname = nickname,
+                    viewModel = viewModel,
+                    context = context
+                )
+
+
+                }
     }
-}
-
-
-@Composable
-fun LanguageListItem(title:String,onClick:() -> Unit){
-    ListItem(
-        headlineContent = {Text(title, fontSize = 18.sp)},
-        modifier = Modifier.fillMaxWidth()
-            .clickable { onClick() },
-        colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.background,
-            headlineColor = MaterialTheme.colorScheme.onBackground)
-    )
-}
