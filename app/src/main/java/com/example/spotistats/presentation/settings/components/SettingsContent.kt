@@ -17,20 +17,23 @@ import com.example.spotistats.R
 @Composable
 fun SettingsContent(
     paddingValues: PaddingValues,
-    navController: NavController,
-    isAuthenticated: State<Boolean>
+    isAuthenticated: State<Boolean>,
+    onAccountClick:() -> Unit,
+    onLanguageClick:() -> Unit
+
 ){
     LazyColumn(modifier = Modifier.padding(paddingValues)) {
         if (isAuthenticated.value) {
             item{
                 SettingsItem(title = stringResource(R.string.account),
                     icon = Icons.Default.AccountCircle,
-                    onClick = {navController.navigate("account")})
+                    onClick = onAccountClick
+                )
             }
             item{
                 SettingsItem(title = stringResource(R.string.language),
                     icon = ImageVector.vectorResource(R.drawable.language_24px),
-                    onClick = {navController.navigate("language")}
+                    onClick = onLanguageClick
                 )
             }
         }

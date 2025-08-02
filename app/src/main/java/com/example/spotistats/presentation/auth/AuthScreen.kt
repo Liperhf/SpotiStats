@@ -52,7 +52,7 @@ fun AuthScreen(
         }
     }
     AuthContent(
-        viewModel = viewModel
+        onLoginClicked = viewModel::onLoginClicked
     )
 
 }

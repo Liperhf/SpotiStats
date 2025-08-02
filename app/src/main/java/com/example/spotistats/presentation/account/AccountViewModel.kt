@@ -1,4 +1,4 @@
-package com.example.spotistats.presentation.settings
+package com.example.spotistats.presentation.account
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -21,22 +21,19 @@ import javax.inject.Inject
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
-class SettingsViewModel @Inject constructor(
+class AccountViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val userUseCase: UserUseCase
 ):ViewModel(
 ) {
-    private val _language = mutableStateOf(AppLanguage.ENGLISH)
-    val language: State<AppLanguage> = _language
-    private val _imageUri = MutableStateFlow<Uri?>(null)
-    val imageUri: StateFlow<Uri?> = _imageUri
-    private val _nickname = MutableStateFlow<String?>(null)
-    val nickname: StateFlow<String?> = _nickname
-    private val _profile = MutableStateFlow<UserProfile?>(null)
-    val profile: StateFlow<UserProfile?> = _profile
-
+    private val _uiState = MutableStateFlow(AccountUiState())
+    val uiState: StateFlow<AccountUiState> = _uiState
 
     init {
+        loadProfile()
+    }
+
+    private fun loadProfile() {
         viewModelScope.launch {
             val savedNickname = AccountPrefs.getNickname(context)
             val savedAvatar = AccountPrefs.getAvatar(context)
@@ -48,53 +45,66 @@ class SettingsViewModel @Inject constructor(
                 }
             } else null
 
-            _nickname.value = when {
+            val nickname = when {
                 !savedNickname.isNullOrEmpty() -> savedNickname
                 userProfile != null -> userProfile.display_name ?: ""
                 else -> ""
             }
 
-            _imageUri.value = when {
+            val imageUrl = when {
                 !savedAvatar.isNullOrEmpty() -> Uri.parse(savedAvatar)
-                userProfile != null && !userProfile.imagesUrl.isNullOrEmpty() -> Uri.parse(userProfile.imagesUrl)
+                userProfile != null && !userProfile.imagesUrl.isNullOrEmpty() -> Uri.parse(
+                    userProfile.imagesUrl
+                )
+
                 else -> null
             }
 
+
+            _uiState.value = AccountUiState(
+                imageUrl = imageUrl,
+                nickname = nickname,
+                profile = userProfile
+            )
+
             if (userProfile != null) {
-                _profile.value = userProfile
-                if (savedNickname.isNullOrEmpty()) AccountPrefs.saveNickname(context, userProfile.display_name ?: "")
-                if (savedAvatar.isNullOrEmpty()) AccountPrefs.saveAvatar(context, userProfile.imagesUrl ?: "")
+                if (savedNickname.isNullOrEmpty()) AccountPrefs.saveNickname(
+                    context,
+                    nickname,
+                )
+                if (savedAvatar.isNullOrEmpty()) AccountPrefs.saveAvatar(
+                    context,
+                    imageUrl.toString(),
+                )
             }
         }
     }
 
+
         fun setNickName(nick: String) {
-            _nickname.value = nick
+            _uiState.value = _uiState.value.copy(nickname = nick)
         }
 
         fun setAvatar(uri: Uri) {
-            _imageUri.value = uri
-        }
-
-
-        fun setLanguage(language: AppLanguage) {
-            _language.value = language
+            _uiState.value = _uiState.value.copy(imageUrl = uri)
         }
 
         fun saveProfile(context: Context) {
-            _nickname.value?.let { AccountPrefs.saveNickname(context, it) }
-            AccountPrefs.saveAvatar(context, _imageUri.value.toString())
+            _uiState.value.nickname?.let { AccountPrefs.saveNickname(context, it) }
+            AccountPrefs.saveAvatar(context, _uiState.value.imageUrl.toString())
         }
 
     fun resetProfile(){
         viewModelScope.launch {
         val userProfile = userUseCase.getUserProfile()
-        _profile.value = userProfile
-        _nickname.value = profile.value?.display_name
-        _imageUri.value = Uri.parse(profile.value?.imagesUrl)
+        val newUiState = AccountUiState(
+            imageUrl = userProfile.imagesUrl.let { Uri.parse(it) },
+            nickname = userProfile.display_name,
+            profile = userProfile
+        )
+            _uiState.value = newUiState
             saveProfile(context)
     }
     }
 
 }
-

@@ -21,8 +21,8 @@ import com.example.spotistats.presentation.stats.StatsViewModel
 
 @Composable
 fun TimeRangeRow(
-    viewModel: StatsViewModel,
-    selectedTimeRange: State<StatsViewModel.TimeRange>
+    selectedTimeRange: State<StatsViewModel.TimeRange>,
+    onUpdateTimeRange:(StatsViewModel.TimeRange) -> Unit
 ){
     Column() {
         Row(modifier = Modifier
@@ -36,7 +36,7 @@ fun TimeRangeRow(
             horizontalArrangement = Arrangement.SpaceBetween){
             StatsViewModel.TimeRange.values().forEach { range ->
                 val isSelected = selectedTimeRange.value == range
-                Button(onClick = {viewModel.updateTimeRange(range)},
+                Button(onClick = {onUpdateTimeRange(range)},
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.background,
                         contentColor = if(isSelected){

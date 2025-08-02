@@ -11,17 +11,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.example.spotistats.R
-import com.example.spotistats.presentation.auth.AuthViewModel
 
 @Composable
 fun AuthContent(
-    viewModel: AuthViewModel
+    onLoginClicked:() -> Unit
     ){
     Box(modifier = Modifier
         .fillMaxSize(),
         contentAlignment = Alignment.Center){
         Button(onClick = {
-            viewModel.onLoginClicked()
+            onLoginClicked()
         },
             colors = ButtonColors(containerColor = MaterialTheme.colorScheme.secondary,
                 contentColor = MaterialTheme.colorScheme.background,

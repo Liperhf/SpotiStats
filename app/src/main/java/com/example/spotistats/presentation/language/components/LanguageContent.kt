@@ -10,28 +10,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.example.spotistats.R
 import com.example.spotistats.domain.model.AppLanguage
-import com.example.spotistats.presentation.settings.SettingsViewModel
+import com.example.spotistats.presentation.language.LanguageViewModel
 import com.example.spotistats.util.LanguagePrefs
 import com.example.spotistats.util.UpdateLocale
 import java.util.Locale
 
 @Composable
 fun LanguageContent(paddingValues: PaddingValues,
-                   viewModel: SettingsViewModel,
-                   context: Context
+                    context: Context,
+                    onSetLanguageClick:(AppLanguage) -> Unit
 ){
     LazyColumn(modifier = Modifier.padding(paddingValues)){
         item{
             LanguageListItem(title = stringResource(R.string.english,), onClick = {
                 LanguagePrefs.saveLanguage(context,"en")
-                viewModel.setLanguage(AppLanguage.ENGLISH)
+                onSetLanguageClick(AppLanguage.ENGLISH)
                 UpdateLocale(context, Locale("en"))
                 (context as? Activity)?.recreate()
             })
         }
         item { LanguageListItem(title = stringResource(R.string.russian), onClick = {
             LanguagePrefs.saveLanguage(context,"ru")
-            viewModel.setLanguage(AppLanguage.RUSSIAN)
+            onSetLanguageClick(AppLanguage.RUSSIAN)
             UpdateLocale(context, Locale("ru"))
             (context as? Activity)?.recreate()
         })

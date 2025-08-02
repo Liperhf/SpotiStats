@@ -24,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,17 +31,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.spotistats.R
-import com.example.spotistats.presentation.settings.SettingsViewModel
+import com.example.spotistats.presentation.account.AccountViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountContent(
     paddingValues: PaddingValues,
     pickImageLauncher: ManagedActivityResultLauncher<String, Uri?>,
-    imageUri: State<Uri?>,
-    nickname: State<String?>,
-    viewModel: SettingsViewModel,
-    context: Context
+    imageUri: Uri?,
+    nickname: String?,
+    context: Context,
+    onSetNickNameClick:(String) -> Unit,
+    onSaveProfileClick:(Context) -> Unit,
+    onResetProfileClick:() -> Unit
 )
 {
     Column(modifier = Modifier
@@ -58,7 +59,7 @@ fun AccountContent(
                 .padding(8.dp)
         ) {
             AsyncImage(
-                model = imageUri.value,
+                model = imageUri,
                 contentDescription = stringResource(R.string.avatar),
                 modifier = Modifier
                     .size(170.dp)
@@ -82,26 +83,28 @@ fun AccountContent(
         }
         Spacer(modifier = Modifier.height(24.dp))
 
-        nickname.value?.let { it ->
-            TextField(value = it,
-                onValueChange = {
-                    viewModel.setNickName(it)
-                },
-                label = { Text(stringResource(R.string.name)) },
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                    focusedLabelColor = MaterialTheme.colorScheme.onBackground,
-                    unfocusedLabelColor = MaterialTheme.colorScheme.onBackground,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-                    cursorColor = MaterialTheme.colorScheme.onBackground
+        nickname.let { it ->
+            if (it != null) {
+                TextField(value = it,
+                    onValueChange = {
+                        onSetNickNameClick(it)
+                    },
+                    label = { Text(stringResource(R.string.name)) },
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        focusedLabelColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        cursorColor = MaterialTheme.colorScheme.onBackground
+                    )
                 )
-            )
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(onClick = {viewModel.saveProfile(context = context)},
+        Button(onClick = {onSaveProfileClick(context)},
             modifier = Modifier
                 .width(250.dp)
                 .height(50.dp)) {
@@ -112,7 +115,7 @@ fun AccountContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(onClick = {viewModel.resetProfile() },
+        Button(onClick = {onResetProfileClick() },
             modifier = Modifier
                 .width(250.dp)
                 .height(50.dp)

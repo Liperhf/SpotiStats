@@ -43,12 +43,14 @@ fun StatsScreen(navController: NavController,
     }
     Scaffold(
         topBar = {
-            TimeRangeRow(viewModel = viewModel,
-                selectedTimeRange = selectedTimeRange)
+            TimeRangeRow(
+                selectedTimeRange = selectedTimeRange,
+                onUpdateTimeRange = viewModel::updateTimeRange)
         },
         bottomBar = {
-            ContentTypeRow(viewModel = viewModel,
-                selectedContentType = selectedContentType,)
+            ContentTypeRow(
+                selectedContentType = selectedContentType,
+                onUpdateContentType = viewModel::updateContentType)
         }
     ) {paddingValues ->
             StatsContent(

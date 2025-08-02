@@ -29,11 +29,12 @@ import com.example.spotistats.presentation.common.AppBottomNavigationBar
 import com.example.spotistats.presentation.auth.AuthScreen
 import com.example.spotistats.presentation.auth.AuthViewModel
 import com.example.spotistats.presentation.language.LanguageScreen
+import com.example.spotistats.presentation.language.LanguageViewModel
 import com.example.spotistats.presentation.main.MainScreen
 import com.example.spotistats.presentation.main.MainViewModel
 import com.example.spotistats.presentation.recently.RecentlyScreen
 import com.example.spotistats.presentation.settings.SettingsScreen
-import com.example.spotistats.presentation.settings.SettingsViewModel
+import com.example.spotistats.presentation.account.AccountViewModel
 import com.example.spotistats.presentation.stats.StatsScreen
 import com.example.spotistats.presentation.stats.StatsViewModel
 import com.example.spotistats.ui.theme.SpotiStatsTheme
@@ -80,8 +81,9 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     val mainViewModel: MainViewModel = hiltViewModel()
                     val authViewModel: AuthViewModel = hiltViewModel()
-                    val settingsViewModel: SettingsViewModel = hiltViewModel()
+                    val accountViewModel: AccountViewModel = hiltViewModel()
                     val statsViewModel: StatsViewModel = hiltViewModel()
+                    val languageViewModel: LanguageViewModel = hiltViewModel()
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
                     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -113,7 +115,7 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 mainViewModel = mainViewModel,
                                 authViewModel = authViewModel,
-                                settingsViewModel = settingsViewModel) }
+                                settingsViewModel = accountViewModel) }
 
                             composable("settings"){ SettingsScreen(
                                 navController = navController,
@@ -121,12 +123,12 @@ class MainActivity : ComponentActivity() {
                             ) }
                             composable("language"){ LanguageScreen(
                                 navController = navController,
-                                viewModel = settingsViewModel
+                                viewModel = languageViewModel
                             ) }
                             composable("account") {
                                 AccountScreen(
                                     navController = navController,
-                                    viewModel = settingsViewModel,
+                                    viewModel = accountViewModel,
                                     onStartImageCrop = startImageCrop
                                 )
                             }

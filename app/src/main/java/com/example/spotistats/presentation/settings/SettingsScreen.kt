@@ -64,8 +64,9 @@ fun SettingsScreen(
     ) {paddingValues ->
             SettingsContent(
                 paddingValues = paddingValues,
-                navController = navController,
-                isAuthenticated = isAuthenticated
+                isAuthenticated = isAuthenticated,
+                onAccountClick = {navController.navigate("account")},
+                onLanguageClick = {navController.navigate("language")}
             )
 
     }

@@ -18,15 +18,15 @@ import com.example.spotistats.presentation.stats.StatsViewModel
 
 @Composable
 fun ContentTypeRow(
-    viewModel:StatsViewModel,
-    selectedContentType: State<StatsViewModel.ContentType>
+    selectedContentType: State<StatsViewModel.ContentType>,
+    onUpdateContentType:(StatsViewModel.ContentType) -> Unit
 ){
     Row(modifier = Modifier
         .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween){
         StatsViewModel.ContentType.values().forEach { type ->
             val isSelected = selectedContentType.value == type
-            Button(onClick = { viewModel.updateContentType(type) },
+            Button(onClick = { onUpdateContentType(type) },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.background,
                     contentColor = if(isSelected){

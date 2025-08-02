@@ -22,7 +22,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.example.spotistats.R
 import com.example.spotistats.presentation.account.components.AccountContent
-import com.example.spotistats.presentation.settings.SettingsViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 
@@ -30,15 +29,14 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AccountScreen(
-    viewModel: SettingsViewModel,
+    viewModel: AccountViewModel,
     navController: NavController,
     onStartImageCrop: (sourceUri: Uri, callback: (Uri?) -> Unit) -> Unit
 ){
     val systemUiController = rememberSystemUiController()
     val navBarColor = MaterialTheme.colorScheme.background
     val statusBarColor = MaterialTheme.colorScheme.primary
-    val imageUri = viewModel.imageUri.collectAsState()
-    val nickname = viewModel.nickname.collectAsState()
+    val uiState = viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
 
@@ -88,10 +86,12 @@ fun AccountScreen(
                 AccountContent(
                     paddingValues = paddingValues,
                     pickImageLauncher = pickImageLauncher,
-                    imageUri = imageUri,
-                    nickname = nickname,
-                    viewModel = viewModel,
-                    context = context
+                    imageUri = uiState.value.imageUrl,
+                    nickname = uiState.value.nickname,
+                    context = context,
+                    onSetNickNameClick = viewModel::setNickName,
+                    onSaveProfileClick = viewModel::saveProfile,
+                    onResetProfileClick = viewModel::resetProfile
                 )
 
 

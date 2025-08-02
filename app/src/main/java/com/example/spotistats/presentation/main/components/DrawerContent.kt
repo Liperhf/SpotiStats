@@ -23,14 +23,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.spotistats.R
-import androidx.compose.runtime.State
-import androidx.navigation.NavController
-import com.example.spotistats.presentation.auth.AuthViewModel
 
 @Composable
 fun DrawerContent(
-    currentlyUserAvatar:State<Uri?>,
-    currentlyUserName: State<String?>,
+    currentlyUserAvatar: Uri?,
+    currentlyUserName: String?,
     onSettingsClick:() -> Unit,
     onLogoutClick:() -> Unit,
 ){
@@ -40,14 +37,14 @@ fun DrawerContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model = currentlyUserAvatar.value,
+                model = currentlyUserAvatar,
                 contentDescription = stringResource(R.string.avatar),
                 modifier = Modifier
                     .padding(start = 8.dp)
                     .size(45.dp)
                     .clip(CircleShape)
             )
-            currentlyUserName.value.let {
+            currentlyUserName.let {
                 if (it != null) {
                     Text(
                         it,
