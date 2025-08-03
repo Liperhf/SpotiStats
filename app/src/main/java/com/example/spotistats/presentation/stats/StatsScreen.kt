@@ -1,26 +1,11 @@
 package com.example.spotistats.presentation.stats
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.spotistats.R
 import com.example.spotistats.presentation.stats.components.ContentTypeRow
 import com.example.spotistats.presentation.stats.components.StatsContent
 import com.example.spotistats.presentation.stats.components.TimeRangeRow
@@ -30,13 +15,7 @@ import com.example.spotistats.presentation.stats.components.TimeRangeRow
 fun StatsScreen(navController: NavController,
                 viewModel: StatsViewModel
 ){
-
-    val topTracks = viewModel.topTracks.collectAsState()
-    val topArtists = viewModel.topArtists.collectAsState()
-    val topAlbums = viewModel.topAlbums.collectAsState()
-    val selectedContentType = viewModel.selectedContentType.collectAsState()
-    val selectedTimeRange = viewModel.selectedTimeRange.collectAsState()
-    val isLoading = viewModel.isLoading.collectAsState()
+    val uiState = viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadStats()
@@ -44,23 +23,24 @@ fun StatsScreen(navController: NavController,
     Scaffold(
         topBar = {
             TimeRangeRow(
-                selectedTimeRange = selectedTimeRange,
-                onUpdateTimeRange = viewModel::updateTimeRange)
+                selectedTimeRange = uiState.value.selectedTimeRange,
+                onUpdateTimeRange = viewModel::updateTimeRange,
+                uiState = uiState.value
+            )
         },
         bottomBar = {
             ContentTypeRow(
-                selectedContentType = selectedContentType,
-                onUpdateContentType = viewModel::updateContentType)
+                onUpdateContentType = viewModel::updateContentType,
+                uiState = uiState.value
+            )
         }
     ) {paddingValues ->
             StatsContent(
                 paddingValues = paddingValues,
-                isLoading = isLoading,
-                selectedContentType = selectedContentType,
-                topTracks = topTracks,
-                topArtists = topArtists,
-                topAlbums = topAlbums)
-                }
+                uiState = uiState.value
+            )
+
+    }
 
 }
 

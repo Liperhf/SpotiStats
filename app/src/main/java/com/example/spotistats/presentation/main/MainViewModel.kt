@@ -35,27 +35,33 @@ class MainViewModel @Inject constructor(
     private val topContentUseCase: TopContentUseCase,
     private val calculateTopAlbumsUseCase: CalculateTopAlbumsUseCase
 ): ViewModel() {
-    private val _recentlyPlayed = MutableStateFlow<RecentlyPlayed?>(null)
-    val recentlyPlayed: StateFlow<RecentlyPlayed?> = _recentlyPlayed
-    private val _userProfile = MutableStateFlow<UserProfile?>(null)
-    val userProfile: StateFlow<UserProfile?> = _userProfile
-    private val _currentlyPlaying = MutableStateFlow<CurrentlyPlaying?>(null)
-    val currentlyPlaying: StateFlow<CurrentlyPlaying?> = _currentlyPlaying
-    private val _progressMs = MutableStateFlow(0)
-    val progressMs = _progressMs.asStateFlow()
-    var progressJob: Job? = null
-    private val _userTopArtists = MutableStateFlow<UserTopArtists?>(null)
-    val userTopArtists: StateFlow<UserTopArtists?> = _userTopArtists
-    private val _userTopTracks = MutableStateFlow<UserTopTracks?>(null)
-    val userTopTracks: StateFlow<UserTopTracks?> = _userTopTracks
-    private val _userTopAlbums = MutableStateFlow<List<TopAlbum?>>(emptyList())
-    val userTopAlbums: StateFlow<List<TopAlbum?>> = _userTopAlbums
+    private val _uiState = MutableStateFlow(MainUiState())
+    val uiState = _uiState.asStateFlow()
+    private var progressJob: Job? = null
 
+
+
+
+    fun loadStats(){
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            try {
+                getRecentlyPlayed()
+                getUserProfile()
+                getUserTopArtists()
+                getUserTopTracks()
+                getCurrentlyPlaying()
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
+            _uiState.value = _uiState.value.copy(isLoading = false)
+        }
+    }
 
 
     suspend fun getRecentlyPlayed() {
         try {
-            _recentlyPlayed.value = playbackUseCase.getRecentlyPlayed()
+            _uiState.value = _uiState.value.copy(recentlyPlayed = playbackUseCase.getRecentlyPlayed())
         } catch (e: Exception) {
             Log.e("getRecentlyPlayed", "No network: ${e.message}")
         }
@@ -63,8 +69,8 @@ class MainViewModel @Inject constructor(
 
     suspend fun getUserProfile(){
         try {
-            _userProfile.value = userUseCase.getUserProfile()
-            println("Profile loaded: ${_userProfile.value?.imagesUrl}")
+            _uiState.value = _uiState.value.copy(userProfile = userUseCase.getUserProfile())
+            println("Profile loaded: ${_uiState.value.userProfile?.imagesUrl}")
         } catch (e: Exception) {
             println("Failed to load profile: ${e.message}")
         }
@@ -72,16 +78,16 @@ class MainViewModel @Inject constructor(
 
     suspend fun getCurrentlyPlaying(){
         try {
-            _currentlyPlaying.value = playbackUseCase.getCurrentlyPlaying()
-            val data = _currentlyPlaying.value
+            _uiState.value = _uiState.value.copy(currentlyPlaying = playbackUseCase.getCurrentlyPlaying())
+            val data = _uiState.value.currentlyPlaying
             val durationMs = data?.item?.duration_ms ?: 0
-            _progressMs.value = data?.progress_ms ?: 0
+            _uiState.value = _uiState.value.copy(progressMs = data?.progress_ms ?: 0)
             progressJob?.cancel()
             if(durationMs > 0 ){
                 progressJob = startProgress(durationMs)
             }
         }catch (e:Exception){
-            _currentlyPlaying.value = null
+            _uiState.value = _uiState.value.copy(currentlyPlaying = null)
             Log.e("NowPlaying", "Failed to load : ${e.message}")
         }
     }
@@ -89,7 +95,7 @@ class MainViewModel @Inject constructor(
     suspend fun getUserTopArtists() {
         try {
             val result = topContentUseCase.getUserTopArtistsShort()
-            _userTopArtists.value = result
+            _uiState.value = _uiState.value.copy(topArtists = result)
         } catch (e: Exception) {
             println("Failed to load top artists: ${e.message}")
         }
@@ -98,7 +104,7 @@ class MainViewModel @Inject constructor(
     suspend fun getUserTopTracks() {
         try {
             val result = topContentUseCase.getUserTopTracksShort()
-            _userTopTracks.value = result
+            _uiState.value = _uiState.value.copy(topTracks = result)
             calculatedUserTopAlbums()
         }catch (e:Exception){
             println("Failed to load top artists: ${e.message}")
@@ -107,17 +113,17 @@ class MainViewModel @Inject constructor(
 
     private fun startProgress(durationMs:Int) : Job {
         return viewModelScope.launch {
-            while(_progressMs.value < durationMs && _currentlyPlaying.value?.is_playing == true){
+            while(_uiState.value.progressMs < durationMs && _uiState.value.currentlyPlaying?.is_playing == true){
                 delay(100)
-                _progressMs.value += 100
+                _uiState.value = _uiState.value.copy(progressMs = _uiState.value.progressMs + 100)
             }
         }
     }
 
     private fun calculatedUserTopAlbums() {
-        val topTracks = _userTopTracks.value ?: return
+        val topTracks = _uiState.value.topTracks ?: return
         val topAlbums = calculateTopAlbumsUseCase(topTracks)
-        _userTopAlbums.value = topAlbums
+        _uiState.value = _uiState.value.copy(topAlbums = topAlbums)
     }
 
 

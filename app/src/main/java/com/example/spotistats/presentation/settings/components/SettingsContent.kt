@@ -11,19 +11,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.navigation.NavController
 import com.example.spotistats.R
+import com.example.spotistats.presentation.auth.AuthUiState
 
 @Composable
 fun SettingsContent(
     paddingValues: PaddingValues,
-    isAuthenticated: State<Boolean>,
     onAccountClick:() -> Unit,
-    onLanguageClick:() -> Unit
+    onLanguageClick:() -> Unit,
+    uiState: AuthUiState
 
 ){
     LazyColumn(modifier = Modifier.padding(paddingValues)) {
-        if (isAuthenticated.value) {
+        if (uiState.isAuthenticated) {
             item{
                 SettingsItem(title = stringResource(R.string.account),
                     icon = Icons.Default.AccountCircle,

@@ -31,20 +31,16 @@ class AuthViewModel @Inject constructor(
     private val authUseCase: AuthUseCase,
 ) : ViewModel() {
 
-    private val _authIntent = MutableStateFlow<Intent?>(null)
-    val authIntent: StateFlow<Intent?> = _authIntent
-    private val _isAuthenticated = MutableStateFlow(false)
-    val isAuthenticated: StateFlow<Boolean> = _isAuthenticated
-    private val _callbackHandled = MutableStateFlow(false)
-    val callbackHandled: StateFlow<Boolean> = _callbackHandled
+    private val _uiState = MutableStateFlow(AuthUiState())
+    val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
 
     fun markCallbackHandled() {
-        _callbackHandled.value = true
+        _uiState.value = _uiState.value.copy(callbackHandled = true)
     }
 
     fun onLoginClicked() {
-        _authIntent.value = authUseCase.createAuthIntent()
+        _uiState.value = _uiState.value.copy(authIntent = authUseCase.createAuthIntent())
     }
 
     fun checkAuthStatus() {
@@ -52,10 +48,10 @@ class AuthViewModel @Inject constructor(
             try {
                 val isSuccess = authUseCase.isUserAuthorized()
                 Log.d("AuthViewModel", "checkAuthStatus: isUserAuthorized = $isSuccess")
-                _isAuthenticated.value = isSuccess
+                _uiState.value = _uiState.value.copy(isAuthenticated = isSuccess)
             } catch (e: Exception) {
                 Log.e("AuthViewModel", "checkAuthStatus error", e)
-                _isAuthenticated.value = false
+                _uiState.value = _uiState.value.copy(isAuthenticated = false)
             }
         }
     }
@@ -103,7 +99,7 @@ class AuthViewModel @Inject constructor(
                 authUseCase.clearTokens()
 
 
-                _isAuthenticated.value = false
+                _uiState.value = _uiState.value.copy(isAuthenticated = false)
 
 
             }

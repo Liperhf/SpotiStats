@@ -31,7 +31,7 @@ fun SettingsScreen(
     val systemUiController = rememberSystemUiController()
     val navBarColor = MaterialTheme.colorScheme.background
     val statusBarColor = MaterialTheme.colorScheme.primary
-    val isAuthenticated = viewModel.isAuthenticated.collectAsState()
+    val uiState = viewModel.uiState.collectAsState()
 
     SideEffect {
         systemUiController.setNavigationBarColor(
@@ -64,7 +64,7 @@ fun SettingsScreen(
     ) {paddingValues ->
             SettingsContent(
                 paddingValues = paddingValues,
-                isAuthenticated = isAuthenticated,
+                uiState = uiState.value,
                 onAccountClick = {navController.navigate("account")},
                 onLanguageClick = {navController.navigate("language")}
             )

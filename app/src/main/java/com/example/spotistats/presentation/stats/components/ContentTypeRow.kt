@@ -8,24 +8,25 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.spotistats.R
+import com.example.spotistats.presentation.stats.ContentType
+import com.example.spotistats.presentation.stats.StatsUiState
 import com.example.spotistats.presentation.stats.StatsViewModel
 
 @Composable
 fun ContentTypeRow(
-    selectedContentType: State<StatsViewModel.ContentType>,
-    onUpdateContentType:(StatsViewModel.ContentType) -> Unit
+    onUpdateContentType:(ContentType) -> Unit,
+    uiState: StatsUiState
 ){
     Row(modifier = Modifier
         .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween){
-        StatsViewModel.ContentType.values().forEach { type ->
-            val isSelected = selectedContentType.value == type
+        ContentType.values().forEach { type ->
+            val isSelected = uiState.selectedContentType == type
             Button(onClick = { onUpdateContentType(type) },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.background,
@@ -37,17 +38,17 @@ fun ContentTypeRow(
                 ),
             ) {
                 when(type){
-                    StatsViewModel.ContentType.TRACKS -> {
+                    ContentType.TRACKS -> {
                         Text(text = stringResource(R.string.tracks),
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp)
                     }
-                    StatsViewModel.ContentType.ARTISTS -> {
+                    ContentType.ARTISTS -> {
                         Text(text = stringResource(R.string.artists),
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp)
                     }
-                    StatsViewModel.ContentType.ALBUMS -> {
+                    ContentType.ALBUMS -> {
                         Text(text = stringResource(R.string.albums),
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp)

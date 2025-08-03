@@ -1,4 +1,4 @@
-package com.example.spotistats.presentation.common
+package com.example.spotistats.presentation.screen.authorization
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -6,13 +6,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -25,7 +28,7 @@ data class BottomNavItem(
     val labelResId: Int,
     val icon: ImageVector,
     val route:String,
-    )
+)
 
 @Composable
 fun AppBottomNavigationBar(navController: NavController){
@@ -41,10 +44,10 @@ fun AppBottomNavigationBar(navController: NavController){
             route = "stats"
         ),
     )
-    val homeAssociatedRoutes = setOf("main", "settings", "account", "language")
+    val homeAssociatedRoutes = setOf("main", "settings", "account", "language","recently")
 
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
+        containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.85f),
         contentColor = MaterialTheme.colorScheme.onBackground,
         modifier = Modifier.height(65.dp)
     ) {
@@ -61,7 +64,7 @@ fun AppBottomNavigationBar(navController: NavController){
                 selected = isSelected,
                 icon = {Icon(item.icon,
                     contentDescription = stringResource(item.labelResId),
-                    modifier = Modifier.size(35.dp))},
+                    modifier = Modifier.size(30.dp))},
                 label = {Text(stringResource(item.labelResId))},
                 onClick = {
                     if(item.route == "main") {
@@ -76,18 +79,18 @@ fun AppBottomNavigationBar(navController: NavController){
 
                             }
                         }
-                        } else {
-                                if (currentRoute != item.route) {
-                                    navController.navigate(item.route) {
-                                        popUpTo(navController.graph.startDestinationId) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
+                    } else {
+                        if (currentRoute != item.route) {
+                            navController.navigate(item.route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
                                 }
+                                launchSingleTop = true
+                                restoreState = true
                             }
-                          },
+                        }
+                    }
+                },
                 alwaysShowLabel = true,
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.onBackground,

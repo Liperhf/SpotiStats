@@ -1,21 +1,11 @@
 package com.example.spotistats.presentation.auth
 
 import android.app.Activity
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
-import com.example.spotistats.R
 import com.example.spotistats.presentation.auth.components.AuthContent
 
 @Composable
@@ -25,13 +15,12 @@ fun AuthScreen(
 ){
     val context = LocalContext.current
     val activity = context as? Activity
-    val authIntent = viewModel.authIntent.collectAsState()
-    val isAuthenticated = viewModel.isAuthenticated.collectAsState()
+    val uiState = viewModel.uiState.collectAsState()
 
 
     LaunchedEffect(Unit) {
         val intent = activity?.intent
-        if (intent?.data != null && !viewModel.callbackHandled.value){
+        if (intent?.data != null && !uiState.value.callbackHandled){
             viewModel.processSpotifyCallback(intent)
             viewModel.markCallbackHandled()
         } else {
@@ -39,13 +28,13 @@ fun AuthScreen(
         }
     }
 
-    LaunchedEffect(authIntent.value) {
-        authIntent.value?.let {intent ->
+    LaunchedEffect(uiState.value.authIntent) {
+        uiState.value.authIntent?.let {intent ->
             context.startActivity(intent) }
     }
 
-    LaunchedEffect(isAuthenticated.value) {
-        if(isAuthenticated.value){
+    LaunchedEffect(uiState.value.isAuthenticated) {
+        if(uiState.value.isAuthenticated){
             navController.navigate("main"){
                 popUpTo("auth"){inclusive = true}
             }

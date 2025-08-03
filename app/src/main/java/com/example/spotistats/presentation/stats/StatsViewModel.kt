@@ -20,58 +20,51 @@ class StatsViewModel @Inject constructor(
     private val topContentUseCase: TopContentUseCase,
     private val calculateTopAlbumsUseCase: CalculateTopAlbumsUseCase,
 ):ViewModel() {
-    enum class ContentType{TRACKS,ARTISTS,ALBUMS}
-    enum class TimeRange{SHORT,MEDIUM,LONG}
-    private val _selectedContentType = MutableStateFlow(ContentType.TRACKS)
-    val selectedContentType:StateFlow<ContentType> = _selectedContentType
-    private val _selectedTimeRange = MutableStateFlow(TimeRange.SHORT)
-    val selectedTimeRange:StateFlow<TimeRange> = _selectedTimeRange
-    val _topTracks = MutableStateFlow<UserTopTracks?>(null)
-    val topTracks:StateFlow<UserTopTracks?> = _topTracks
-    private val _topArtists = MutableStateFlow<UserTopArtists?>(null)
-    val topArtists:StateFlow<UserTopArtists?> = _topArtists
-    private val _topAlbums = MutableStateFlow<List<TopAlbum?>>(emptyList())
-    val topAlbums:StateFlow<List<TopAlbum?>> = _topAlbums
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading:StateFlow<Boolean?> = _isLoading
+    private val _uiState = MutableStateFlow(StatsUiState())
+    val uiState:StateFlow<StatsUiState> = _uiState
 
     fun updateContentType(contentType: ContentType){
-        _selectedContentType.value = contentType
+        _uiState.value = _uiState.value.copy(selectedContentType = contentType)
         loadStats()
     }
 
     fun updateTimeRange(timeRange: TimeRange){
-        _selectedTimeRange.value = timeRange
+       _uiState.value = _uiState.value.copy(selectedTimeRange = timeRange)
         loadStats()
     }
 
     fun loadStats() {
         viewModelScope.launch {
-            _isLoading.value = true
+            _uiState.value = _uiState.value.copy(isLoading = true)
             try {
-                val currentType = _selectedContentType.value
-                val currentRange = _selectedTimeRange.value
+                val currentType = _uiState.value.selectedContentType
+                val currentRange = _uiState.value.selectedTimeRange
 
-                _topTracks.value = null
-                _topArtists.value = null
-                _topAlbums.value = emptyList()
+                _uiState.value = _uiState.value.copy(
+                    topTracks = null,
+                    topArtists = null,
+                    topAlbums = emptyList()
+                )
 
                 when (currentType) {
 
                     ContentType.TRACKS -> {
-                        _topTracks.value = when (currentRange) {
+                        val tracks = when (currentRange) {
                             TimeRange.SHORT -> topContentUseCase.getUserTopTracksShort()
                             TimeRange.MEDIUM -> topContentUseCase.getUserTopTracksMedium()
                             TimeRange.LONG -> topContentUseCase.getUserTopTracksLong()
                         }
+                        _uiState.value = _uiState.value.copy(topTracks = tracks)
+
                     }
 
                     ContentType.ARTISTS -> {
-                        _topArtists.value = when (currentRange) {
+                        val artists = when (currentRange) {
                             TimeRange.SHORT -> topContentUseCase.getUserTopArtistsShort()
                             TimeRange.MEDIUM -> topContentUseCase.getUserTopArtistsMedium()
                             TimeRange.LONG -> topContentUseCase.getUserTopArtistsLong()
                         }
+                        _uiState.value = _uiState.value.copy(topArtists = artists)
                     }
 
                     ContentType.ALBUMS -> {
@@ -80,20 +73,15 @@ class StatsViewModel @Inject constructor(
                             TimeRange.MEDIUM -> topContentUseCase.getUserTopTracksMedium()
                             TimeRange.LONG -> topContentUseCase.getUserTopTracksLong()
                         }
-                        calculatedUserTopAlbums(tracks)
+                        val albums = calculateTopAlbumsUseCase(tracks)
+                        _uiState.value = _uiState.value.copy(topAlbums = albums)
                     }
                 }
             }catch (e:Exception){
                 e.printStackTrace()
             }finally {
-                _isLoading.value = false
+                _uiState.value = _uiState.value.copy(isLoading = false)
             }
         }
-    }
-
-
-    private fun calculatedUserTopAlbums(userTopTracks:UserTopTracks) {
-        val topAlbums = calculateTopAlbumsUseCase(userTopTracks)
-        _topAlbums.value = topAlbums
     }
 }

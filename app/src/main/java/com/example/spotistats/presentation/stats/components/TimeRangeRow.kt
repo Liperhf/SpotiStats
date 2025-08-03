@@ -10,19 +10,21 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.spotistats.R
+import com.example.spotistats.presentation.stats.StatsUiState
 import com.example.spotistats.presentation.stats.StatsViewModel
+import com.example.spotistats.presentation.stats.TimeRange
 
 @Composable
 fun TimeRangeRow(
-    selectedTimeRange: State<StatsViewModel.TimeRange>,
-    onUpdateTimeRange:(StatsViewModel.TimeRange) -> Unit
+    selectedTimeRange: TimeRange,
+    onUpdateTimeRange:(TimeRange) -> Unit,
+    uiState: StatsUiState
 ){
     Column() {
         Row(modifier = Modifier
@@ -34,8 +36,8 @@ fun TimeRangeRow(
             fontWeight = FontWeight.Bold)}
         Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween){
-            StatsViewModel.TimeRange.values().forEach { range ->
-                val isSelected = selectedTimeRange.value == range
+            TimeRange.values().forEach { range ->
+                val isSelected = uiState.selectedTimeRange == range
                 Button(onClick = {onUpdateTimeRange(range)},
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.background,
@@ -48,17 +50,17 @@ fun TimeRangeRow(
                 )
                 {
                     when(range){
-                        StatsViewModel.TimeRange.SHORT -> {
+                        TimeRange.SHORT -> {
                             Text(text = stringResource(R.string.last_months),
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp)
                         }
-                        StatsViewModel.TimeRange.MEDIUM -> {
+                        TimeRange.MEDIUM -> {
                             Text(text = stringResource(R.string.last_six_months),
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp)
                         }
-                        StatsViewModel.TimeRange.LONG -> {
+                        TimeRange.LONG -> {
                             Text(text = stringResource(R.string.last_year),
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp)

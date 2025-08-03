@@ -25,7 +25,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.spotistats.presentation.account.AccountScreen
-import com.example.spotistats.presentation.common.AppBottomNavigationBar
 import com.example.spotistats.presentation.auth.AuthScreen
 import com.example.spotistats.presentation.auth.AuthViewModel
 import com.example.spotistats.presentation.language.LanguageScreen
@@ -35,6 +34,7 @@ import com.example.spotistats.presentation.main.MainViewModel
 import com.example.spotistats.presentation.recently.RecentlyScreen
 import com.example.spotistats.presentation.settings.SettingsScreen
 import com.example.spotistats.presentation.account.AccountViewModel
+import com.example.spotistats.presentation.screen.authorization.AppBottomNavigationBar
 import com.example.spotistats.presentation.stats.StatsScreen
 import com.example.spotistats.presentation.stats.StatsViewModel
 import com.example.spotistats.ui.theme.SpotiStatsTheme
@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
     private var currentCropCallback:((Uri?) -> Unit)? = null
 
 
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -4,7 +4,10 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
@@ -22,6 +25,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -48,28 +52,10 @@ fun MainScreen(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val recentlyPlayed = mainViewModel.recentlyPlayed.collectAsState()
-    val recentlyPlayedTracks = recentlyPlayed.value?.tracks
-    val isAuthenticated = authViewModel.isAuthenticated.collectAsState()
     val greeting = stringResource(id = mainViewModel.getGreeting())
-    val userProfile = mainViewModel.userProfile.collectAsState()
-    val currentlyPlaying = mainViewModel.currentlyPlaying.collectAsState()
-    val progressMs = mainViewModel.progressMs.collectAsState()
-    val lastPlayedTrack = recentlyPlayed.value?.tracks?.firstOrNull()
-    val lastPlayedImageUrl = lastPlayedTrack?.imageUrl
-    val lastPlayedName = lastPlayedTrack?.name
-    val lastPlayedArtist = lastPlayedTrack?.artists
-    val currentlyImageUrl = currentlyPlaying.value?.item?.imageUrl
-    val currentlyTrackName = currentlyPlaying.value?.item?.name
-    val currentlyArtistName = currentlyPlaying.value?.item?.artists
-    val currentlyTrack = currentlyPlaying.value?.item
-    val currentlyDurationMs = currentlyTrack?.duration_ms ?: 1
     val accountUiState = settingsViewModel.uiState.collectAsState()
-    val currentlyUserName = accountUiState.value.nickname
-    val currentlyUserAvatar = accountUiState.value.imageUrl
-    val userTopArtists = mainViewModel.userTopArtists.collectAsState()
-    val userTopTracks = mainViewModel.userTopTracks.collectAsState()
-    val userTopAlbums = mainViewModel.userTopAlbums.collectAsState()
+    val mainUiState = mainViewModel.uiState.collectAsState()
+    val authUiState = authViewModel.uiState.collectAsState()
 
     val systemUiController = rememberSystemUiController()
     val navBarColor = MaterialTheme.colorScheme.background
@@ -97,43 +83,14 @@ fun MainScreen(
     }
 
     LaunchedEffect(Unit) {
-        if (isAuthenticated.value) {
-            try {
-                mainViewModel.getRecentlyPlayed()
-            } catch (e: Exception) {
-                Log.e("MainScreen", "Failed to get recently played: ${e.message}")
-            }
-
-            try {
-                mainViewModel.getUserProfile()
-            } catch (e: Exception) {
-                Log.e("MainScreen", "Failed to get profile: ${e.message}")
-            }
-
-            try {
-                mainViewModel.getCurrentlyPlaying()
-            } catch (e: Exception) {
-                Log.e("MainScreen", "Failed to get currently playing: ${e.message}")
-            }
-
-            try {
-                mainViewModel.getUserTopArtists()
-            } catch (e: Exception) {
-                Log.e("MainScreen", "Failed to get top artists: ${e.message}")
-            }
-
-            try {
-                mainViewModel.getUserTopTracks()
-            } catch (e: Exception) {
-                Log.e("MainScreen", "Failed to get top tracks: ${e.message}")
-            }
-
+        if (authUiState.value.isAuthenticated) {
+            mainViewModel.loadStats()
         }
     }
 
 
-    LaunchedEffect(isAuthenticated.value) {
-        if (!isAuthenticated.value) {
+    LaunchedEffect(authUiState.value.isAuthenticated) {
+        if (!authUiState.value.isAuthenticated) {
             navController.navigate("auth") {
                 popUpTo("main") { inclusive = true }
             }
@@ -153,8 +110,8 @@ fun MainScreen(
         ModalNavigationDrawer(
             drawerContent = {
                 DrawerContent(
-                    currentlyUserAvatar,
-                    currentlyUserName,
+                    accountUiState.value.imageUrl,
+                    accountUiState.value.nickname,
                     onSettingsClick = { navController.navigate("settings") },
                     onLogoutClick = {authViewModel.logout()}
                 )
@@ -170,7 +127,7 @@ fun MainScreen(
                                 onClick = { scope.launch { drawerState.open() } },
                                 content = {
                                     AsyncImage(
-                                        model = currentlyUserAvatar,
+                                        model = accountUiState.value.imageUrl,
                                         contentDescription = stringResource(R.string.avatar),
                                         modifier = Modifier.size(40.dp)
                                     )
@@ -185,26 +142,19 @@ fun MainScreen(
                     )
                 },
             ) { paddingValues ->
+                if(mainUiState.value.isLoading){
+                    Box(modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center){
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.onBackground)
+                    }
+                }
                 MainContent(
                     isRefreshing,
                     refreshRecentlyPlayed,
                     paddingValues,
-                    currentlyPlaying,
-                    currentlyImageUrl,
-                    currentlyTrackName,
-                    currentlyArtistName,
-                    currentlyDurationMs,
-                    progressMs,
-                    lastPlayedTrack?.name,
-                    lastPlayedImageUrl,
-                    lastPlayedTrack?.album,
-                    lastPlayedName,
-                    lastPlayedArtist,
-                    recentlyPlayedTracks,
                     onRecentlyShowClick = {navController.navigate("recently")},
-                    userTopArtists,
-                    userTopTracks,
-                    userTopAlbums
+                    mainUiState = mainUiState.value
                 )
             }
         }

@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.spotistats.R
+import com.example.spotistats.presentation.main.MainUiState
 import com.example.spotistats.presentation.main.MainViewModel
 import com.example.spotistats.presentation.recently.components.RecentlyContent
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -46,8 +47,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
         val systemUiController = rememberSystemUiController()
         val navBarColor = MaterialTheme.colorScheme.background
         val statusBarColor = MaterialTheme.colorScheme.background
-        val recentlyPlayed = viewModel.recentlyPlayed.collectAsState()
-        val recentlyPlayedTracks = recentlyPlayed.value?.tracks
+        val mainUiState = viewModel.uiState.collectAsState()
 
         SideEffect {
             systemUiController.setNavigationBarColor(
@@ -78,6 +78,8 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
                 ),
             ) }
         ) {paddingValues ->
-            RecentlyContent(paddingValues,recentlyPlayedTracks)
+            RecentlyContent(paddingValues,
+                uiState = mainUiState.value
+            )
             }
         }

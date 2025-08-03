@@ -24,16 +24,17 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.spotistats.R
 import com.example.spotistats.domain.model.Track
+import com.example.spotistats.presentation.main.MainUiState
 
 @Composable
 fun RecentlyContent(
     paddingValues: PaddingValues,
-    recentlyPlayedTracks: List<Track>?
+    uiState: MainUiState
 ){
     LazyColumn(modifier = Modifier.padding(paddingValues)){
-        if (recentlyPlayedTracks != null) {
-            items(recentlyPlayedTracks.size){
-                val track = recentlyPlayedTracks[it]
+        if (uiState.recentlyPlayed != null) {
+            items(uiState.recentlyPlayed.tracks.size){
+                val track = uiState.recentlyPlayed.tracks[it]
                 val imageUrl = track.imageUrl
                 val name = track.name
                 val artist = track.artists

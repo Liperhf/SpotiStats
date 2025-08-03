@@ -24,7 +24,9 @@ import coil.compose.AsyncImage
 import com.example.spotistats.R
 
 @Composable
-fun LastPlayedBox(imageUrl: String, name: String, artist: String) {
+fun LastPlayedBox(imageUrl: String,
+                  name: String,
+                  artist: String) {
     Box(
         modifier = Modifier
             .padding(horizontal = 10.dp)
