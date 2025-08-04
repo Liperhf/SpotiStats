@@ -142,5 +142,9 @@ android {
         testImplementation(libs.junit)
         androidTestImplementation(libs.androidx.junit.v115)
         androidTestImplementation(libs.androidx.espresso.core.v351)
+        androidTestImplementation(libs.androidx.compose.bom.v20250500)
+        testImplementation(libs.kotlinx.coroutines.test)
+        testImplementation(libs.mockk)
+        //testImplementation(libs.mockito.core)
     }
 }
