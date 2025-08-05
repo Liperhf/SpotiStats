@@ -99,4 +99,5 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     //testImplementation(libs.mockito.core)
     testImplementation(libs.mockk)
+    testImplementation(libs.kotlin.test)
 }

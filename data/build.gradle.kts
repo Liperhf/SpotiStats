@@ -146,5 +146,6 @@ android {
         testImplementation(libs.kotlinx.coroutines.test)
         testImplementation(libs.mockk)
         //testImplementation(libs.mockito.core)
+        testImplementation(libs.jetbrains.kotlin.test)
     }
 }
