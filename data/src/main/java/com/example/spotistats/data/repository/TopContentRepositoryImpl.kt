@@ -17,7 +17,7 @@ import com.example.spotistats.domain.repository.TopContentRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class TopContentRepositoryImpl @Inject constructor(
+class  TopContentRepositoryImpl @Inject constructor(
     private val config: SpotifyConfig,
     private val spotifyAuthApi: SpotifyAuthApi,
     private val spotifyUserApi: SpotifyUserApi,
@@ -32,13 +32,10 @@ class TopContentRepositoryImpl @Inject constructor(
         return try {
             val token = authRepository.getAccessToken() ?: throw IllegalArgumentException("No access token")
             Log.d("RepositoryImpl", "Fetching top artists (short) with token: $token")
-
-            // 1. Загружаем с сервера
             val dto = spotifyUserApi.getTopArtistsShort("Bearer $token")
             val domainModel = dto.toDomain()
             Log.d("RepositoryImpl", "API returned ${domainModel.items.size} artists")
 
-            // 2. Конвертируем в Entity
             val entities = domainModel.items.mapIndexed { index, item ->
                 val entity = item.toEntity(timeRange, index + 1)
                 if (entity == null) {
@@ -49,20 +46,17 @@ class TopContentRepositoryImpl @Inject constructor(
 
             Log.d("RepositoryImpl", "Mapped ${entities.size} artists to entities")
 
-            // 3. Сохраняем в Room
             topArtistsDao.clearTopArtists(timeRange)
             Log.d("RepositoryImpl", "Cleared DB for timeRange=$timeRange")
 
             topArtistsDao.insertTopArtists(entities)
             Log.d("RepositoryImpl", "Inserted ${entities.size} artists into DB")
 
-            // 4. Возвращаем Domain-модель
             domainModel
 
         } catch (e: Exception) {
             Log.e("RepositoryImpl", "API error: ${e.message}", e)
 
-            // 5. Пытаемся загрузить из Room
             val cachedEntities = topArtistsDao.getTopArtists(timeRange)
             Log.d("RepositoryImpl", "Loaded ${cachedEntities.size} artists from DB cache")
 
@@ -70,7 +64,6 @@ class TopContentRepositoryImpl @Inject constructor(
                 return UserTopArtists(emptyList())
             }
 
-            // 6. Конвертируем Entity -> Domain
             val domainFromCache = UserTopArtists(items = cachedEntities.map { it.toDomain() })
             Log.d("RepositoryImpl", "Returning cached UserTopArtists with ${domainFromCache.items.size} items")
 

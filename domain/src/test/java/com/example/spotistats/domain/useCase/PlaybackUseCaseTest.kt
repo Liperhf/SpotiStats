@@ -28,7 +28,7 @@ class PlaybackUseCaseTest {
     }
 
     @Test
-    fun `getCurrentlyPlaying should return currentlyPlaying track if token is valid and currentlyPlating is not empty`() = runTest {
+    fun `getCurrentlyPlaying should return currentlyPlaying track if repository returns success`() = runTest {
         val fakeCurrentlyPlaying = CurrentlyPlaying(
             is_playing = true,
             item = CurrentlyItem(
@@ -46,7 +46,7 @@ class PlaybackUseCaseTest {
     }
 
     @Test
-    fun `getRecentlyPlayed should return RecentlyPlayed track if token is valid and currentlyPlating is not empty`() = runTest {
+    fun `getRecentlyPlayed should return RecentlyPlayed track if repository returns success`() = runTest {
         val fakeRecentlyPlayed = RecentlyPlayed(
             tracks = (1..10).map {
                 Track(
