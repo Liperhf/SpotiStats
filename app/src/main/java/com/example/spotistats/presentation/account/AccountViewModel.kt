@@ -33,7 +33,7 @@ class AccountViewModel @Inject constructor(
         loadProfile()
     }
 
-    private fun loadProfile() {
+    fun loadProfile() {
         viewModelScope.launch {
             val savedNickname = AccountPrefs.getNickname(context)
             val savedAvatar = AccountPrefs.getAvatar(context)
