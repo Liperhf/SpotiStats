@@ -1,4 +1,4 @@
-package com.example.spotistats.viewModels
+package com.example.spotistats.util
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -9,11 +9,10 @@ import kotlinx.coroutines.test.setMain
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
-
 @ExperimentalCoroutinesApi
 class MainCoroutineRule (
-    private val testDispatcher:TestDispatcher = UnconfinedTestDispatcher()
-):TestWatcher(){
+    private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
+): TestWatcher(){
     override fun starting(description: Description?) {
         super.starting(description)
         Dispatchers.setMain(testDispatcher)

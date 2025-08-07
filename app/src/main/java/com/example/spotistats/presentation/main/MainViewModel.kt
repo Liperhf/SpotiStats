@@ -52,7 +52,7 @@ class MainViewModel @Inject constructor(
                 getUserTopTracks()
                 getCurrentlyPlaying()
             }catch (e:Exception){
-                e.printStackTrace()
+                _uiState.value = _uiState.value.copy(errorMessage = e.message)
             }
             _uiState.value = _uiState.value.copy(isLoading = false)
         }
@@ -63,16 +63,15 @@ class MainViewModel @Inject constructor(
         try {
             _uiState.value = _uiState.value.copy(recentlyPlayed = playbackUseCase.getRecentlyPlayed())
         } catch (e: Exception) {
-            Log.e("getRecentlyPlayed", "No network: ${e.message}")
+            _uiState.value = _uiState.value.copy(errorMessage = e.message)
         }
     }
 
     suspend fun getUserProfile(){
         try {
             _uiState.value = _uiState.value.copy(userProfile = userUseCase.getUserProfile())
-            println("Profile loaded: ${_uiState.value.userProfile?.imagesUrl}")
         } catch (e: Exception) {
-            println("Failed to load profile: ${e.message}")
+            _uiState.value = _uiState.value.copy(errorMessage = e.message)
         }
     }
 
@@ -88,7 +87,7 @@ class MainViewModel @Inject constructor(
             }
         }catch (e:Exception){
             _uiState.value = _uiState.value.copy(currentlyPlaying = null)
-            Log.e("NowPlaying", "Failed to load : ${e.message}")
+            _uiState.value = _uiState.value.copy(errorMessage = e.message)
         }
     }
 
@@ -97,7 +96,7 @@ class MainViewModel @Inject constructor(
             val result = topContentUseCase.getUserTopArtistsShort()
             _uiState.value = _uiState.value.copy(topArtists = result)
         } catch (e: Exception) {
-            println("Failed to load top artists: ${e.message}")
+            _uiState.value = _uiState.value.copy(errorMessage = e.message)
         }
     }
 
@@ -107,7 +106,7 @@ class MainViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(topTracks = result)
             calculatedUserTopAlbums()
         }catch (e:Exception){
-            println("Failed to load top artists: ${e.message}")
+            _uiState.value = _uiState.value.copy(errorMessage = e.message)
         }
     }
 
@@ -120,7 +119,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun calculatedUserTopAlbums() {
+    fun calculatedUserTopAlbums() {
         val topTracks = _uiState.value.topTracks ?: return
         val topAlbums = calculateTopAlbumsUseCase(topTracks)
         _uiState.value = _uiState.value.copy(topAlbums = topAlbums)

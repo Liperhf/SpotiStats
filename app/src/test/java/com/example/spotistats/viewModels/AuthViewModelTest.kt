@@ -5,6 +5,7 @@ import android.net.Uri
 import com.example.spotistats.domain.model.AuthToken
 import com.example.spotistats.domain.useCases.AuthUseCase
 import com.example.spotistats.presentation.auth.AuthViewModel
+import com.example.spotistats.util.MainCoroutineRule
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify

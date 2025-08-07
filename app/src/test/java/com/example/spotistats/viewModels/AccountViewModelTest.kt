@@ -9,6 +9,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import android.net.Uri
+import com.example.spotistats.util.MainCoroutineRule
 import io.mockk.Runs
 import io.mockk.coVerify
 import io.mockk.just

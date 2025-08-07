@@ -78,7 +78,7 @@ class StatsViewModel @Inject constructor(
                     }
                 }
             }catch (e:Exception){
-                e.printStackTrace()
+                _uiState.value = _uiState.value.copy(errorMessage = e.message)
             }finally {
                 _uiState.value = _uiState.value.copy(isLoading = false)
             }
