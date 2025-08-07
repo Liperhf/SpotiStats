@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.example.spotistats.R
 import com.example.spotistats.domain.model.AppLanguage
-import com.example.spotistats.presentation.language.LanguageViewModel
 import com.example.spotistats.util.LanguagePrefs
 import com.example.spotistats.util.UpdateLocale
 import java.util.Locale
