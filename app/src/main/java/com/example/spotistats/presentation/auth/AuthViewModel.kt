@@ -47,10 +47,8 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val isSuccess = authUseCase.isUserAuthorized()
-                Log.d("AuthViewModel", "checkAuthStatus: isUserAuthorized = $isSuccess")
                 _uiState.value = _uiState.value.copy(isAuthenticated = isSuccess)
             } catch (e: Exception) {
-                Log.e("AuthViewModel", "checkAuthStatus error", e)
                 _uiState.value = _uiState.value.copy(isAuthenticated = false)
             }
         }
@@ -58,30 +56,25 @@ class AuthViewModel @Inject constructor(
 
     fun processSpotifyCallback(intent: Intent) {
         val data: Uri? = intent.data
-        Log.d("AuthViewModel", "processSpotifyCallback: data = $data")
         if (data?.scheme == "spotistats" && data.host == "callback") {
             val code = data.getQueryParameter("code")
             val error = data.getQueryParameter("error")
-            Log.d("AuthViewModel", "processSpotifyCallback: code = $code, error = $error")
             if (code != null) {
                 processAuthorizationCode(code)
             } else if (error != null) {
-                Log.e("AuthViewModel", "Authorization error: $error")
+                _uiState.value = _uiState.value.copy(errorMessage = error)
             }
         }
     }
 
     fun processAuthorizationCode(code: String) {
-        Log.d("AuthViewModel", "processAuthorizationCode: code = $code")
         viewModelScope.launch {
             try {
                 val authDto = authUseCase.exchangeCodeForToken(code)
-                Log.d("AuthViewModel", "exchangeCodeForToken success: $authDto")
                 authUseCase.saveTokens(authDto)
-                Log.d("AuthViewModel", "Tokens saved")
                 checkAuthStatus()
             } catch (e: Exception) {
-                Log.e("AuthViewModel", "processAuthorizationCode error", e)
+                _uiState.value = _uiState.value.copy(errorMessage = e.message)
             }
         }
     }
@@ -108,7 +101,7 @@ class AuthViewModel @Inject constructor(
             catch (e:Exception){
 
 
-                e.printStackTrace()
+                _uiState.value = _uiState.value.copy(errorMessage = e.message)
 
 
             }
