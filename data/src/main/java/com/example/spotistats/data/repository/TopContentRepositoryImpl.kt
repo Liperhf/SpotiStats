@@ -31,10 +31,8 @@ class  TopContentRepositoryImpl @Inject constructor(
 
         return try {
             val token = authRepository.getAccessToken() ?: throw IllegalArgumentException("No access token")
-            Log.d("RepositoryImpl", "Fetching top artists (short) with token: $token")
             val dto = spotifyUserApi.getTopArtistsShort("Bearer $token")
             val domainModel = dto.toDomain()
-            Log.d("RepositoryImpl", "API returned ${domainModel.items.size} artists")
 
             val entities = domainModel.items.mapIndexed { index, item ->
                 val entity = item.toEntity(timeRange, index + 1)
@@ -44,13 +42,10 @@ class  TopContentRepositoryImpl @Inject constructor(
                 entity
             }.filterNotNull()
 
-            Log.d("RepositoryImpl", "Mapped ${entities.size} artists to entities")
 
             topArtistsDao.clearTopArtists(timeRange)
-            Log.d("RepositoryImpl", "Cleared DB for timeRange=$timeRange")
 
             topArtistsDao.insertTopArtists(entities)
-            Log.d("RepositoryImpl", "Inserted ${entities.size} artists into DB")
 
             domainModel
 

@@ -3,12 +3,8 @@ package com.example.spotistats.presentation.account
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.spotistats.domain.model.AppLanguage
-import com.example.spotistats.domain.model.UserProfile
 import com.example.spotistats.domain.useCases.UserUseCase
 import com.example.spotistats.util.AccountPrefs
 import dagger.hilt.android.lifecycle.HiltViewModel
