@@ -1,0 +1,43 @@
+<resources>
+    <string name="login">Войти через</string>
+    <string name="settings">Настройки</string>
+    <string name="logout">Выйти</string>
+    <string name="good_morning">Доброе утро</string>
+    <string name="good_day">Добрый день</string>
+    <string name="good_evening">Добрый вечер</string>
+    <string name="good_night">Спокойной ночи</string>
+    <string name="now_playing">Сейчас играет</string>
+    <string name="last_played">Последний прослушаный</string>
+    <string name="account">Аккаунт</string>
+    <string name="language">Язык</string>
+    <string name="back">Назад</string>
+    <string name="avatar">Аватар</string>
+    <string name="track_image">Изображение трека</string>
+    <string name="icon">Иконка</string>
+    <string name="app_name">SpotiStats</string>
+    <string name="english">Английский</string>
+    <string name="russian">Русский</string>
+    <string name="name">Имя</string>
+    <string name="change">Изменить</string>
+    <string name="save_changes">Сохранить изменения</string>
+    <string name="reset_changes">Сбросить изменения</string>
+    <string name="home">Главная</string>
+    <string name="stats">Статистика</string>
+    <string name="listened_recently">Недавние</string>
+    <string name="top_tracks_month">Ваши любимые треки за месяц</string>
+    <string name="top_artists_month">Ваши любимые исполнители за месяц</string>
+    <string name="top_albums_month">Ваши любимые альбомы за месяц</string>
+    <string name="show_all">Показать все</string>
+    <string name="top">Топ</string>
+    <string name="last_months">Месяц</string>
+    <string name="last_six_months">6 Месяцев</string>
+    <string name="last_year">Год</string>
+    <string name="artists">Исполнители</string>
+    <string name="tracks">Треки</string>
+    <string name="albums">Альбомы</string>
+    <string name="welcome">Добро пожаловать!</string>
+    <string name="spotify">Spotify</string>
+    <string name="welcom_text">Войдите,чтобы продолжить</string>
+    <string name="error_nickname">Введите имя</string>
+
+</resources>
