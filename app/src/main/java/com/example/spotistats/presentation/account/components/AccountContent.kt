@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import coil.compose.AsyncImage
 import com.example.spotistats.R
 import com.example.spotistats.presentation.account.AccountViewModel
@@ -46,6 +47,10 @@ fun AccountContent(
     onResetProfileClick:() -> Unit
 )
 {
+    val maxLength = 20
+    val isError = nickname?.isBlank()
+    val errorMessage = stringResource(R.string.error_nickname)
+
     Column(modifier = Modifier
         .padding(paddingValues)
         .fillMaxSize(),
@@ -85,20 +90,39 @@ fun AccountContent(
 
         nickname.let { it ->
             if (it != null) {
-                TextField(value = it,
-                    onValueChange = {
-                        onSetNickNameClick(it)
-                    },
-                    label = { Text(stringResource(R.string.name)) },
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                        focusedLabelColor = MaterialTheme.colorScheme.onBackground,
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onBackground,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-                        cursorColor = MaterialTheme.colorScheme.onBackground
+                if (isError != null) {
+                    TextField(value = it,
+                        onValueChange = {
+                            if(it.length <= maxLength)
+                                onSetNickNameClick(it)
+                        },
+                        label = { Text(stringResource(R.string.name)) },
+                        isError = isError,
+                        supportingText = {
+                            when {
+                                isError -> {
+                                    Text(
+                                        text = errorMessage,
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                                else -> {
+                                    Text(
+                                        text = "${nickname.length} / $maxLength"
+                                    )
+                                }
+                            }
+                        },
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                            focusedLabelColor = MaterialTheme.colorScheme.onBackground,
+                            unfocusedLabelColor = MaterialTheme.colorScheme.onBackground,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                            cursorColor = MaterialTheme.colorScheme.onBackground
+                        )
                     )
-                )
+                }
             }
         }
 

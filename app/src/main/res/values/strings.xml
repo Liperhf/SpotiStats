@@ -38,5 +38,6 @@
     <string name="welcome">Welcome!</string>
     <string name="spotify">Spotify</string>
     <string name="welcom_text">Login to continue</string>
+    <string name="error_nickname">Enter the name</string>
 
 </resources>
