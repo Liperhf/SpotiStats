@@ -14,7 +14,6 @@ import com.example.spotistats.domain.model.UserTopArtistsItem
 import com.example.spotistats.domain.model.UserTopTracks
 import com.example.spotistats.domain.model.UserTopTracksItem
 
-class FakeFactory {
     object FakeFactory {
 
         fun createFakeTrack(): Track = Track(
@@ -93,4 +92,3 @@ class FakeFactory {
                 progress_ms = 50000
             )
     }
-}
