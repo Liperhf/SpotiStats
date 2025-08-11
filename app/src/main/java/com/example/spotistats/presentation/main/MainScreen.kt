@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.spotistats.R
@@ -46,9 +47,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(
     navController: NavController,
-    mainViewModel: MainViewModel,
-    authViewModel: AuthViewModel,
-    settingsViewModel: AccountViewModel
+    mainViewModel:MainViewModel,
+    authViewModel:AuthViewModel,
+    settingsViewModel:AccountViewModel
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()

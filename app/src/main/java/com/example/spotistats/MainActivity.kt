@@ -44,13 +44,11 @@ import java.io.File
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @RequiresApi(Build.VERSION_CODES.O)
     private lateinit var uCropLauncher: ActivityResultLauncher<Intent>
     private var currentCropCallback:((Uri?) -> Unit)? = null
 
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -94,14 +92,14 @@ class MainActivity : ComponentActivity() {
                     val shouldShowBottomBar = currentRoute in screensWithBottomBar
 
                     Scaffold(
-                            bottomBar =
-                            {
-                                if(shouldShowBottomBar) {
+                        bottomBar =
+                        {
+                            if(shouldShowBottomBar) {
                                 AppBottomNavigationBar(navController)
                             }
-                            }
+                        }
                     ) {
-                        paddingValues ->
+                            paddingValues ->
                         NavHost(navController = navController,
                             startDestination = "auth",
                             modifier = Modifier.padding(paddingValues)) {
@@ -152,7 +150,6 @@ class MainActivity : ComponentActivity() {
         }
     }
     @SuppressLint("SuspiciousIndentation")
-    @RequiresApi(Build.VERSION_CODES.O)
     fun startCropActivityForResult(sourceUri: Uri,  callback: (Uri?) -> Unit) {
         this.currentCropCallback = callback
         val destinationFileName = "cropped_avatar_${System.currentTimeMillis()}.jpg"
@@ -168,6 +165,6 @@ class MainActivity : ComponentActivity() {
         val uCropIntent = UCrop.of(sourceUri, destinationUri)
             .withOptions(options)
             .getIntent(this)
-            uCropLauncher.launch(uCropIntent)
+        uCropLauncher.launch(uCropIntent)
     }
 }

@@ -19,6 +19,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.spotistats.R
 import com.example.spotistats.presentation.account.components.AccountContent
@@ -29,7 +30,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AccountScreen(
-    viewModel: AccountViewModel,
+    viewModel:AccountViewModel,
     navController: NavController,
     onStartImageCrop: (sourceUri: Uri, callback: (Uri?) -> Unit) -> Unit
 ){

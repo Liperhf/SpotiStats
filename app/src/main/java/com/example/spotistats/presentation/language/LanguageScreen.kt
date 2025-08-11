@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.spotistats.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -23,7 +24,7 @@ import com.example.spotistats.presentation.language.components.LanguageContent
 @Composable
 fun LanguageScreen(
     navController: NavController,
-    viewModel: LanguageViewModel
+    viewModel:LanguageViewModel
 ){
     val systemUiController = rememberSystemUiController()
     val navBarColor = MaterialTheme.colorScheme.background

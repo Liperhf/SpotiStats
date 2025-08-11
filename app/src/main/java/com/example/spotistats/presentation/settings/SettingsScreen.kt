@@ -18,6 +18,7 @@ import androidx.navigation.NavController
 import com.example.spotistats.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import androidx.compose.runtime.collectAsState
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.spotistats.presentation.auth.AuthViewModel
 import com.example.spotistats.presentation.settings.components.SettingsContent
 
