@@ -1,6 +1,6 @@
 package com.example.spotistats.domain.model
 
 
-data class ArtistX (
+data class ArtistX(
     val name: String,
-    )
+)

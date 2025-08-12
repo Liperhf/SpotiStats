@@ -20,15 +20,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.spotistats.R
+import com.example.spotistats.ui.theme.SpotiStatsTheme
 
 @Composable
-fun LastPlayedBox(imageUrl: String,
-                  name: String,
-                  artist: String) {
+fun LastPlayedBox(
+    imageUrl: String,
+    name: String,
+    artist: String
+) {
     Box(
         modifier = Modifier
             .padding(horizontal = 10.dp)
@@ -37,8 +41,10 @@ fun LastPlayedBox(imageUrl: String,
             .height(160.dp)
             .fillMaxWidth()
     ) {
-        Column(modifier = Modifier
-            .padding(12.dp)) {
+        Column(
+            modifier = Modifier
+                .padding(12.dp)
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -50,10 +56,12 @@ fun LastPlayedBox(imageUrl: String,
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
                 )
-                AsyncImage(model = R.drawable.spotify,
+                AsyncImage(
+                    model = R.drawable.spotify,
                     contentDescription = stringResource(R.string.spotify),
                     modifier = Modifier
-                        .size(30.dp))
+                        .size(30.dp)
+                )
             }
             Row {
                 AsyncImage(
@@ -61,7 +69,7 @@ fun LastPlayedBox(imageUrl: String,
                     contentDescription = stringResource(R.string.track_image),
                     modifier = Modifier
                         .size(105.dp, 105.dp)
-                        .clip(RoundedCornerShape(10.dp),),
+                        .clip(RoundedCornerShape(10.dp)),
                     placeholder = painterResource(R.drawable.place_holder_track),
                     error = painterResource(R.drawable.place_holder_track)
                 )
@@ -83,5 +91,13 @@ fun LastPlayedBox(imageUrl: String,
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun LastPlayedBoxPreview() {
+    SpotiStatsTheme {
+        LastPlayedBox(imageUrl = "", name = "Track", artist = "Artist")
     }
 }

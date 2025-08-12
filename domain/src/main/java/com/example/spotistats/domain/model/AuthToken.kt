@@ -1,6 +1,6 @@
 package com.example.spotistats.domain.model
 
-data class AuthToken (
+data class AuthToken(
     val access_token: String,
     val token_type: String,
     val expires_in: Int,

@@ -41,15 +41,14 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun MainScreen(
     navController: NavController,
-    mainViewModel:MainViewModel,
-    authViewModel:AuthViewModel,
-    settingsViewModel:AccountViewModel
+    mainViewModel:MainViewModel = hiltViewModel(),
+    authViewModel:AuthViewModel = hiltViewModel(),
+    settingsViewModel:AccountViewModel = hiltViewModel()
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -84,23 +83,23 @@ fun MainScreen(
     }
 
     LaunchedEffect(Unit) {
-        if (authUiState.value.isAuthenticated) {
-            mainViewModel.loadStats()
-        }
+        authViewModel.checkAuthStatus()
     }
 
 
-    LaunchedEffect(authUiState.value.isAuthenticated) {
+    LaunchedEffect(authUiState.value.hasCheckedAuth, authUiState.value.isAuthenticated) {
+        if (!authUiState.value.hasCheckedAuth) return@LaunchedEffect
         if (!authUiState.value.isAuthenticated) {
             navController.navigate("auth") {
                 popUpTo("main") { inclusive = true }
             }
         } else {
+            mainViewModel.loadStats()
             while (true) {
                 try {
                     mainViewModel.getCurrentlyPlaying()
                 } catch (e: Exception) {
-                    Log.e("MainScreen", "Ошибка при обновлении now playing: ${e.message}")
+                    Log.e("MainScreen", "Error when updating now playing: ${e.message}")
                 }
                 delay(1000)
             }

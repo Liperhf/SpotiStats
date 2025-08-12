@@ -20,7 +20,7 @@ import javax.inject.Inject
 class AccountViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val userUseCase: UserUseCase
-):ViewModel(
+) : ViewModel(
 ) {
     private val _uiState = MutableStateFlow(AccountUiState())
     val uiState: StateFlow<AccountUiState> = _uiState
@@ -43,13 +43,13 @@ class AccountViewModel @Inject constructor(
 
             val nickname = when {
                 !savedNickname.isNullOrEmpty() -> savedNickname
-                userProfile != null -> userProfile.display_name ?: ""
+                userProfile != null -> userProfile.display_name
                 else -> ""
             }
 
             val imageUrl = when {
                 !savedAvatar.isNullOrEmpty() -> Uri.parse(savedAvatar)
-                userProfile != null && !userProfile.imagesUrl.isNullOrEmpty() -> Uri.parse(
+                userProfile != null && userProfile.imagesUrl.isNotEmpty() -> Uri.parse(
                     userProfile.imagesUrl
                 )
 
@@ -77,30 +77,30 @@ class AccountViewModel @Inject constructor(
     }
 
 
-        fun setNickName(nick: String) {
-            _uiState.value = _uiState.value.copy(nickname = nick)
-        }
+    fun setNickName(nick: String) {
+        _uiState.value = _uiState.value.copy(nickname = nick)
+    }
 
-        fun setAvatar(uri: Uri) {
-            _uiState.value = _uiState.value.copy(imageUrl = uri)
-        }
+    fun setAvatar(uri: Uri) {
+        _uiState.value = _uiState.value.copy(imageUrl = uri)
+    }
 
-        fun saveProfile(context: Context) {
-            _uiState.value.nickname?.let { AccountPrefs.saveNickname(context, it) }
-            AccountPrefs.saveAvatar(context, _uiState.value.imageUrl.toString())
-        }
+    fun saveProfile(context: Context) {
+        _uiState.value.nickname?.let { AccountPrefs.saveNickname(context, it) }
+        AccountPrefs.saveAvatar(context, _uiState.value.imageUrl.toString())
+    }
 
-    fun resetProfile(){
+    fun resetProfile() {
         viewModelScope.launch {
-        val userProfile = userUseCase.getUserProfile()
-        val newUiState = AccountUiState(
-            imageUrl = userProfile.imagesUrl.let { Uri.parse(it) },
-            nickname = userProfile.display_name,
-            profile = userProfile
-        )
+            val userProfile = userUseCase.getUserProfile()
+            val newUiState = AccountUiState(
+                imageUrl = userProfile.imagesUrl.let { Uri.parse(it) },
+                nickname = userProfile.display_name,
+                profile = userProfile
+            )
             _uiState.value = newUiState
             saveProfile(context)
-    }
+        }
     }
 
 }

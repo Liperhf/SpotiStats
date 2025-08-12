@@ -24,9 +24,7 @@ class CalculateTopAlbumsUseCase @Inject constructor() {
             }
         }
 
-        return albumsCount.values
-            .map { pair -> TopAlbum(pair.first, pair.second) }
-            .sortedByDescending { topAlbum -> topAlbum.trackCount }
-            .take(10)
+        return albumsCount.values.map { pair -> TopAlbum(pair.first, pair.second) }
+            .sortedByDescending { topAlbum -> topAlbum.trackCount }.take(10)
     }
 }

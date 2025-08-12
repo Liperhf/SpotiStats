@@ -5,5 +5,5 @@ data class CurrentlyItem(
     val duration_ms: Int,
     val id: String,
     val name: String,
-    val imageUrl:String
+    val imageUrl: String
 )

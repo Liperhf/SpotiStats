@@ -3,8 +3,8 @@ package com.example.spotistats.data.mapper.DtoMappers
 import com.example.spotistats.data.dto.RecentlyPlayedDto
 import com.example.spotistats.domain.model.RecentlyPlayed
 
-fun RecentlyPlayedDto.toDomain():RecentlyPlayed{
+fun RecentlyPlayedDto.toDomain(): RecentlyPlayed {
     return RecentlyPlayed(
-        tracks =    items.map{it.track.toDomain()},
+        tracks = items.map { it.track.toDomain() },
     )
 }

@@ -12,60 +12,60 @@ import retrofit2.http.Query
 interface SpotifyUserApi {
     @GET("me")
     suspend fun getUserProfile(
-        @Header("Authorization") authorization:String
+        @Header("Authorization") authorization: String
     ): UserProfileDto
 
-    @GET ("me/player/recently-played")
+    @GET("me/player/recently-played")
     suspend fun getRecentlyPlayed(
         @Header("Authorization") authorization: String,
-        @Query("limit") limit:Int = 50
+        @Query("limit") limit: Int = 50
     ): RecentlyPlayedDto
 
-    @GET ("me/player/currently-playing")
+    @GET("me/player/currently-playing")
     suspend fun getCurrentlyPlaying(
         @Header("Authorization") authorization: String,
-    ):CurrentlyPlayingDto
+    ): CurrentlyPlayingDto
 
     @GET("me/top/artists")
     suspend fun getTopArtistsShort(
         @Header("Authorization") authorization: String,
-        @Query("limit") limit:Int = 50,
-        @Query("time_range") time_range:String = "short_term"
-    ):UserTopArtistsDto
+        @Query("limit") limit: Int = 50,
+        @Query("time_range") time_range: String = "short_term"
+    ): UserTopArtistsDto
 
     @GET("me/top/artists")
     suspend fun getTopArtistsMedium(
         @Header("Authorization") authorization: String,
-        @Query("limit") limit:Int = 50,
+        @Query("limit") limit: Int = 50,
         @Query("time_range") time_range: String = "medium_term"
-    ):UserTopArtistsDto
+    ): UserTopArtistsDto
 
     @GET("me/top/artists")
     suspend fun getTopArtistsLong(
         @Header("Authorization") authorization: String,
-        @Query("limit") limit:Int = 50,
+        @Query("limit") limit: Int = 50,
         @Query("time_range") time_range: String = "long_term"
-    ):UserTopArtistsDto
+    ): UserTopArtistsDto
 
     @GET("me/top/tracks")
     suspend fun getTopTracksShort(
         @Header("Authorization") authorization: String,
-        @Query("limit") limit:Int = 50,
+        @Query("limit") limit: Int = 50,
         @Query("time_range") time_range: String = "short_term"
-    ):UserTopTracksDto
+    ): UserTopTracksDto
 
     @GET("me/top/tracks")
     suspend fun getTopTracksMedium(
         @Header("Authorization") authorization: String,
-        @Query("limit") limit:Int = 50,
+        @Query("limit") limit: Int = 50,
         @Query("time_range") time_range: String = "medium_term"
-    ):UserTopTracksDto
+    ): UserTopTracksDto
 
     @GET("me/top/tracks")
     suspend fun getTopTracksLong(
         @Header("Authorization") authorization: String,
-        @Query("limit") limit:Int = 50,
+        @Query("limit") limit: Int = 50,
         @Query("time_range") time_range: String = "long_term"
-    ):UserTopTracksDto
+    ): UserTopTracksDto
 
 }

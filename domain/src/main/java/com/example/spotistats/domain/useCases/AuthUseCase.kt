@@ -7,62 +7,61 @@ import javax.inject.Inject
 
 class AuthUseCase @Inject constructor(
     private val authRepository: AuthRepository,
-)
-{
+) {
     fun createAuthIntent(): Intent {
         return authRepository.buildAuthIntent()
     }
 
-    suspend fun exchangeCodeForToken(code:String): AuthToken {
+    suspend fun exchangeCodeForToken(code: String): AuthToken {
         return authRepository.exchangeCodeForToken(code)
     }
 
-    suspend fun saveTokens(authTokenDto: AuthToken){
+    suspend fun saveTokens(authTokenDto: AuthToken) {
         return authRepository.saveTokens(authTokenDto)
     }
 
-    suspend fun getAccessToken():String?{
+    suspend fun getAccessToken(): String? {
         return authRepository.getAccessToken()
     }
 
-    suspend fun getRefreshToken():String?{
+    suspend fun getRefreshToken(): String? {
         return authRepository.getRefreshToken()
     }
 
-    suspend fun refreshTokenIfNeeded():Boolean{
+    suspend fun refreshTokenIfNeeded(): Boolean {
         return try {
-            if(isTokenExpired()){
+            if (isTokenExpired()) {
                 val refreshToken = getRefreshToken()
-                if(refreshToken != null){
+                if (refreshToken != null) {
                     val newAuthDto = authRepository.refreshToken(refreshToken)
                     saveTokens(newAuthDto)
                     true
-                }else false
-            }else true
-        }catch (e:Exception){
+                } else false
+            } else true
+        } catch (e: Exception) {
             false
         }
     }
 
-    suspend fun getExpiresAt():Long{
+    suspend fun getExpiresAt(): Long {
         return authRepository.getExpiresAt()
     }
 
 
-    suspend fun isUserAuthorized():Boolean{
+    suspend fun isUserAuthorized(): Boolean {
         val token = getAccessToken()
-        if(token == null) return false
-        if(isTokenExpired()){
+        if (token == null) return false
+        if (isTokenExpired()) {
             return refreshTokenIfNeeded()
         }
         return true
     }
 
-    suspend fun clearTokens(){
+    suspend fun clearTokens() {
         return authRepository.clearTokens()
     }
 
-    suspend fun isTokenExpired():Boolean{
+    suspend fun isTokenExpired(): Boolean {
         return authRepository.isTokenExpired()
     }
 

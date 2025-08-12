@@ -19,11 +19,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.spotistats.R
+import com.example.spotistats.domain.model.Image
 import com.example.spotistats.domain.model.UserTopArtists
+import com.example.spotistats.domain.model.UserTopArtistsItem
+import com.example.spotistats.ui.theme.SpotiStatsTheme
 
 @Composable
 fun UserTopArtistsBox(userTopArtists: UserTopArtists) {
@@ -71,4 +75,28 @@ fun UserTopArtistsBox(userTopArtists: UserTopArtists) {
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun UserTopArtistsPreview() {
+    SpotiStatsTheme {
+        UserTopArtistsBox(
+            UserTopArtists(
+                items = List(10) {
+                    UserTopArtistsItem(
+                        name = "Artist $it",
+                        images = listOf(
+                            Image(
+                                height = 640,
+                                url = "https://album.cover.url",
+                                width = 640
+                            )
+                        )
+                    )
+                }
+            )
+        )
+    }
+
 }

@@ -1,5 +1,5 @@
 package com.example.spotistats.domain.model
 
-data class ExternalUrls (
+data class ExternalUrls(
     val spotify: String
 )

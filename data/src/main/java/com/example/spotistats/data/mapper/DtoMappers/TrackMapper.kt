@@ -3,7 +3,7 @@ package com.example.spotistats.data.mapper.DtoMappers
 import com.example.spotistats.data.dto.common.TrackDto
 import com.example.spotistats.domain.model.Track
 
-fun TrackDto.toDomain() : Track{
+fun TrackDto.toDomain(): Track {
     return Track(
         id = this.id,
         album = this.album.name,

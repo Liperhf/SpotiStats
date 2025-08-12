@@ -7,13 +7,13 @@ import androidx.room.Query
 import com.example.spotistats.data.local.entity.TopArtistEntity
 
 @Dao
-interface TopArtistsDao{
+interface TopArtistsDao {
     @Query("SELECT * FROM top_artist WHERE timeRange = :timeRange ORDER BY position ASC")
-    suspend fun getTopArtists(timeRange: String):List<TopArtistEntity>
+    suspend fun getTopArtists(timeRange: String): List<TopArtistEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTopArtists(artists: kotlin.collections.List<com.example.spotistats.data.local.entity.TopArtistEntity>)
 
     @Query("DELETE FROM top_artist WHERE timeRange = :timeRange")
-    suspend fun clearTopArtists(timeRange:String)
+    suspend fun clearTopArtists(timeRange: String)
 }

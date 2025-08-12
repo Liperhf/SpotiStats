@@ -9,11 +9,11 @@ interface SpotifyAuthApi {
     @FormUrlEncoded
     @POST("api/token")
     suspend fun exchangeCodeForToken(
-        @Field("grant_type") grantType:String = "authorization_code",
-        @Field("code") code:String,
-        @Field("redirect_uri") redirectUri:String,
-        @Field("client_id") clientId:String,
-        @Field("client_secret") clientSecret:String
+        @Field("grant_type") grantType: String = "authorization_code",
+        @Field("code") code: String,
+        @Field("redirect_uri") redirectUri: String,
+        @Field("client_id") clientId: String,
+        @Field("client_secret") clientSecret: String
     ): AuthTokenDto
 
     @FormUrlEncoded

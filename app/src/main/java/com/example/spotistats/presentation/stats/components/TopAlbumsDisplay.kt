@@ -19,52 +19,86 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.spotistats.R
+import com.example.spotistats.domain.model.Album
+import com.example.spotistats.domain.model.ArtistX
+import com.example.spotistats.domain.model.Image
 import com.example.spotistats.domain.model.TopAlbum
+import com.example.spotistats.ui.theme.SpotiStatsTheme
 
 @Composable
-fun TopAlbumsDisplay(albums: List<TopAlbum?>){
+fun TopAlbumsDisplay(albums: List<TopAlbum?>) {
     LazyColumn {
-        if (albums != null) {
-            items(albums.size){
-                val album = albums[it]
-                val name = album?.album?.name
-                val imageUrl = album?.album?.images?.firstOrNull()?.url
-                Row(modifier = Modifier
+        items(albums.size) {
+            val album = albums[it]
+            val name = album?.album?.name
+            val imageUrl = album?.album?.images?.firstOrNull()?.url
+            Row(
+                modifier = Modifier
                     .padding(horizontal = 15.dp, vertical = 7.dp)
-                    .fillMaxWidth()){
-                    val number:Int = it + 1
-                    Text(text = number.toString(),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                            .width(32.dp)
-                            .padding(end = 9.dp))
-                    AsyncImage(model = imageUrl,
-                        contentDescription = stringResource(R.string.listened_recently),
-                        modifier = Modifier
-                            .size(60.dp)
-                            .clip(RoundedCornerShape(10.dp)),
-                        placeholder = painterResource(R.drawable.place_holder_track),
-                        error = painterResource(R.drawable.place_holder_track)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Column() {
-                        if (name != null) {
-                            Text(text = name,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onBackground,
-                                overflow = TextOverflow.Ellipsis,
-                                maxLines = 1)
-                        }
+                    .fillMaxWidth()
+            ) {
+                val number: Int = it + 1
+                Text(
+                    text = number.toString(),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .width(32.dp)
+                        .padding(end = 9.dp)
+                )
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = stringResource(R.string.listened_recently),
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(RoundedCornerShape(10.dp)),
+                    placeholder = painterResource(R.drawable.place_holder_track),
+                    error = painterResource(R.drawable.place_holder_track)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Column() {
+                    if (name != null) {
+                        Text(
+                            text = name,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1
+                        )
                     }
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun TopAlbumsDisplay() {
+    SpotiStatsTheme {
+        TopAlbumsDisplay(albums = List(10) {
+            TopAlbum(
+                album = Album(
+                    id = "album_id",
+                    name = "Fake Album",
+                    artists = listOf(ArtistX(name = "Fake Album")),
+                    images = listOf(
+                        Image(
+                            height = 640,
+                            url = "https://album.cover.url",
+                            width = 640
+                        )
+                    )
+                ),
+                trackCount = it + 1
+            )
+        })
     }
 }

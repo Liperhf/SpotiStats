@@ -19,11 +19,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.spotistats.R
+import com.example.spotistats.domain.model.Album
+import com.example.spotistats.domain.model.ArtistX
+import com.example.spotistats.domain.model.Image
 import com.example.spotistats.domain.model.UserTopTracks
+import com.example.spotistats.domain.model.UserTopTracksItem
+import com.example.spotistats.ui.theme.SpotiStatsTheme
 
 @Composable
 fun UserTopTracksBox(userTopTracks: UserTopTracks) {
@@ -67,18 +73,45 @@ fun UserTopTracksBox(userTopTracks: UserTopTracks) {
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
-                        if (artist != null) {
-                            Text(
-                                text = artist,
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
+                        Text(
+                            text = artist,
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
                     }
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun UserTopTracks() {
+    SpotiStatsTheme {
+        UserTopTracksBox(
+            UserTopTracks(
+                items = List(10) {
+                    UserTopTracksItem(
+                        name = "Track $it",
+                        album = Album(
+                            id = "album_id",
+                            name = "Fake Album",
+                            artists = listOf(ArtistX(name = "Fake Album")),
+                            images = listOf(
+                                Image(
+                                    height = 640,
+                                    url = "https://album.cover.url",
+                                    width = 640
+                                )
+                            )
+                        ),
+                        artists = listOf(ArtistX(name = "Fake Album")),
+                    )
+                }
+            )
+        )
     }
 }

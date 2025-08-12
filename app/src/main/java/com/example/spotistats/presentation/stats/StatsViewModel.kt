@@ -2,10 +2,6 @@ package com.example.spotistats.presentation.stats
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.spotistats.domain.model.Album
-import com.example.spotistats.domain.model.TopAlbum
-import com.example.spotistats.domain.model.UserTopArtists
-import com.example.spotistats.domain.model.UserTopTracks
 import com.example.spotistats.domain.useCases.CalculateTopAlbumsUseCase
 import com.example.spotistats.domain.useCases.TopContentUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,17 +15,17 @@ import javax.inject.Inject
 class StatsViewModel @Inject constructor(
     private val topContentUseCase: TopContentUseCase,
     private val calculateTopAlbumsUseCase: CalculateTopAlbumsUseCase,
-):ViewModel() {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(StatsUiState())
-    val uiState:StateFlow<StatsUiState> = _uiState
+    val uiState: StateFlow<StatsUiState> = _uiState
 
-    fun updateContentType(contentType: ContentType){
+    fun updateContentType(contentType: ContentType) {
         _uiState.value = _uiState.value.copy(selectedContentType = contentType)
         loadStats()
     }
 
-    fun updateTimeRange(timeRange: TimeRange){
-       _uiState.value = _uiState.value.copy(selectedTimeRange = timeRange)
+    fun updateTimeRange(timeRange: TimeRange) {
+        _uiState.value = _uiState.value.copy(selectedTimeRange = timeRange)
         loadStats()
     }
 
@@ -77,9 +73,9 @@ class StatsViewModel @Inject constructor(
                         _uiState.value = _uiState.value.copy(topAlbums = albums)
                     }
                 }
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(errorMessage = e.message)
-            }finally {
+            } finally {
                 _uiState.value = _uiState.value.copy(isLoading = false)
             }
         }

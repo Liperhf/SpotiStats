@@ -12,18 +12,23 @@ class TopContentUseCase @Inject constructor(
     suspend fun getUserTopArtistsShort(): UserTopArtists {
         return topContentRepository.getUserTopArtistsShort()
     }
+
     suspend fun getUserTopTracksShort(): UserTopTracks {
         return topContentRepository.getUserTopTracksShort()
     }
+
     suspend fun getUserTopArtistsMedium(): UserTopArtists {
         return topContentRepository.getUserTopArtistsMedium()
     }
+
     suspend fun getUserTopArtistsLong(): UserTopArtists {
         return topContentRepository.getUserTopArtistsLong()
     }
+
     suspend fun getUserTopTracksMedium(): UserTopTracks {
         return topContentRepository.getUserTopTracksMedium()
     }
+
     suspend fun getUserTopTracksLong(): UserTopTracks {
         return topContentRepository.getUserTopTracksLong()
     }

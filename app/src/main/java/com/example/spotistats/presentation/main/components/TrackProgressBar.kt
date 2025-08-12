@@ -12,8 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.spotistats.ui.theme.SpotiStatsTheme
 import com.example.spotistats.util.formatTime
 
 @Composable
@@ -44,6 +46,17 @@ fun TrackProgressBar(
                 .height(4.dp)
                 .clip(RoundedCornerShape(4.dp)),
             color = MaterialTheme.colorScheme.secondary,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun TrackProgressPreview() {
+    SpotiStatsTheme {
+        TrackProgressBar(
+            progressMs = 45_000,
+            durationMs = 210_000
         )
     }
 }

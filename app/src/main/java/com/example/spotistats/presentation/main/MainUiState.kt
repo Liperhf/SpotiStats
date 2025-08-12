@@ -6,7 +6,6 @@ import com.example.spotistats.domain.model.TopAlbum
 import com.example.spotistats.domain.model.UserProfile
 import com.example.spotistats.domain.model.UserTopArtists
 import com.example.spotistats.domain.model.UserTopTracks
-import kotlinx.coroutines.Job
 
 
 data class MainUiState(

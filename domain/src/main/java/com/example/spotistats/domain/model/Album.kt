@@ -6,4 +6,4 @@ data class Album(
     val images: List<Image>,
     val name: String,
 
-)
+    )

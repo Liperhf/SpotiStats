@@ -3,7 +3,7 @@ package com.example.spotistats.data.mapper.DtoMappers
 import CurrentlyPlayingDto
 import com.example.spotistats.domain.model.CurrentlyPlaying
 
-fun CurrentlyPlayingDto.toDomain():CurrentlyPlaying{
+fun CurrentlyPlayingDto.toDomain(): CurrentlyPlaying {
     return CurrentlyPlaying(
         is_playing = this.is_playing,
         item = this.item.toDomain(),

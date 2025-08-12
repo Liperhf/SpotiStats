@@ -5,7 +5,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -30,10 +30,10 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AccountScreen(
-    viewModel:AccountViewModel,
+    viewModel: AccountViewModel = hiltViewModel(),
     navController: NavController,
     onStartImageCrop: (sourceUri: Uri, callback: (Uri?) -> Unit) -> Unit
-){
+) {
     val systemUiController = rememberSystemUiController()
     val navBarColor = MaterialTheme.colorScheme.background
     val statusBarColor = MaterialTheme.colorScheme.primary
@@ -43,10 +43,9 @@ fun AccountScreen(
 
     val pickImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
-    ){
-        uri:Uri? ->
+    ) { uri: Uri? ->
         uri?.let { sourceImageUri ->
-            onStartImageCrop(sourceImageUri){croppedUri->
+            onStartImageCrop(sourceImageUri) { croppedUri ->
                 croppedUri?.let {
                     viewModel.setAvatar(croppedUri)
                 }
@@ -57,44 +56,48 @@ fun AccountScreen(
 
     SideEffect {
         systemUiController.setNavigationBarColor(
-            color = navBarColor,
-            darkIcons = false
+            color = navBarColor, darkIcons = false
         )
         systemUiController.setStatusBarColor(
-            color = statusBarColor,
-            darkIcons = false
+            color = statusBarColor, darkIcons = false
         )
     }
 
 
     Scaffold(
-        topBar = { CenterAlignedTopAppBar(
-            title = { Text(text = stringResource(R.string.account)) },
-            navigationIcon = {
-                IconButton(
-                onClick = {navController.popBackStack()},
-                content = { Icon(imageVector = Icons.Default.ArrowBack,
-                    contentDescription = stringResource(R.string.back),
-                    tint = MaterialTheme.colorScheme.onBackground) },
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(text = stringResource(R.string.account)) },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { navController.popBackStack() },
+                        content = {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.back),
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        },
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                ),
             )
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                titleContentColor = MaterialTheme.colorScheme.onBackground
-            ),
-        ) },
-    ) {paddingValues ->
-                AccountContent(
-                    paddingValues = paddingValues,
-                    pickImageLauncher = pickImageLauncher,
-                    imageUri = uiState.value.imageUrl,
-                    nickname = uiState.value.nickname,
-                    context = context,
-                    onSetNickNameClick = viewModel::setNickName,
-                    onSaveProfileClick = viewModel::saveProfile,
-                    onResetProfileClick = viewModel::resetProfile
-                )
+        },
+    ) { paddingValues ->
+        AccountContent(
+            paddingValues = paddingValues,
+            onPickImageClick = { pickImageLauncher.launch("image/*") },
+            imageUri = uiState.value.imageUrl,
+            nickname = uiState.value.nickname,
+            context = context,
+            onSetNickNameClick = viewModel::setNickName,
+            onSaveProfileClick = viewModel::saveProfile,
+            onResetProfileClick = viewModel::resetProfile
+        )
 
 
-                }
     }
+}

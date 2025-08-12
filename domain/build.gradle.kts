@@ -41,19 +41,19 @@ dependencies {
     implementation(libs.google.accompanist.swiperefresh)
 
     //UCrop
-    implementation (libs.yalantis.ucrop)
+    implementation(libs.yalantis.ucrop)
 
 
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.android.auth)
 
     // Core
-    implementation(libs.androidx.core.ktx.v1120)
-    implementation(libs.androidx.lifecycle.runtime.ktx.v270)
-    implementation(libs.androidx.activity.compose.v182)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
 
     // Compose
-    implementation(platform(libs.androidx.compose.bom.v20240200))
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.coil.compose)
     implementation(libs.ui)
     implementation(libs.ui.graphics)
@@ -83,8 +83,8 @@ dependencies {
 
     // Testing
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit.v115)
-    androidTestImplementation(libs.androidx.espresso.core.v351)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform("androidx.compose:compose-bom:2024.02.00"))
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)

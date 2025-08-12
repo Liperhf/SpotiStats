@@ -17,11 +17,8 @@ import javax.inject.Inject
 class AuthRepositoryImpl @Inject constructor(
     private val config: SpotifyConfig,
     private val spotifyAuthApi: SpotifyAuthApi,
-    private val spotifyUserApi: SpotifyUserApi,
-    private val topArtistsDao: TopArtistsDao,
-    private val topTracksDao: TopTracksDao,
     @ApplicationContext private val context: Context
-):AuthRepository {
+) : AuthRepository {
     override fun buildAuthIntent(): Intent {
         val clientId = config.CLIENT_ID
         val redirectUri = config.REDIRECT_URI

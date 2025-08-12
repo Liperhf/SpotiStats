@@ -19,11 +19,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.spotistats.R
+import com.example.spotistats.domain.model.Album
+import com.example.spotistats.domain.model.ArtistX
+import com.example.spotistats.domain.model.Image
 import com.example.spotistats.domain.model.TopAlbum
+import com.example.spotistats.ui.theme.SpotiStatsTheme
 
 @Composable
 fun UserTopAlbumsBox(userTopAlbums: List<TopAlbum?>) {
@@ -81,6 +86,30 @@ fun UserTopAlbumsBox(userTopAlbums: List<TopAlbum?>) {
                     }
                 }
             }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun UserTopAlbumsPreview() {
+    SpotiStatsTheme {
+        List(10) {
+            TopAlbum(
+                album = Album(
+                    id = "album_id",
+                    name = "Fake Album",
+                    artists = listOf(ArtistX(name = "Fake Album")),
+                    images = listOf(
+                        Image(
+                            height = 640,
+                            url = "https://album.cover.url",
+                            width = 640
+                        )
+                    )
+                ),
+                trackCount = it + 1
+            )
         }
     }
 }

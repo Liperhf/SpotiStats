@@ -13,9 +13,9 @@ import com.example.spotistats.presentation.stats.components.TimeRangeRow
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun StatsScreen(navController: NavController,
-                viewModel: StatsViewModel
-){
+fun StatsScreen(
+    viewModel: StatsViewModel = hiltViewModel()
+) {
     val uiState = viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -35,11 +35,11 @@ fun StatsScreen(navController: NavController,
                 uiState = uiState.value
             )
         }
-    ) {paddingValues ->
-            StatsContent(
-                paddingValues = paddingValues,
-                uiState = uiState.value
-            )
+    ) { paddingValues ->
+        StatsContent(
+            paddingValues = paddingValues,
+            uiState = uiState.value
+        )
 
     }
 

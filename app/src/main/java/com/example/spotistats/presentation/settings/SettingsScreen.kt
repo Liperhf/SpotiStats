@@ -12,27 +12,32 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.spotistats.R
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import androidx.compose.runtime.collectAsState
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.spotistats.presentation.auth.AuthViewModel
 import com.example.spotistats.presentation.settings.components.SettingsContent
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SettingsScreen(
     navController: NavController,
-    viewModel: AuthViewModel
-){
+    viewModel: AuthViewModel = hiltViewModel()
+) {
     val systemUiController = rememberSystemUiController()
     val navBarColor = MaterialTheme.colorScheme.background
     val statusBarColor = MaterialTheme.colorScheme.primary
     val uiState = viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.checkAuthStatus()
+    }
 
     SideEffect {
         systemUiController.setNavigationBarColor(
@@ -49,26 +54,34 @@ fun SettingsScreen(
 
 
     Scaffold(
-        topBar = { CenterAlignedTopAppBar(
-            title = {Text(text = stringResource(R.string.settings))},
-            navigationIcon = {IconButton(
-                onClick = {navController.popBackStack()},
-                content = { Icon(imageVector = Icons.Default.ArrowBack,
-                    contentDescription = stringResource(R.string.back),
-                    tint = MaterialTheme.colorScheme.onBackground) },
-            )},
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                titleContentColor = MaterialTheme.colorScheme.onBackground
-            ),
-        ) }
-    ) {paddingValues ->
-            SettingsContent(
-                paddingValues = paddingValues,
-                uiState = uiState.value,
-                onAccountClick = {navController.navigate("account")},
-                onLanguageClick = {navController.navigate("language")}
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(text = stringResource(R.string.settings)) },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { navController.popBackStack() },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = stringResource(R.string.back),
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        },
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                ),
             )
+        }
+    ) { paddingValues ->
+        SettingsContent(
+            paddingValues = paddingValues,
+            uiState = uiState.value,
+            onAccountClick = { navController.navigate("account") },
+            onLanguageClick = { navController.navigate("language") }
+        )
 
     }
 }

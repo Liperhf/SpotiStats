@@ -19,20 +19,16 @@ object NetworkModule {
     @Singleton
     @Named("authRetrofit")
     fun provideSpotifyAuthRetrofit(): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(SpotifyConfig.AUTH_BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        return Retrofit.Builder().baseUrl(SpotifyConfig.AUTH_BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create()).build()
     }
 
     @Provides
     @Singleton
     @Named("apiRetrofit")
     fun provideSpotifyApiRetrofit(): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl((SpotifyConfig.API_BASE_URL))
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        return Retrofit.Builder().baseUrl((SpotifyConfig.API_BASE_URL))
+            .addConverterFactory(GsonConverterFactory.create()).build()
     }
 
     @Provides

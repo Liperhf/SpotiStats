@@ -19,18 +19,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.spotistats.R
+import com.example.spotistats.ui.theme.SpotiStatsTheme
 
 @Composable
 fun DrawerContent(
     currentlyUserAvatar: Uri?,
     currentlyUserName: String?,
-    onSettingsClick:() -> Unit,
-    onLogoutClick:() -> Unit,
-){
+    onSettingsClick: () -> Unit,
+    onLogoutClick: () -> Unit,
+) {
     ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.background) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -64,6 +66,20 @@ fun DrawerContent(
             text = stringResource(R.string.logout),
             onClick = { onLogoutClick() },
             icon = Icons.Default.Delete
+        )
+    }
+}
+
+
+@Preview
+@Composable
+private fun DrawerContentPreview() {
+    SpotiStatsTheme {
+        DrawerContent(
+            currentlyUserAvatar = null,
+            currentlyUserName = "Stas",
+            onSettingsClick = {},
+            onLogoutClick = {}
         )
     }
 }
