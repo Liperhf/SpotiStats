@@ -5,9 +5,7 @@ import com.example.spotistats.data.dto.common.ContextDto
 import com.example.spotistats.data.dto.common.CurrentlyItemDto
 import com.example.spotistats.data.dto.common.DeviceDto
 import com.example.spotistats.data.dto.common.ExternalUrlsDto
-import kotlinx.serialization.Serializable
 
-@Serializable
 data class CurrentlyPlayingDto(
     val actions: ActionsDto,
     val context: ContextDto,

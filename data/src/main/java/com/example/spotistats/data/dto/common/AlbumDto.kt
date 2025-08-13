@@ -1,8 +1,5 @@
 package com.example.spotistats.data.dto.common
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 data class AlbumDto(
     val album_type: String,
     val artists: List<ArtistXDto>,

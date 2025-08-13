@@ -12,9 +12,7 @@ import com.example.spotistats.data.dto.common.LinkedFromDto
 import com.example.spotistats.data.dto.common.RecentlyItemDto
 import com.example.spotistats.data.dto.common.RestrictionsXDto
 import com.example.spotistats.domain.model.Track
-import kotlinx.serialization.Serializable
 
-@Serializable
 data class RecentlyPlayedDto(
     val cursors: CursorsDto,
     val href: String,

@@ -1,8 +1,5 @@
 package com.example.spotistats.data.dto.common
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 data class DeviceDto(
     val id: String,
     val is_active: Boolean,

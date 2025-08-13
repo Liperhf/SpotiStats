@@ -1,8 +1,5 @@
 package com.example.spotistats.data.dto.common
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 data class ActionsDto(
     val interrupting_playback: Boolean,
     val pausing: Boolean,

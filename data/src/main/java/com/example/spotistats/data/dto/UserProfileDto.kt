@@ -4,9 +4,7 @@ import com.example.spotistats.data.dto.common.ExplicitContentDto
 import com.example.spotistats.data.dto.common.ExternalUrlsDto
 import com.example.spotistats.data.dto.common.FollowersDto
 import com.example.spotistats.data.dto.common.ImageDto
-import kotlinx.serialization.Serializable
 
-@Serializable
 data class UserProfileDto(
     val country: String,
     val display_name: String,

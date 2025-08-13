@@ -1,7 +1,5 @@
 package com.example.spotistats.presentation.main
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.spotistats.R
@@ -12,9 +10,9 @@ import com.example.spotistats.domain.useCases.UserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 import javax.inject.Inject
@@ -135,7 +133,8 @@ class MainViewModel @Inject constructor(
                 try {
                     val data = playbackUseCase.getCurrentlyPlaying()
                     val newTrackId = data.item.id
-                    val playingChanged = data.is_playing != _uiState.value.currentlyPlaying?.is_playing
+                    val playingChanged =
+                        data.is_playing != _uiState.value.currentlyPlaying?.is_playing
 
                     if (newTrackId != lastTrackId || playingChanged) {
                         lastTrackId = newTrackId
