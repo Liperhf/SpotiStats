@@ -5,12 +5,12 @@ import com.example.spotistats.domain.useCases.TopContentUseCase
 import com.example.spotistats.presentation.stats.ContentType
 import com.example.spotistats.presentation.stats.StatsViewModel
 import com.example.spotistats.presentation.stats.TimeRange
-import com.example.spotistats.util.FakeFactory.FakeFactory
+import com.example.spotistats.util.FakeFactory
+import com.example.spotistats.domain.model.TimeRange as DomainTimeRange
 import com.example.spotistats.util.MainCoroutineRule
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.spyk
@@ -69,7 +69,7 @@ class StatsViewModelTest {
         val fakeTimeRange = TimeRange.SHORT
         coEvery { statsViewModel.updateContentType(fakeContentType) } just Runs
         coEvery { statsViewModel.updateTimeRange(fakeTimeRange) } just Runs
-        coEvery { topContentUseCase.getUserTopTracksShort() } returns fakeTracks
+        coEvery { topContentUseCase.getUserTopTracks(DomainTimeRange.SHORT) } returns fakeTracks
         statsViewModel.updateContentType(fakeContentType)
         statsViewModel.updateTimeRange(fakeTimeRange)
         statsViewModel.loadStats()
@@ -80,12 +80,11 @@ class StatsViewModelTest {
 
     @Test
     fun `loadStats should return exceptions and update uiState`() = runTest{
-        val fakeTracks = FakeFactory.createFakeUserTopTracks()
         val fakeContentType = ContentType.TRACKS
         val fakeTimeRange = TimeRange.SHORT
         coEvery { statsViewModel.updateContentType(fakeContentType) } just Runs
         coEvery { statsViewModel.updateTimeRange(fakeTimeRange) } just Runs
-        coEvery { topContentUseCase.getUserTopTracksShort() } throws Exception("error")
+        coEvery { topContentUseCase.getUserTopTracks(DomainTimeRange.SHORT) } throws Exception("error")
         statsViewModel.updateContentType(fakeContentType)
         statsViewModel.updateTimeRange(fakeTimeRange)
         statsViewModel.loadStats()

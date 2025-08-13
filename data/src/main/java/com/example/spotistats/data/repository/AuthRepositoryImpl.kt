@@ -5,10 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import com.example.spotistats.data.api.SpotifyAuthApi
 import com.example.spotistats.data.api.SpotifyConfig
-import com.example.spotistats.data.api.SpotifyUserApi
-import com.example.spotistats.data.local.dao.TopArtistsDao
-import com.example.spotistats.data.local.dao.TopTracksDao
-import com.example.spotistats.data.mapper.DtoMappers.toDomain
+import com.example.spotistats.data.mapper.dtoMappers.toDomain
 import com.example.spotistats.domain.model.AuthToken
 import com.example.spotistats.domain.repository.AuthRepository
 import dagger.hilt.android.qualifiers.ApplicationContext

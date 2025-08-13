@@ -12,6 +12,7 @@ import com.example.spotistats.domain.useCases.UserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -28,7 +29,8 @@ class MainViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState = _uiState.asStateFlow()
     private var progressJob: Job? = null
-
+    private var pollJob: Job? = null
+    private var lastTrackId: String? = null
 
     fun loadStats() {
         viewModelScope.launch {
@@ -45,7 +47,6 @@ class MainViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(isLoading = false)
         }
     }
-
 
     suspend fun getRecentlyPlayed() {
         try {
@@ -83,7 +84,7 @@ class MainViewModel @Inject constructor(
 
     suspend fun getUserTopArtists() {
         try {
-            val result = topContentUseCase.getUserTopArtistsShort()
+            val result = topContentUseCase.getUserTopArtists()
             _uiState.value = _uiState.value.copy(topArtists = result)
         } catch (e: Exception) {
             _uiState.value = _uiState.value.copy(errorMessage = e.message)
@@ -92,7 +93,7 @@ class MainViewModel @Inject constructor(
 
     suspend fun getUserTopTracks() {
         try {
-            val result = topContentUseCase.getUserTopTracksShort()
+            val result = topContentUseCase.getUserTopTracks()
             _uiState.value = _uiState.value.copy(topTracks = result)
             calculatedUserTopAlbums()
         } catch (e: Exception) {
@@ -115,7 +116,6 @@ class MainViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(topAlbums = topAlbums)
     }
 
-
     fun getGreeting(): Int {
         val hour = LocalTime.now().hour
         val resId = when (hour) {
@@ -127,5 +127,41 @@ class MainViewModel @Inject constructor(
         return resId
     }
 
+    fun startPolling(baseIntervalMs: Long = 5000L) {
+        if (pollJob?.isActive == true) return
+        pollJob = viewModelScope.launch {
+            var interval = baseIntervalMs
+            while (isActive) {
+                try {
+                    val data = playbackUseCase.getCurrentlyPlaying()
+                    val newTrackId = data.item.id
+                    val playingChanged = data.is_playing != _uiState.value.currentlyPlaying?.is_playing
 
+                    if (newTrackId != lastTrackId || playingChanged) {
+                        lastTrackId = newTrackId
+                        _uiState.value = _uiState.value.copy(
+                            currentlyPlaying = data,
+                            progressMs = data.progress_ms ?: 0
+                        )
+                        progressJob?.cancel()
+                        val durationMs = data.item.duration_ms ?: 0
+                        if (durationMs > 0) {
+                            progressJob = startProgress(durationMs)
+                        }
+                    }
+                    interval = baseIntervalMs
+                } catch (e: Exception) {
+                    interval = (interval * 2).coerceAtMost(60000L)
+                    _uiState.value = _uiState.value.copy(errorMessage = e.message)
+                } finally {
+                    delay(interval)
+                }
+            }
+        }
+    }
+
+    fun stopPolling() {
+        pollJob?.cancel()
+        pollJob = null
+    }
 }

@@ -27,45 +27,17 @@ interface SpotifyUserApi {
     ): CurrentlyPlayingDto
 
     @GET("me/top/artists")
-    suspend fun getTopArtistsShort(
+    suspend fun getTopArtists(
         @Header("Authorization") authorization: String,
         @Query("limit") limit: Int = 50,
-        @Query("time_range") time_range: String = "short_term"
-    ): UserTopArtistsDto
-
-    @GET("me/top/artists")
-    suspend fun getTopArtistsMedium(
-        @Header("Authorization") authorization: String,
-        @Query("limit") limit: Int = 50,
-        @Query("time_range") time_range: String = "medium_term"
-    ): UserTopArtistsDto
-
-    @GET("me/top/artists")
-    suspend fun getTopArtistsLong(
-        @Header("Authorization") authorization: String,
-        @Query("limit") limit: Int = 50,
-        @Query("time_range") time_range: String = "long_term"
+        @Query("time_range") time_range: String,
     ): UserTopArtistsDto
 
     @GET("me/top/tracks")
-    suspend fun getTopTracksShort(
+    suspend fun getTopTracks(
         @Header("Authorization") authorization: String,
         @Query("limit") limit: Int = 50,
-        @Query("time_range") time_range: String = "short_term"
-    ): UserTopTracksDto
-
-    @GET("me/top/tracks")
-    suspend fun getTopTracksMedium(
-        @Header("Authorization") authorization: String,
-        @Query("limit") limit: Int = 50,
-        @Query("time_range") time_range: String = "medium_term"
-    ): UserTopTracksDto
-
-    @GET("me/top/tracks")
-    suspend fun getTopTracksLong(
-        @Header("Authorization") authorization: String,
-        @Query("limit") limit: Int = 50,
-        @Query("time_range") time_range: String = "long_term"
+        @Query("time_range") time_range: String,
     ): UserTopTracksDto
 
 }

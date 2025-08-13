@@ -5,7 +5,6 @@ import com.example.spotistats.domain.useCases.PlaybackUseCase
 import com.example.spotistats.domain.useCases.TopContentUseCase
 import com.example.spotistats.domain.useCases.UserUseCase
 import com.example.spotistats.presentation.main.MainViewModel
-import com.example.spotistats.util.FakeFactory.FakeFactory
 import com.example.spotistats.util.MainCoroutineRule
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -15,6 +14,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import com.example.spotistats.domain.model.TimeRange
+import com.example.spotistats.util.FakeFactory
 
 class MainViewModelTest {
     private lateinit var calculateTopAlbumsUseCase: CalculateTopAlbumsUseCase
@@ -46,8 +47,8 @@ class MainViewModelTest {
         coEvery { playbackUseCase.getRecentlyPlayed() } returns mockk()
         coEvery { userUseCase.getUserProfile() } returns mockk()
         coEvery { playbackUseCase.getCurrentlyPlaying() } returns mockk()
-        coEvery { topContentUseCase.getUserTopArtistsShort() } returns mockk()
-        coEvery { topContentUseCase.getUserTopTracksShort() } returns mockk()
+        coEvery { topContentUseCase.getUserTopArtists(TimeRange.SHORT) } returns mockk()
+        coEvery { topContentUseCase.getUserTopTracks(TimeRange.SHORT) } returns mockk()
         coEvery { calculateTopAlbumsUseCase(any()) } returns mockk()
 
         mainViewModel.loadStats()
@@ -55,8 +56,8 @@ class MainViewModelTest {
         assertEquals(false, state.isLoading)
         coVerify { playbackUseCase.getRecentlyPlayed() }
         coVerify { userUseCase.getUserProfile() }
-        coVerify { topContentUseCase.getUserTopArtistsShort() }
-        coVerify { topContentUseCase.getUserTopTracksShort() }
+        coVerify { topContentUseCase.getUserTopArtists(TimeRange.SHORT) }
+        coVerify { topContentUseCase.getUserTopTracks(TimeRange.SHORT) }
         coVerify { playbackUseCase.getCurrentlyPlaying() }
         coVerify { calculateTopAlbumsUseCase(any()) }
     }
@@ -66,8 +67,8 @@ class MainViewModelTest {
         coEvery { playbackUseCase.getRecentlyPlayed() } throws RuntimeException("error")
         coEvery { playbackUseCase.getCurrentlyPlaying() } returns mockk(relaxed = true)
         coEvery { userUseCase.getUserProfile() } returns mockk(relaxed = true)
-        coEvery { topContentUseCase.getUserTopArtistsShort() } returns mockk(relaxed = true)
-        coEvery { topContentUseCase.getUserTopTracksShort() } returns mockk(relaxed = true)
+        coEvery { topContentUseCase.getUserTopArtists(TimeRange.SHORT) } returns mockk(relaxed = true)
+        coEvery { topContentUseCase.getUserTopTracks(TimeRange.SHORT) } returns mockk(relaxed = true)
         coEvery { calculateTopAlbumsUseCase(any()) } returns mockk(relaxed = true)
         mainViewModel.loadStats()
         val state = mainViewModel.uiState.value
@@ -131,7 +132,7 @@ class MainViewModelTest {
     @Test
     fun `getUserTopArtists should update uiState when success`() = runTest{
         val fakeArtists = FakeFactory.createFakeUserTopArtists()
-        coEvery { topContentUseCase.getUserTopArtistsShort() } returns fakeArtists
+        coEvery { topContentUseCase.getUserTopArtists(TimeRange.SHORT) } returns fakeArtists
         mainViewModel.getUserTopArtists()
         val state = mainViewModel.uiState.value
         assertEquals(fakeArtists, state.topArtists)
@@ -139,7 +140,7 @@ class MainViewModelTest {
 
     @Test
     fun `getUserTopArtists should update uiState when error`() = runTest{
-        coEvery {topContentUseCase.getUserTopArtistsShort()} throws Exception("error")
+        coEvery { topContentUseCase.getUserTopArtists(TimeRange.SHORT) } throws Exception("error")
         mainViewModel.getUserTopArtists()
         val state = mainViewModel.uiState.value
         assertEquals("error",state.errorMessage)
@@ -149,7 +150,7 @@ class MainViewModelTest {
     fun `getUserTopTracks should update uiState when success`() = runTest{
         val fakeTracks = FakeFactory.createFakeUserTopTracks()
 
-        coEvery { topContentUseCase.getUserTopTracksShort() } returns fakeTracks
+        coEvery { topContentUseCase.getUserTopTracks(TimeRange.SHORT) } returns fakeTracks
         mainViewModel.getUserTopTracks()
         val state = mainViewModel.uiState.value
         assertEquals(fakeTracks, state.topTracks)
@@ -157,7 +158,7 @@ class MainViewModelTest {
 
     @Test
     fun `getUserTopTracks should update uiState when error`() = runTest{
-        coEvery { topContentUseCase.getUserTopTracksShort() } throws Exception("error")
+        coEvery { topContentUseCase.getUserTopTracks(TimeRange.SHORT) } throws Exception("error")
         mainViewModel.getUserTopTracks()
         val state = mainViewModel.uiState.value
         assertEquals("error", state.errorMessage)
@@ -169,7 +170,7 @@ class MainViewModelTest {
         val fakeTracks = FakeFactory.createFakeUserTopTracks()
         val fakeTopAlbums = FakeFactory.createFakeTopAlbums()
 
-        coEvery { topContentUseCase.getUserTopTracksShort() } returns fakeTracks
+        coEvery { topContentUseCase.getUserTopTracks(TimeRange.SHORT) } returns fakeTracks
         coEvery { calculateTopAlbumsUseCase(fakeTracks) } returns fakeTopAlbums
         mainViewModel.getUserTopTracks()
         mainViewModel.calculatedUserTopAlbums()

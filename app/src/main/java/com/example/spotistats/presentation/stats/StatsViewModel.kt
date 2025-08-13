@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.spotistats.domain.useCases.CalculateTopAlbumsUseCase
 import com.example.spotistats.domain.useCases.TopContentUseCase
+import com.example.spotistats.domain.model.TimeRange as DomainTimeRange
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,30 +46,18 @@ class StatsViewModel @Inject constructor(
                 when (currentType) {
 
                     ContentType.TRACKS -> {
-                        val tracks = when (currentRange) {
-                            TimeRange.SHORT -> topContentUseCase.getUserTopTracksShort()
-                            TimeRange.MEDIUM -> topContentUseCase.getUserTopTracksMedium()
-                            TimeRange.LONG -> topContentUseCase.getUserTopTracksLong()
-                        }
+                        val tracks = topContentUseCase.getUserTopTracks(mapRange(currentRange))
                         _uiState.value = _uiState.value.copy(topTracks = tracks)
 
                     }
 
                     ContentType.ARTISTS -> {
-                        val artists = when (currentRange) {
-                            TimeRange.SHORT -> topContentUseCase.getUserTopArtistsShort()
-                            TimeRange.MEDIUM -> topContentUseCase.getUserTopArtistsMedium()
-                            TimeRange.LONG -> topContentUseCase.getUserTopArtistsLong()
-                        }
+                        val artists = topContentUseCase.getUserTopArtists(mapRange(currentRange))
                         _uiState.value = _uiState.value.copy(topArtists = artists)
                     }
 
                     ContentType.ALBUMS -> {
-                        val tracks = when (currentRange) {
-                            TimeRange.SHORT -> topContentUseCase.getUserTopTracksShort()
-                            TimeRange.MEDIUM -> topContentUseCase.getUserTopTracksMedium()
-                            TimeRange.LONG -> topContentUseCase.getUserTopTracksLong()
-                        }
+                        val tracks = topContentUseCase.getUserTopTracks(mapRange(currentRange))
                         val albums = calculateTopAlbumsUseCase(tracks)
                         _uiState.value = _uiState.value.copy(topAlbums = albums)
                     }
@@ -79,5 +68,11 @@ class StatsViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(isLoading = false)
             }
         }
+    }
+
+    private fun mapRange(range: TimeRange): DomainTimeRange = when (range) {
+        TimeRange.SHORT -> DomainTimeRange.SHORT
+        TimeRange.MEDIUM -> DomainTimeRange.MEDIUM
+        TimeRange.LONG -> DomainTimeRange.LONG
     }
 }

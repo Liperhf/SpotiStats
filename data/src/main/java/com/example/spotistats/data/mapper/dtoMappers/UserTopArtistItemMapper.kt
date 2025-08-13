@@ -1,4 +1,4 @@
-package com.example.spotistats.data.mapper.DtoMappers
+package com.example.spotistats.data.mapper.dtoMappers
 
 import com.example.spotistats.data.dto.common.UserTopArtistsItemDto
 import com.example.spotistats.domain.model.UserTopArtistsItem

@@ -1,4 +1,4 @@
-package com.example.spotistats.data.mapper.DtoMappers
+package com.example.spotistats.data.mapper.dtoMappers
 
 import CurrentlyPlayingDto
 import com.example.spotistats.domain.model.CurrentlyPlaying

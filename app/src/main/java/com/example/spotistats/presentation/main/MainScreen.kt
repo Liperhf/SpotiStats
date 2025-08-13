@@ -2,7 +2,7 @@ package com.example.spotistats.presentation.main
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
+// import android.util.Log // no longer used
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,6 +38,10 @@ import com.example.spotistats.presentation.main.components.DrawerContent
 import com.example.spotistats.presentation.main.components.MainContent
 import com.example.spotistats.presentation.account.AccountViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -46,10 +50,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(
     navController: NavController,
-    mainViewModel:MainViewModel = hiltViewModel(),
-    authViewModel:AuthViewModel = hiltViewModel(),
-    settingsViewModel:AccountViewModel = hiltViewModel()
+    mainViewModel: MainViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel = hiltViewModel(),
+    settingsViewModel: AccountViewModel = hiltViewModel()
 ) {
+    val lifecycleOwner = LocalLifecycleOwner.current
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val greeting = stringResource(id = mainViewModel.getGreeting())
@@ -87,7 +92,11 @@ fun MainScreen(
     }
 
 
-    LaunchedEffect(authUiState.value.hasCheckedAuth, authUiState.value.isAuthenticated) {
+    LaunchedEffect(
+        authUiState.value.hasCheckedAuth,
+        authUiState.value.isAuthenticated,
+        lifecycleOwner
+    ) {
         if (!authUiState.value.hasCheckedAuth) return@LaunchedEffect
         if (!authUiState.value.isAuthenticated) {
             navController.navigate("auth") {
@@ -95,17 +104,17 @@ fun MainScreen(
             }
         } else {
             mainViewModel.loadStats()
-            while (true) {
+
+            lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mainViewModel.startPolling()
                 try {
-                    mainViewModel.getCurrentlyPlaying()
-                } catch (e: Exception) {
-                    Log.e("MainScreen", "Error when updating now playing: ${e.message}")
+                    awaitCancellation()
+                } finally {
+                    mainViewModel.stopPolling()
                 }
-                delay(1000)
             }
         }
     }
-
 
         ModalNavigationDrawer(
             drawerContent = {

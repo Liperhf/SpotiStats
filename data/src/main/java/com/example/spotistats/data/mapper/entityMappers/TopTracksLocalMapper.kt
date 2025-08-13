@@ -1,4 +1,4 @@
-package com.example.spotistats.data.mapper.EntityMappers
+package com.example.spotistats.data.mapper.entityMappers
 
 import com.example.spotistats.data.local.entity.TopTrackEntity
 import com.example.spotistats.domain.model.Album

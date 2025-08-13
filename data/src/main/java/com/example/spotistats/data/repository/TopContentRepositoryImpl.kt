@@ -4,13 +4,14 @@ import android.util.Log
 import com.example.spotistats.data.api.SpotifyUserApi
 import com.example.spotistats.data.local.dao.TopArtistsDao
 import com.example.spotistats.data.local.dao.TopTracksDao
-import com.example.spotistats.data.mapper.DtoMappers.toDomain
-import com.example.spotistats.data.mapper.EntityMappers.toDomain
-import com.example.spotistats.data.mapper.EntityMappers.toEntity
+import com.example.spotistats.data.mapper.dtoMappers.toDomain
+import com.example.spotistats.data.mapper.entityMappers.toDomain
+import com.example.spotistats.data.mapper.entityMappers.toEntity
 import com.example.spotistats.domain.model.UserTopArtists
 import com.example.spotistats.domain.model.UserTopTracks
 import com.example.spotistats.domain.repository.AuthRepository
 import com.example.spotistats.domain.repository.TopContentRepository
+import com.example.spotistats.domain.model.TimeRange
 import javax.inject.Inject
 
 class TopContentRepositoryImpl @Inject constructor(
@@ -19,65 +20,27 @@ class TopContentRepositoryImpl @Inject constructor(
     private val topTracksDao: TopTracksDao,
     private val authRepository: AuthRepository,
 ) : TopContentRepository {
-    override suspend fun getUserTopArtistsShort(): UserTopArtists {
-        val timeRange = "short_term"
-
+    override suspend fun getUserTopArtists(timeRange: TimeRange): UserTopArtists {
+        val rangeKey = timeRange.api
         return try {
-            val token =
-                authRepository.getAccessToken() ?: throw IllegalArgumentException("No access token")
-            val dto = spotifyUserApi.getTopArtistsShort("Bearer $token")
-            val domainModel = dto.toDomain()
-
-            val entities = domainModel.items.mapIndexed { index, item ->
-                val entity = item.toEntity(timeRange, index + 1)
-                entity
-            }
-
-
-            topArtistsDao.clearTopArtists(timeRange)
-
-            topArtistsDao.insertTopArtists(entities)
-
-            domainModel
-
-        } catch (e: Exception) {
-            Log.e("RepositoryImpl", "API error: ${e.message}", e)
-
-            val cachedEntities = topArtistsDao.getTopArtists(timeRange)
-            Log.d("RepositoryImpl", "Loaded ${cachedEntities.size} artists from DB cache")
-
-            if (cachedEntities.isEmpty()) {
-                return UserTopArtists(emptyList())
-            }
-
-            val domainFromCache = UserTopArtists(items = cachedEntities.map { it.toDomain() })
-            Log.d(
-                "RepositoryImpl",
-                "Returning cached UserTopArtists with ${domainFromCache.items.size} items"
+            val token = authRepository.getAccessToken()
+                ?: throw IllegalArgumentException("No access token")
+            val dto = spotifyUserApi.getTopArtists(
+                authorization = "Bearer $token",
+                time_range = rangeKey
             )
-
-            domainFromCache
-        }
-    }
-
-
-    override suspend fun getUserTopArtistsMedium(): UserTopArtists {
-        return try {
-            val token =
-                authRepository.getAccessToken() ?: throw IllegalArgumentException("No access token")
-            val dto = spotifyUserApi.getTopArtistsMedium("Bearer $token")
             val domainModel = dto.toDomain()
-            val timeRange = "medium_term"
-            val entities = domainModel.items.mapIndexed { index, item ->
-                item.toEntity(timeRange, index + 1)
-            }
 
-            topArtistsDao.clearTopArtists(timeRange)
+            val entities = domainModel.items.mapIndexed { index, item ->
+                item.toEntity(rangeKey, index + 1)
+            }
+            topArtistsDao.clearTopArtists(rangeKey)
             topArtistsDao.insertTopArtists(entities)
 
             domainModel
         } catch (e: Exception) {
-            val cachedEntities = topArtistsDao.getTopArtists("medium_term")
+            Log.e("RepositoryImpl", "Artists API error: ${e.message}", e)
+            val cachedEntities = topArtistsDao.getTopArtists(rangeKey)
             if (cachedEntities.isEmpty()) {
                 return UserTopArtists(emptyList())
             }
@@ -85,95 +48,27 @@ class TopContentRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getUserTopArtistsLong(): UserTopArtists {
+    override suspend fun getUserTopTracks(timeRange: TimeRange): UserTopTracks {
+        val rangeKey = timeRange.api
         return try {
-            val token =
-                authRepository.getAccessToken() ?: throw IllegalArgumentException("No access token")
-            val dto = spotifyUserApi.getTopArtistsLong("Bearer $token")
+            val token = authRepository.getAccessToken()
+                ?: throw IllegalArgumentException("No access token")
+            val dto = spotifyUserApi.getTopTracks(
+                authorization = "Bearer $token",
+                time_range = rangeKey
+            )
             val domainModel = dto.toDomain()
-            val timeRange = "long_term"
+
             val entities = domainModel.items.mapIndexed { index, item ->
-                item.toEntity(timeRange, index + 1)
+                item.toEntity(rangeKey, index + 1)
             }
-
-            topArtistsDao.clearTopArtists(timeRange)
-            topArtistsDao.insertTopArtists(entities)
-
-            domainModel
-        } catch (e: Exception) {
-            val cachedEntities = topArtistsDao.getTopArtists("long_term")
-            if (cachedEntities.isEmpty()) {
-                return UserTopArtists(emptyList())
-            }
-            UserTopArtists(items = cachedEntities.map { it.toDomain() })
-        }
-    }
-
-    override suspend fun getUserTopTracksShort(): UserTopTracks {
-        return try {
-            val token =
-                authRepository.getAccessToken() ?: throw IllegalArgumentException("No access token")
-            val dto = spotifyUserApi.getTopTracksShort("Bearer $token")
-            val domainModel = dto.toDomain()
-            val timeRange = "short_term"
-            val entities = domainModel.items.mapIndexed { index, item ->
-                item.toEntity(timeRange, index + 1)
-            }
-
-            topTracksDao.clearTopTracks(timeRange)
+            topTracksDao.clearTopTracks(rangeKey)
             topTracksDao.insertTopTracks(entities)
 
             domainModel
         } catch (e: Exception) {
-            val cachedEntities = topTracksDao.getTopTracks("short_term")
-            if (cachedEntities.isEmpty()) {
-                return UserTopTracks(emptyList())
-            }
-            UserTopTracks(items = cachedEntities.map { it.toDomain() })
-        }
-    }
-
-    override suspend fun getUserTopTracksMedium(): UserTopTracks {
-        return try {
-            val token =
-                authRepository.getAccessToken() ?: throw IllegalArgumentException("No access token")
-            val dto = spotifyUserApi.getTopTracksMedium("Bearer $token")
-            val domainModel = dto.toDomain()
-            val timeRange = "medium_term"
-            val entities = domainModel.items.mapIndexed { index, item ->
-                item.toEntity(timeRange, index + 1)
-            }
-
-            topTracksDao.clearTopTracks(timeRange)
-            topTracksDao.insertTopTracks(entities)
-
-            domainModel
-        } catch (e: Exception) {
-            val cachedEntities = topTracksDao.getTopTracks("medium_term")
-            if (cachedEntities.isEmpty()) {
-                return UserTopTracks(emptyList())
-            }
-            UserTopTracks(items = cachedEntities.map { it.toDomain() })
-        }
-    }
-
-    override suspend fun getUserTopTracksLong(): UserTopTracks {
-        return try {
-            val token =
-                authRepository.getAccessToken() ?: throw IllegalArgumentException("No access token")
-            val dto = spotifyUserApi.getTopTracksLong("Bearer $token")
-            val domainModel = dto.toDomain()
-            val timeRange = "long_term"
-            val entities = domainModel.items.mapIndexed { index, item ->
-                item.toEntity(timeRange, index + 1)
-            }
-
-            topTracksDao.clearTopTracks(timeRange)
-            topTracksDao.insertTopTracks(entities)
-
-            domainModel
-        } catch (e: Exception) {
-            val cachedEntities = topTracksDao.getTopTracks("long_term")
+            Log.e("RepositoryImpl", "Tracks API error: ${e.message}", e)
+            val cachedEntities = topTracksDao.getTopTracks(rangeKey)
             if (cachedEntities.isEmpty()) {
                 return UserTopTracks(emptyList())
             }

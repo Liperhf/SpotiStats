@@ -1,7 +1,7 @@
 package com.example.spotistats.data.repository
 
 import com.example.spotistats.data.api.SpotifyUserApi
-import com.example.spotistats.data.mapper.DtoMappers.toDomain
+import com.example.spotistats.data.mapper.dtoMappers.toDomain
 import com.example.spotistats.domain.model.CurrentlyPlaying
 import com.example.spotistats.domain.model.RecentlyPlayed
 import com.example.spotistats.domain.repository.AuthRepository
