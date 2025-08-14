@@ -4,18 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.android.library) apply false
-}
-
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath(libs.gradle)
-        classpath(libs.kotlin.gradle.plugin)
-        classpath(libs.hilt.android.gradle.plugin)
-    }
+    alias(libs.plugins.hilt.android) apply false
 }
 
 tasks.register("clean", Delete::class) {
