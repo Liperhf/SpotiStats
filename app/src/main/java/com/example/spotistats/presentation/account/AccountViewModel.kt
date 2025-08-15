@@ -88,18 +88,39 @@ class AccountViewModel @Inject constructor(
     fun saveProfile(context: Context) {
         _uiState.value.nickname?.let { AccountPrefs.saveNickname(context, it) }
         AccountPrefs.saveAvatar(context, _uiState.value.imageUrl.toString())
+        // Мгновенно обновляем состояние, чтобы изменения отобразились без навигации
+        loadProfile()
     }
 
     fun resetProfile() {
         viewModelScope.launch {
-            val userProfile = userUseCase.getUserProfile()
-            val newUiState = AccountUiState(
-                imageUrl = userProfile.imagesUrl.let { Uri.parse(it) },
-                nickname = userProfile.display_name,
-                profile = userProfile
-            )
-            _uiState.value = newUiState
-            saveProfile(context)
+            try {
+                // 1) Сбрасываем локальные оверрайды (ник/аватар), чтобы не подменяли данные Spotify
+                AccountPrefs.clearNickname(context)
+                AccountPrefs.clearAvatar(context)
+
+                // 2) Получаем профиль из Spotify (репозиторий подмешает пустые локальные, т.е. чистые данные Spotify)
+                val userProfile = userUseCase.getUserProfile()
+
+                val newUiState = AccountUiState(
+                    imageUrl = userProfile.imagesUrl.let { Uri.parse(it) },
+                    nickname = userProfile.display_name,
+                    profile = userProfile
+                )
+                _uiState.value = newUiState
+                // 3) Сохраняем сброшенные значения как текущие локальные
+                AccountPrefs.saveNickname(context, userProfile.display_name)
+                AccountPrefs.saveAvatar(context, userProfile.imagesUrl)
+            } catch (e: Exception) {
+                val savedNickname = AccountPrefs.getNickname(context) ?: ""
+                val savedAvatar = AccountPrefs.getAvatar(context)
+                val imageUri = savedAvatar?.let { Uri.parse(it) }
+
+                _uiState.value = _uiState.value.copy(
+                    nickname = savedNickname,
+                    imageUrl = imageUri
+                )
+            }
         }
     }
 

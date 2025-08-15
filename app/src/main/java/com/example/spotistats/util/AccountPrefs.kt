@@ -28,4 +28,14 @@ object AccountPrefs {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         return prefs.getString(KEY_AVATAR, null)
     }
+
+    fun clearNickname(context: Context) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit().remove(KEY_NICKNAME).apply()
+    }
+
+    fun clearAvatar(context: Context) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit().remove(KEY_AVATAR).apply()
+    }
 }

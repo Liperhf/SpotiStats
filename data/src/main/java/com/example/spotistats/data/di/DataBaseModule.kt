@@ -3,6 +3,7 @@ package com.example.spotistats.data.di
 import android.content.Context
 import androidx.room.Room
 import com.example.spotistats.data.local.AppDataBase
+import com.example.spotistats.data.local.dao.RecentlyPlayedDao
 import com.example.spotistats.data.local.dao.TopArtistsDao
 import com.example.spotistats.data.local.dao.TopTracksDao
 import dagger.Module
@@ -38,5 +39,11 @@ object DataBaseModule {
     @Singleton
     fun provideTopTracksDao(appDataBase: AppDataBase): TopTracksDao {
         return appDataBase.topTracksDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRecentlyPlayedDao(appDataBase: AppDataBase): RecentlyPlayedDao {
+        return appDataBase.recentlyPlayedDao()
     }
 }

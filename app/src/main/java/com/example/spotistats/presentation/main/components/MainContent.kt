@@ -82,12 +82,10 @@ fun MainContent(isRefreshing: MutableState<Boolean>,
                 }
             }
             item {
-                if (recentlyPlayedTracks != null) {
-                    RecentlyPlayedBox(
-                        recentlyPlayedTracks = recentlyPlayedTracks,
-                        onShowAllClick = {onRecentlyShowClick()}
-                    )
-                }
+                RecentlyPlayedBox(
+                    recentlyPlayedTracks = recentlyPlayedTracks ?: emptyList(),
+                    onShowAllClick = { onRecentlyShowClick() }
+                )
             }
             item {
                 userTopArtists.let {
