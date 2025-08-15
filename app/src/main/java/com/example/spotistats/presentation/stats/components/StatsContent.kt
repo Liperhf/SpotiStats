@@ -34,7 +34,7 @@ fun StatsContent(
             .fillMaxSize()
             .padding(paddingValues)
     ) {
-        if (uiState.isLoading == true) {
+        if (uiState.isLoading) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center

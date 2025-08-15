@@ -54,7 +54,7 @@ fun MainScreen(
     authViewModel: AuthViewModel = hiltViewModel(),
     settingsViewModel: AccountViewModel = hiltViewModel()
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val greeting = stringResource(id = mainViewModel.getGreeting())

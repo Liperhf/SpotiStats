@@ -34,7 +34,6 @@ import coil.compose.AsyncImage
 import com.example.spotistats.R
 import com.example.spotistats.ui.theme.SpotiStatsTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountContent(
     paddingValues: PaddingValues,

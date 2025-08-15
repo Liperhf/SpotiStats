@@ -140,10 +140,10 @@ class MainViewModel @Inject constructor(
                         lastTrackId = newTrackId
                         _uiState.value = _uiState.value.copy(
                             currentlyPlaying = data,
-                            progressMs = data.progress_ms ?: 0
+                            progressMs = data.progress_ms
                         )
                         progressJob?.cancel()
-                        val durationMs = data.item.duration_ms ?: 0
+                        val durationMs = data.item.duration_ms
                         if (durationMs > 0) {
                             progressJob = startProgress(durationMs)
                         }

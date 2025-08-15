@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.spotistats.navigation.SpotiStatsNavGraph
-import com.example.spotistats.presentation.screen.authorization.AppBottomNavigationBar
+import com.example.spotistats.presentation.common.AppBottomNavigationBar
 import com.example.spotistats.ui.theme.SpotiStatsTheme
 import com.yalantis.ucrop.UCrop
 import dagger.hilt.android.AndroidEntryPoint

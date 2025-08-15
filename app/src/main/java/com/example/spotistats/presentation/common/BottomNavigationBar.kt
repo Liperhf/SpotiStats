@@ -1,4 +1,4 @@
-package com.example.spotistats.presentation.screen.authorization
+package com.example.spotistats.presentation.common
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
