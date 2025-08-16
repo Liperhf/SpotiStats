@@ -18,16 +18,36 @@ SpotiStats is an Android application for analyzing your Spotify listening statis
 
 # 📱 Demonstration
 
+### 🏠 Main Screen
 <div align="center">
-  <img src="screenshots/main_screen.png" width="250" alt="Main screen">
-  <img src="screenshots/stats_screen.png" width="250" alt="Stats screen">
-  <img src="screenshots/profile_screen.png" width="250" alt="Profile">
+  <img src="screenshots/main_screen.jpg" width="250" alt="Main screen">
 </div>
 
+### 📊 Stats Screen
 <div align="center">
-  <img src="screenshots/auth_screen.png" width="250" alt="Auth">
-  <img src="screenshots/settings_screen.png" width="250" alt="Settings">
-  <img src="screenshots/recently_played.png" width="250" alt="Recently played">
+  <img src="screenshots/stats_screen.jpg" width="250" alt="Stats screen">
+</div>
+
+### 👤 Profile Screen
+<div align="center">
+  <img src="screenshots/profile_screen.jpg" width="250" alt="Profile screen">
+</div>
+
+---
+
+### 🔐 Authorization Screen
+<div align="center">
+  <img src="screenshots/auth_screen.jpg" width="250" alt="Auth screen">
+</div>
+
+### ⚙️ Settings Screen
+<div align="center">
+  <img src="screenshots/settings_screen.jpg" width="250" alt="Settings screen">
+</div>
+
+### 🎶 Recently Played
+<div align="center">
+  <img src="screenshots/recently_played.jpg" width="250" alt="Recently played">
 </div>
 
 # ✨ Features
