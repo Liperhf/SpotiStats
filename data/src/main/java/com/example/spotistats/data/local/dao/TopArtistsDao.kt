@@ -12,7 +12,7 @@ interface TopArtistsDao {
     suspend fun getTopArtists(timeRange: String): List<TopArtistEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTopArtists(artists: kotlin.collections.List<com.example.spotistats.data.local.entity.TopArtistEntity>)
+    suspend fun insertTopArtists(artists: List<TopArtistEntity>)
 
     @Query("DELETE FROM top_artist WHERE timeRange = :timeRange")
     suspend fun clearTopArtists(timeRange: String)
