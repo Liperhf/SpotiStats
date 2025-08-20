@@ -12,6 +12,6 @@ interface AuthRepository {
     suspend fun getExpiresAt(): Long
     suspend fun isTokenExpired(): Boolean
     suspend fun refreshToken(refreshToken: String): AuthToken
-    suspend fun clearTokens(): Unit
+    suspend fun clearTokens()
 
 }

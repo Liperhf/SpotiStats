@@ -43,14 +43,9 @@ class AuthUseCase @Inject constructor(
         }
     }
 
-    suspend fun getExpiresAt(): Long {
-        return authRepository.getExpiresAt()
-    }
-
 
     suspend fun isUserAuthorized(): Boolean {
-        val token = getAccessToken()
-        if (token == null) return false
+        getAccessToken() ?: return false
         if (isTokenExpired()) {
             return refreshTokenIfNeeded()
         }
